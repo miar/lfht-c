@@ -1,0 +1,2 @@
+This is a small project that implements an external version of the Lock Free Hash Tries (LFHT) model implemented in the YapTab system. 
+For the moment the LFHT supports only check and insert operations in a lock-free fashion. It does not support the delete operation. The model is formalized in the paper "A Lock-Free Hash Trie Design for Concurrent Tabled Logic Programs", which should be available soon in the IJPP journal.
