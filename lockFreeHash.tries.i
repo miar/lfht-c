@@ -7,9 +7,9 @@
 #define LFHT_STR_PTR                      dic_ptr
 #define LFHT_USES_ARGS                    , long value
 #define LFHT_PASS_ARGS                    , value
-#define LFHT_ROOT_ADDR                    (&(Root.Root))
-#define LFHT_FirstNode                    ((Root.Root))
-#define LFHT_GetFirstNode(NODE)           (NODE = ((LFHT_STR_PTR) (Root.Root)))
+#define LFHT_ROOT_ADDR                    (&(Root.dic))
+#define LFHT_FirstNode                    ((Root.dic))
+#define LFHT_GetFirstNode(NODE)           (NODE = ((LFHT_STR_PTR) (Root.dic)))
 #define LFHT_NodeKey(NODE)                Dic_key(NODE)
 #define LFHT_NodeNext(NODE)               Dic_next(NODE)
 #define LFHT_NEW_NODE(NODE, KEY, NEXT)    NEW_DIC_ENTRY(NODE, KEY, value, NEXT)
