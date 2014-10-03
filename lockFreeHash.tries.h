@@ -4,6 +4,7 @@
 /*******************************************************************************
  *                            YapTab compatibility stuff                       *
  *******************************************************************************/
+#ifdef YAPTAB
 
 /* persistent macros - macros used to call the lfht model from outside files */
 #define LFHT_SUBGOAL_TRIE_CHECK_INSERT_ENTRY(K, P)   subgoal_trie_check_insert_key(K, P PASS_REGS)
@@ -16,6 +17,18 @@
 /* BLANC if no TabMalloc */ 
 #define LFHT_PASS_REGS                                 PASS_REGS
 #define LFHT_NODE_KEY_STR                              Term
+
+#else  /* Joana's stuff */
+/* 0 (zero) if none */
+#define LFHT_NrLowTagBits                             0
+/* BLANC if no TabMalloc */
+#define LFHT_USES_REGS
+/* BLANC if no TabMalloc */ 
+#define LFHT_PASS_REGS
+#define LFHT_NODE_KEY_STR                             long
+#endif /*YAPTAB */
+
+
 
 /*******************************************************************************
  *                            LFHT configure parameters                        *
