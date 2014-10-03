@@ -19,9 +19,12 @@ typedef struct dic {
   Dic_next(PTR) = NEXT;						   \
 }
 
-#define FREE_DIC_ENTRY(PTR)         FREE(PTR)
+#define FREE_DIC_ENTRY(PTR)         free(PTR)
 
-dic_ptr Root = NULL;
+
+struct benchRoot {dic_ptr Root;};
+struct benchRoot Root;
+
 
 #define INCLUDE_DIC_LOCK_FREE_HASH_TRIE  1
 
