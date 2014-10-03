@@ -21,10 +21,8 @@ typedef struct dic {
 
 #define FREE_DIC_ENTRY(PTR)         free(PTR)
 
-
 struct benchRoot {dic_ptr Root;};
 struct benchRoot Root;
-
 
 #define INCLUDE_DIC_LOCK_FREE_HASH_TRIE  1
 
