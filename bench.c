@@ -7,9 +7,7 @@ int main() {
   dic_check_insert_key(key, value);
   dic_check_insert_key(2, value);
   dic_check_insert_key(3, value);
-  dic_check_insert_key(4, value);
-  dic_check_insert_key(5, value);
-
+  dic_show_state();
   /*  key = 3; value = 4;
   check_insert (root, key, value);
   print_values (root); */

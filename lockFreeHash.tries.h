@@ -4,7 +4,7 @@
 /*******************************************************************************
  *                            YapTab compatibility stuff                       *
  *******************************************************************************/
-#ifdef YAPTAB
+#ifdef YAP_TABMALLOC
 /* persistent macros - macros used to call the lfht model from outside files */
 #define LFHT_SUBGOAL_TRIE_CHECK_INSERT_ENTRY(K, P)   subgoal_trie_check_insert_key(K, P PASS_REGS)
 #define LFHT_ANSWER_TRIE_CHECK_INSERT_ENTRY(K, P, I)   answer_trie_check_insert_key(K, P, I PASS_REGS)
@@ -24,8 +24,7 @@
 /* BLANC if no TabMalloc */ 
 #define LFHT_PASS_REGS
 #define LFHT_NODE_KEY_STR                             long
-#endif /*YAPTAB */
-
+#endif /*YAP_TABMALLOC */
 
 
 /*******************************************************************************
@@ -73,7 +72,7 @@
 
 /* integrated with TabMalloc. If no TabMalloc, then use malloc */
 
-#ifdef YAPTAB
+#ifdef YAP_TABMALLOC
 #define LFHT_MemAllocBuckets(STR)                        		\
   union trie_hash_buckets *aux;						\
   ALLOC_STRUCT(aux, union trie_hash_buckets, _pages_trie_hash_buckets); \
@@ -85,7 +84,7 @@
   if ((PTR = (void *) malloc((LFHT_BUCKET_ARRAY_SIZE + 1)*sizeof(void *))) == NULL) \
     perror("ALLOC_DIC_ENTRY: malloc error")
 
-#endif /* YAPTAB */
+#endif /* YAP_TABMALLOC */
 
 #define LFHT_InitBuckets(BUCKET_PTR, PREV_HASH)                         \
   { int i; void **init_bucket_ptr;                                      \

@@ -13,7 +13,8 @@
 #define LFHT_NodeKey(NODE)                Dic_key(NODE)
 #define LFHT_NodeNext(NODE)               Dic_next(NODE)
 #define LFHT_NEW_NODE(NODE, KEY, NEXT)    NEW_DIC_ENTRY(NODE, KEY, value, NEXT)
-#define LFHT_FREE_NODE(PTR)               FREE_DIC_ENTRY(PTR)
+#define LFHT_FREE_NODE(NODE)              FREE_DIC_ENTRY(NODE)
+#define LFHT_SHOW_NODE(NODE)              SHOW_DIC_ENTRY(NODE)
 
 #define LFHT_CHECK_INSERT_KEY             dic_check_insert_key
 #define LFHT_CHECK_INSERT_FIRST_CHAIN     dic_check_insert_first_chain
@@ -22,8 +23,11 @@
 #define LFHT_ADJUST_CHAIN_NODES           dic_adjust_chain_nodes
 #define LFHT_INSERT_BUCKET_ARRAY          dic_insert_bucket_array
 #define LFHT_INSERT_BUCKET_CHAIN          dic_insert_bucket_chain
+#define LFHT_SHOW_STATE                   dic_show_state
+#define LFHT_SHOW_CHAIN                   dic_show_chain
+
 /* bench configuration - end */
-/*-------------- don't change nothing from this point ------------------ */
+/*-------------- don't change nothing from this point until the end of the file ------------------ */
 
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY(LFHT_NODE_KEY_STR key LFHT_USES_ARGS);
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node, LFHT_NODE_KEY_STR key, int count_nodes LFHT_USES_ARGS);
@@ -32,7 +36,13 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
 static inline void LFHT_ADJUST_CHAIN_NODES(LFHT_STR_PTR *new_hash, LFHT_STR_PTR chain_node, LFHT_STR_PTR last_node, int n_shifts LFHT_USES_REGS);
 static inline void LFHT_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash, LFHT_STR_PTR chain_node, int n_shifts LFHT_USES_REGS);
 static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash, LFHT_STR_PTR chain_node, LFHT_STR_PTR adjust_node, int n_shifts, int count_nodes LFHT_USES_REGS);
+static inline void LFHT_SHOW_STATE(void);
+static inline void LFHT_SHOW_CHAIN(LFHT_STR_PTR chain_node, LFHT_STR_PTR * end_chain);
 #endif /* INCLUDE_DIC_LOCK_FREE_HASH_TRIE */
+
+/* ------------------------------------------------------------------------------------*/
+/*                                 check_insert                                        */
+/* ------------------------------------------------------------------------------------*/
 
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY(LFHT_NODE_KEY_STR key LFHT_USES_ARGS) {
   LFHT_STR_PTR first_node;
@@ -221,6 +231,45 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash, LFHT_STR_PT
   return LFHT_CALL_INSERT_BUCKET_ARRAY(jump_hash, adjust_node, (n_shifts + 1));
 }
 
+
+/* ------------------------------------------------------------------------------------*/
+/*                     show state (prints the nodes of the LFHT)                       */
+/* ------------------------------------------------------------------------------------*/
+
+static inline void LFHT_SHOW_STATE(void) {
+  LFHT_STR_PTR first_node;
+  LFHT_GetFirstNode(first_node);
+  if (first_node == NULL) {
+    printf("LFHT is empty \n");
+    return;
+  }  
+  //  if (LFHT_IsHashLevel(first_node))
+  //  return LFHT_SHOW_BUCKET_ARRAY((LFHT_STR_PTR *) first_node);
+  return LFHT_SHOW_CHAIN(first_node, (LFHT_STR_PTR *)NULL);
+}
+
+static inline void LFHT_SHOW_CHAIN(LFHT_STR_PTR chain_node, LFHT_STR_PTR * end_chain) {
+  if ((LFHT_STR_PTR *) chain_node == end_chain) {
+    printf("\n");
+    return;
+  }
+  LFHT_SHOW_NODE(chain_node);
+  return LFHT_SHOW_CHAIN(LFHT_NodeNext(chain_node), end_chain);
+}
+
+static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
+  /*------- HERE ------/
+
+
+
+}
+
+
+
+/* ------------------------------------------------------------------------------------*/
+/*                                 undefined macros                                    */
+/* ------------------------------------------------------------------------------------*/
+
 #undef LFHT_STR
 #undef LFHT_STR_PTR
 #undef LFHT_USES_ARGS
@@ -239,4 +288,8 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash, LFHT_STR_PT
 #undef LFHT_ADJUST_CHAIN_NODES
 #undef LFHT_INSERT_BUCKET_ARRAY
 #undef LFHT_INSERT_BUCKET_CHAIN
+
+
+
+
 
