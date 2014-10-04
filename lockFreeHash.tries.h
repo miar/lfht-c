@@ -41,6 +41,7 @@
  *                            LFHT macros                                      *
  *******************************************************************************/
 /* common macros - do not change*/
+
 #define LFHT_CALL_CHECK_INSERT_KEY(K)                      LFHT_CHECK_INSERT_KEY(K LFHT_PASS_ARGS)
 #define LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(F, K, S)        LFHT_CHECK_INSERT_FIRST_CHAIN(F, K, S LFHT_PASS_ARGS)
 #define LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(F, K, S)       LFHT_CHECK_INSERT_BUCKET_ARRAY(F, K, S LFHT_PASS_ARGS)
@@ -124,11 +125,17 @@
     BUCKET_PTR = (STR **) alloc_bucket_ptr;                                          \
   }
 
+#ifdef YAP_TABMALLOC 
 #define LFHT_FreeBuckets(PTR, BKT, STR)
+
   /* !! -- commented ... check this later */
   /* V04_FREE_THB(((STR *) V04_UNTAG(PTR)) - 1) 
      FREE_STRUCT((union trie_hash_buckets*)STR, union trie_hash_buckets, _pages_trie_hash_buckets)
      FREE_BLOCK(((ans_node_ptr *) V04_UNTAG(STR)) - 1) */
+
+#else /* Joana's stuff */
+#define LFHT_FreeBuckets(PTR, _NIU1_, _NIU2_)  free((LFHT_STR_PTR *)((LFHT_UntagHashLevel(PTR)) - 1))
+#endif
 
 #endif /* LFHT_LOCAL_THREAD_BUFFER_FOR_BUCKET_ARRAYS */
 #endif /* _LOCK_FREE_HASH_TRIES_H */

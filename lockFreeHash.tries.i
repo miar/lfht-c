@@ -26,6 +26,9 @@
 #define LFHT_SHOW_STATE                   dic_show_state
 #define LFHT_SHOW_CHAIN                   dic_show_chain
 #define LFHT_SHOW_BUCKET_ARRAY            dic_show_bucket_array
+#define LFHT_ABOLISH_ALL_KEYS             dic_abolish_all_keys
+#define LFHT_ABOLISH_CHAIN                dic_abolish_chain
+#define LFHT_ABOLISH_BUCKET_ARRAY         dic_abolish_bucket_array
 
 /* bench configuration - end */
 /*-------------- don't change nothing from this point until the end of the file ------------------ */
@@ -40,6 +43,9 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash, LFHT_STR_PT
 static inline void LFHT_SHOW_STATE(void);
 static inline void LFHT_SHOW_CHAIN(LFHT_STR_PTR chain_node, LFHT_STR_PTR * end_chain);
 static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
+static inline void LFHT_ABOLISH_ALL_KEYS(void);
+static inline void LFHT_ABOLISH_CHAIN(LFHT_STR_PTR chain_node, LFHT_STR_PTR * end_chain);
+static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
 #endif /* INCLUDE_DIC_LOCK_FREE_HASH_TRIE */
 
 /* ------------------------------------------------------------------------------------*/
@@ -268,6 +274,49 @@ static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
       LFHT_SHOW_CHAIN((LFHT_STR_PTR)*bucket, curr_hash);
     bucket++;
   }
+  return;
+}
+
+/* ------------------------------------------------------------------------------------*/
+/*                     abolish keys (removes all nodes inside the LFHT)                */
+/* ------------------------------------------------------------------------------------*/
+
+static inline void LFHT_ABOLISH_ALL_KEYS(void) {
+  LFHT_STR_PTR first_node;
+  LFHT_GetFirstNode(first_node);
+  if (first_node == NULL) {
+    printf("LFHT is empty \n");
+    return;
+  }  
+  if (LFHT_IsHashLevel(first_node))
+    LFHT_ABOLISH_BUCKET_ARRAY((LFHT_STR_PTR *) first_node);
+  else
+    LFHT_ABOLISH_CHAIN(first_node, (LFHT_STR_PTR *)NULL);
+  LFHT_FirstNode = NULL;
+  return;
+}
+
+
+static inline void LFHT_ABOLISH_CHAIN(LFHT_STR_PTR chain_node, LFHT_STR_PTR * end_chain) {
+  if ((LFHT_STR_PTR *) chain_node == end_chain)
+    return;  
+  LFHT_ABOLISH_CHAIN(LFHT_NodeNext(chain_node), end_chain);
+  FREE_DIC_ENTRY(chain_node);
+  return;
+}
+
+static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
+  int i;
+  LFHT_STR_PTR *bucket;
+  bucket = (LFHT_STR_PTR *) LFHT_UntagHashLevel(curr_hash);
+  for (i = 0; i < LFHT_BUCKET_ARRAY_SIZE ; i++) {
+    if (LFHT_IsHashLevel((*bucket)))
+      LFHT_ABOLISH_BUCKET_ARRAY((LFHT_STR_PTR *) *bucket);
+    else
+      LFHT_ABOLISH_CHAIN((LFHT_STR_PTR)*bucket, curr_hash);
+    bucket++;
+  }
+  LFHT_FreeBuckets(curr_hash, NULL, NULL);
   return;
 }
 
