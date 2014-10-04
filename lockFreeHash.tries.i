@@ -321,6 +321,46 @@ static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
 }
 
 /* ------------------------------------------------------------------------------------*/
+/*                     abolish a key (removes the node with the key from the LFHT)     */
+/* ------------------------------------------------------------------------------------*/
+
+ /* --------------------- HERE --------------------*/
+/*
+static inline LFHT_Bool LFHT_CHECK_REMOVE_KEY(LFHT_NODE_KEY_STR key) {
+  LFHT_STR_PTR first_node;
+  LFHT_GetFirstNode(first_node);
+  if (first_node == NULL) {
+    printf("LFHT is empty \n");
+    return LFHT_false;
+  }
+ 
+  if (LFHT_IsHashLevel(first_node))
+    return LFHT_CHECK_REMOVE_BUCKET_ARRAY((LFHT_STR_PTR *) first_node);
+  else {
+    if (LFHT_NodeKey(first_node) == key) {
+      LFHT_FREE_NODE(first_node);
+      LFHT_FirstNode = NULL;
+      return LFHT_true;
+    } else
+      return LFHT_CHECK_REMOVE_CHAIN(first_node, (LFHT_STR_PTR *)NULL);
+  }
+}
+
+static inline void LFHT_ABOLISH_CHAIN(LFHT_STR_PTR chain_node, LFHT_STR_PTR * end_chain) {
+
+
+  if ((LFHT_STR_PTR *) chain_node == end_chain)
+    return LFHT_false;
+
+  LFHT_ABOLISH_CHAIN(LFHT_NodeNext(chain_node), end_chain);
+  FREE_DIC_ENTRY(chain_node);
+  return;
+}
+*/
+
+
+
+/* ------------------------------------------------------------------------------------*/
 /*                                 undefine macros                                     */
 /* ------------------------------------------------------------------------------------*/
 
@@ -345,3 +385,6 @@ static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
 #undef LFHT_SHOW_STATE
 #undef LFHT_SHOW_CHAIN
 #undef LFHT_SHOW_BUCKET_ARRAY
+#undef LFHT_ABOLISH_ALL_KEYS
+#undef LFHT_ABOLISH_CHAIN
+#undef LFHT_ABOLISH_BUCKET_ARRAY

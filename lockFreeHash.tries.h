@@ -1,6 +1,8 @@
 #ifndef _LOCK_FREE_HASH_TRIES_H
 #define _LOCK_FREE_HASH_TRIES_H
 
+typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
+
 /*******************************************************************************
  *                            YapTab compatibility stuff                       *
  *******************************************************************************/
