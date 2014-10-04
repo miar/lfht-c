@@ -233,7 +233,6 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash, LFHT_STR_PT
   return LFHT_CALL_INSERT_BUCKET_ARRAY(jump_hash, adjust_node, (n_shifts + 1));
 }
 
-
 /* ------------------------------------------------------------------------------------*/
 /*                     show state (prints the nodes inside the LFHT)                   */
 /* ------------------------------------------------------------------------------------*/
@@ -253,8 +252,9 @@ static inline void LFHT_SHOW_STATE(void) {
 static inline void LFHT_SHOW_CHAIN(LFHT_STR_PTR chain_node, LFHT_STR_PTR * end_chain) {
   if ((LFHT_STR_PTR *) chain_node == end_chain)
     return;  
+  LFHT_SHOW_CHAIN(LFHT_NodeNext(chain_node), end_chain);
   LFHT_SHOW_NODE(chain_node);
-  return LFHT_SHOW_CHAIN(LFHT_NodeNext(chain_node), end_chain);
+  return;
 }
 
 static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
