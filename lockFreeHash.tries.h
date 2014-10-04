@@ -134,7 +134,8 @@
      FREE_BLOCK(((ans_node_ptr *) V04_UNTAG(STR)) - 1) */
 
 #else /* Joana's stuff */
-#define LFHT_FreeBuckets(PTR, _NIU1_, _NIU2_)  free((LFHT_STR_PTR *)((LFHT_UntagHashLevel(PTR)) - 1))
+#define LFHT_FreeBuckets(PTR, _NIU1_, _NIU2_)  \
+  free(((LFHT_STR_PTR *)LFHT_UntagHashLevel(PTR)) - 1)
 #endif
 
 #endif /* LFHT_LOCAL_THREAD_BUFFER_FOR_BUCKET_ARRAYS */
