@@ -2,9 +2,9 @@
 #include<stdlib.h>
 
 typedef struct dic {
-  long key;            /* Mandatory Field */
-  long value;          /* Optional  Field */
-  struct dic *next;   /* Mandatory Field */
+  long key;           /* LFHT Mandatory Field */
+  long value;         /* Optional  Field */
+  struct dic *next;   /* LFHT Mandatory Field */
 } *dic_ptr;
 
 #define Dic_key(X)    ((X)->key)
@@ -20,8 +20,7 @@ typedef struct dic {
 }
 
 #define FREE_DIC_ENTRY(PTR)         free(PTR)
-#define SHOW_DIC_ENTRY(NODE)        printf("(%ld, %ld) ", Dic_key(NODE), Dic_val(NODE))
-
+#define SHOW_DIC_ENTRY(NODE)        printf("(%ld, %ld)\n", Dic_key(NODE), Dic_val(NODE))
 
 struct benchRoot {dic_ptr dic;};
 struct benchRoot Root;
