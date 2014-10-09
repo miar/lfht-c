@@ -37,5 +37,3 @@ struct benchRoot Root;
 #define INCLUDE_DIC_LOCK_FREE_HASH_TRIE  1
 
 #include "lockFreeHash.tries.i"
-
-
