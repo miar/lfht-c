@@ -1,10 +1,31 @@
-This is a small project that implements an external version of the
-Lock Free Hash Tries (LFHT) model implemented in the YapTab system.
-For the moment the LFHT supports only check and insert operations in a
-lock-free fashion.
+This is a small project that implements an external version written in
+C of the Lock Free Hash Tries (LFHT) model implemented in the YapTab
+system. The LFHT can be included in any project written in C, just by
+using the files "lockFreeHash.tries.h" and "lockFreeHash.tries.i".
 
-The model does not support the delete operation. The paper "A
-Lock-Free Hash Trie Design for Concurrent Tabled Logic Programs",
-which should be available soon in the IJPP journal, has the
-formalization (lock-freedom and linearizability).
+For the moment the LFHT supports only the "check_insert" operation in
+a lock-free fashion. The benchmark given in this project is a dictionary
+that associates a key to a value.
+
+The paper "A Lock-Free Hash Trie Design for Concurrent Tabled Logic
+Programs", which should be available soon in the IJPP journal has the
+formalization (lock-freedom and linearizability) of the model.
+
+Other issues : 
+
+      - The LFHT does not support the concurrent "delete_key"
+        operation. Supports for the moment an "abolish_all_keys"
+        operation, which removes all keys in the LFHT. MUST BE
+        DONE in a non-concurrent environment. 
+
+      - The LFHT supports also a "show_state" operation, that shows all
+        keys in the LFHT. MUST BE DONE in a non-concurrent environment.
+
+Undergoing work : 
+
+      - Support for deletion of individual keys in a lock-free and
+        non-lock-free fashion. ("delete_key" operation)
+      - Improve the Makefile.
+      - Support for the "check" operation.
+      - Benchmark with a multithreaded environment.
 
