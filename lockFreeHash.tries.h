@@ -34,9 +34,9 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
  *******************************************************************************/
 /* common macros - do not change*/
 
-#define LFHT_BIT_SHIFT                    3
+#define LFHT_BIT_SHIFT                    2
 #define LFHT_BUCKET_ARRAY_SIZE            (1 << LFHT_BIT_SHIFT)
-#define LFHT_MAX_NODES_PER_BUCKET         4
+#define LFHT_MAX_NODES_PER_BUCKET         2
 #define LFHT_CELL                         long
 
 /*******************************************************************************
@@ -84,7 +84,7 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
 #else /* Joana's stuff */
 
 #define LFHT_MemAllocBuckets(PTR)                        		            \
-  if ((PTR = (void *) malloc((LFHT_BUCKET_ARRAY_SIZE + 1)*sizeof(void *))) == NULL) \
+  if ((PTR = (void **) malloc((LFHT_BUCKET_ARRAY_SIZE + 1)*sizeof(void *))) == NULL) \
     perror("ALLOC_DIC_ENTRY: malloc error")
 
 #endif /* YAP_TABMALLOC */
@@ -92,9 +92,11 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
 #define LFHT_InitBuckets(BUCKET_PTR, PREV_HASH)                         \
   { int i; void **init_bucket_ptr;                                      \
     *BUCKET_PTR++ = (void *) (PREV_HASH);                               \
-    init_bucket_ptr = (void **) BUCKET_PTR;                             \
-    for (i = LFHT_BUCKET_ARRAY_SIZE; i != 0; i--)                       \
-      *init_bucket_ptr++ = (void *) LFHT_TagAsHashLevel(BUCKET_PTR);    \
+    init_bucket_ptr = (void *) BUCKET_PTR;                             \
+    for (i = LFHT_BUCKET_ARRAY_SIZE; i != 0; i--)  {			\
+      /*printf("init bucket = %p \n",init_bucket_ptr); */		\
+      *init_bucket_ptr++ = (void **) LFHT_TagAsHashLevel(BUCKET_PTR);    \
+    }						                        \
   }
 
 #if defined(LFHT_LOCAL_THREAD_BUFFER_FOR_BUCKET_ARRAYS)

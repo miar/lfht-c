@@ -24,7 +24,7 @@ typedef struct dic {
 
 /* Define how a key is released */
 #define FREE_DIC_ENTRY(PTR)         free(PTR)
-/* Define how a key is shown*/
+/* Define how a key is shown */
 #define SHOW_DIC_ENTRY(NODE)        printf("(%ld, %ld)\n", Dic_key(NODE), Dic_val(NODE))
 
 /* Define the external point from where the LFHT is called */
@@ -35,5 +35,11 @@ struct benchRoot Root;
 /* Include the files in the project */
 
 #define INCLUDE_DIC_LOCK_FREE_HASH_TRIE  1
+
+
+#define LFHT_DEBUG 1
+#ifdef LFHT_DEBUG
+int total_nodes = 0;
+#endif /* LFHT_DEBUG */
 
 #include "lockFreeHash.tries.i"
