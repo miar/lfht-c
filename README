@@ -8,8 +8,10 @@ a lock-free fashion. The benchmark given in this project is a dictionary
 that associates a key to a value.
 
 The paper "A Lock-Free Hash Trie Design for Concurrent Tabled Logic
-Programs", which should be available soon in the IJPP journal has the
-formalization (lock-freedom and linearizability) of the model.
+Programs", which is available in the International Journal of Parallel
+Programming, has the formalization (linearizability and lock-freedom)
+of the model.  Link:
+http://link.springer.com/article/10.1007/s10766-014-0346-1
 
 Other issues : 
 

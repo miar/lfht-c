@@ -307,7 +307,6 @@ static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
   bucket = (LFHT_STR_PTR *) LFHT_UntagHashLevel(curr_hash);
   for (i = 0; i < LFHT_BUCKET_ARRAY_SIZE ; i++) {
     if (LFHT_IsHashLevel((*bucket))) {
-      //      if (*bucket != *curr_hash)
 	LFHT_SHOW_BUCKET_ARRAY((LFHT_STR_PTR *) *bucket);
     }else
       LFHT_SHOW_CHAIN((LFHT_STR_PTR)*bucket, curr_hash);
