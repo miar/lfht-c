@@ -34,9 +34,9 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
  *******************************************************************************/
 /* common macros - do not change*/
 
-#define LFHT_BIT_SHIFT                    2
+#define LFHT_BIT_SHIFT                    3
 #define LFHT_BUCKET_ARRAY_SIZE            (1 << LFHT_BIT_SHIFT)
-#define LFHT_MAX_NODES_PER_BUCKET         2
+#define LFHT_MAX_NODES_PER_BUCKET         4
 #define LFHT_CELL                         long
 
 /*******************************************************************************

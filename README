@@ -24,7 +24,7 @@ Other issues :
         all keys in the LFHT. MUST BE DONE in a non-concurrent fashion
         (after all workers finish).
 
-Undergoing work : 
+Ongoing work : 
 
       - Support for deletion of individual keys in a lock-free and
         non-lock-free fashion. ("delete_key" operation)
