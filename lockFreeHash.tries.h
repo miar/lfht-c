@@ -13,17 +13,12 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
 
 /* 0 (zero) if none */
 #define LFHT_NrLowTagBits                              NumberOfLowTagBits
-/* BLANC if no TabMalloc */
 #define LFHT_USES_REGS                                 USES_REGS
-/* BLANC if no TabMalloc */ 
 #define LFHT_PASS_REGS                                 PASS_REGS
 #define LFHT_NODE_KEY_STR                              Term
-#else  /* Joana's stuff */
-/* 0 (zero) if none */
+#else  /* STANDARD_MALLOC */
 #define LFHT_NrLowTagBits                             0
-/* BLANC if no TabMalloc */
 #define LFHT_USES_REGS
-/* BLANC if no TabMalloc */ 
 #define LFHT_PASS_REGS
 #define LFHT_NODE_KEY_STR                             long
 #endif /*YAP_TABMALLOC */
@@ -73,7 +68,7 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
      /* V04_GET_PREV_HASH */
 #define LFHT_GetPreviousHashLevel(PH, CH, STR)  (PH = (STR **) *(((STR **) LFHT_UntagHashLevel(CH)) - 1))
 
-/* integrated with TabMalloc. If no TabMalloc, then use malloc */
+/* Memory allocation stuff */
 
 #ifdef YAP_TABMALLOC
 #define LFHT_MemAllocBuckets(STR)                        		\
@@ -81,7 +76,7 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
   ALLOC_STRUCT(aux, union trie_hash_buckets, _pages_trie_hash_buckets); \
   STR = aux->hash_buckets
 
-#else /* Joana's stuff */
+#else /* STANDARD_MALLOC */
 
 #define LFHT_MemAllocBuckets(PTR)                        		            \
   if ((PTR = (void **) malloc((LFHT_BUCKET_ARRAY_SIZE + 1)*sizeof(void *))) == NULL) \
@@ -137,7 +132,7 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
      FREE_STRUCT((union trie_hash_buckets*)STR, union trie_hash_buckets, _pages_trie_hash_buckets)
      FREE_BLOCK(((ans_node_ptr *) V04_UNTAG(STR)) - 1) */
 
-#else /* Joana's stuff */
+#else /* STANDARD_MALLOC */ 
 #define LFHT_FreeBuckets(PTR, _NIU1_, _NIU2_)  \
   free(((LFHT_STR_PTR *)LFHT_UntagHashLevel(PTR)) - 1)
 #endif

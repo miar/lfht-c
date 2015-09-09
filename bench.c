@@ -4,6 +4,8 @@
 
 #define NKEYS 100
 
+extern int total_nodes; 
+
 int main() {
   int key, value = 2;  
   for (key = 1 ; key <= NKEYS  ; key++)
