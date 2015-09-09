@@ -7,7 +7,10 @@
 extern int total_nodes; 
 
 int main() {
-  int key, value = 2;  
+  int key, value = 2;
+
+  //  lockFreeHashTrie_init();
+
   for (key = 1 ; key <= NKEYS  ; key++)
     dic_check_insert_key(key, value);
   printf("total_nodes = %d\n", total_nodes);
