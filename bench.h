@@ -12,7 +12,7 @@ typedef struct dic {
 #define Dic_val(X)    ((X)->value)
 #define Dic_next(X)   ((X)->next)
 
-/* Define how a key is inserted*/
+/* Define how a key is inserted */
 
 #define NEW_DIC_ENTRY(PTR, KEY, VAL, NEXT) {			   \
   if ((PTR = (struct dic *) malloc(sizeof(struct dic))) == NULL)   \
