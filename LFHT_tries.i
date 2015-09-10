@@ -59,7 +59,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY(LFHT_NODE_KEY_STR key LFHT_USES
     LFHT_NEW_NODE(new_node, key, NULL);
     //    if (key == 2) {
     //  LFHT_TagAsDeletedKey(new_node);     
-    //}
+    ///}
 
     if (LFHT_BoolCAS(LFHT_ROOT_ADDR, NULL, new_node)) {
 #ifdef LFHT_DEBUG
