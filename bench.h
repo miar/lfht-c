@@ -2,9 +2,6 @@
 #include<stdlib.h>
 #include "LFHT_tries.h"
 
-/* Define the maximum number of simultaneous threads that you system supports */
-#define MAX_THREADS 1
-
 /* Define your node within the LFHT data structure */
 typedef struct dic {
   long key;           /* LFHT Mandatory Field */
@@ -35,7 +32,7 @@ typedef struct dic {
 
 struct benchRoot {
   dic_ptr dic; /* Memory address where you want to hook the LFHT data structures */
-  LFTH_ThreadLocals thread_pool[MAX_THREADS]; 
+  LFHT_EnvPtr dic_env;
 };
 
 struct benchRoot Root;

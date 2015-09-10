@@ -1,5 +1,5 @@
-#ifndef _LOCK_FREE_HASH_TRIES_H
-#define _LOCK_FREE_HASH_TRIES_H
+#ifndef _LFHT_TRIES_H
+#define _LFHT_TRIES_H
 
 #include "LFHT_threads.h"
 
@@ -25,16 +25,6 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
 #define LFHT_NODE_KEY_STR                             long
 #endif /*YAP_TABMALLOC */
 
-
-/*******************************************************************************
- *                            LFHT configure parameters                        *
- *******************************************************************************/
-/* common macros - do not change*/
-
-#define LFHT_BIT_SHIFT                    3
-#define LFHT_BUCKET_ARRAY_SIZE            (1 << LFHT_BIT_SHIFT)
-#define LFHT_MAX_NODES_PER_BUCKET         4
-#define LFHT_CELL                         long
 
 /*******************************************************************************
  *                            LFHT macros                                      *
@@ -140,4 +130,4 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
 #endif
 
 #endif /* LFHT_LOCAL_THREAD_BUFFER_FOR_BUCKET_ARRAYS */
-#endif /* _LOCK_FREE_HASH_TRIES_H */
+#endif /* _LFHT_TRIES_H */
