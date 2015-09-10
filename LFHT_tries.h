@@ -3,8 +3,9 @@
 
 #include "LFHT_threads.h"
 
-typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
+typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 
+#define LFTH_LowTagDeleteBits        1  /* 1 bit for the logically deleted key */
 /*******************************************************************************
  *                            YapTab compatibility stuff                       *
  *******************************************************************************/
@@ -14,12 +15,12 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
 #define LFHT_ANSWER_TRIE_CHECK_INSERT_ENTRY(K, P, I)   answer_trie_check_insert_key(K, P, I PASS_REGS)
 
 /* 0 (zero) if none */
-#define LFHT_NrLowTagBits                              NumberOfLowTagBits
+#define LFHT_NrLowTagBits       ERRO CHECK THIS        LFTH_LowTagDeleteBits + NumberOfLowTagBits
 #define LFHT_USES_REGS                                 USES_REGS
 #define LFHT_PASS_REGS                                 PASS_REGS
 #define LFHT_NODE_KEY_STR                              Term
 #else  /* STANDARD_MALLOC */
-#define LFHT_NrLowTagBits                             0
+#define LFHT_NrLowTagBits                              LFTH_LowTagDeleteBits
 #define LFHT_USES_REGS
 #define LFHT_PASS_REGS
 #define LFHT_NODE_KEY_STR                             long
@@ -38,6 +39,9 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
 #define LFHT_CALL_ADJUST_CHAIN_NODES(H, N, L, S)           LFHT_ADJUST_CHAIN_NODES(H, N, L, S LFHT_PASS_REGS)
 #define LFHT_CALL_INSERT_BUCKET_ARRAY(B, C, S)             LFHT_INSERT_BUCKET_ARRAY(B, C, S LFHT_PASS_REGS)
 #define LFHT_CALL_INSERT_BUCKET_CHAIN(H, N, L, S, C)       LFHT_INSERT_BUCKET_CHAIN(H, N, L, S, C LFHT_PASS_REGS)
+
+#define LFTH_ShiftDeleteBits(KEY)         ((KEY = KEY << LFTH_LowTagDeleteBits))
+#define LFTH_UnshiftDeleteBits(KEY)       ((KEY >> LFTH_LowTagDeleteBits))
 
 #define LFHT_IsEqualKey(NODE, KEY)        (LFHT_NodeKey(NODE) == KEY)
 #define LFHT_IsHashLevel(PTR)             ((LFHT_CELL)(PTR) & (LFHT_CELL)(0x1))

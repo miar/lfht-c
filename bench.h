@@ -13,7 +13,7 @@ typedef struct dic {
 #define Dic_val(X)    ((X)->value)
 #define Dic_next(X)   ((X)->next)
 
-/* Define how a key is inserted */
+/* Define how your data structure is inserted */
 
 #define NEW_DIC_ENTRY(PTR, KEY, VAL, NEXT) {			   \
   if ((PTR = (struct dic *) malloc(sizeof(struct dic))) == NULL)   \
@@ -23,16 +23,16 @@ typedef struct dic {
   Dic_next(PTR) = NEXT;						   \
 }
 
-/* Define how a key is released */
-#define FREE_DIC_ENTRY(PTR)         free(PTR)
-/* Define how a key is shown */
-#define SHOW_DIC_ENTRY(NODE)        printf("(%ld, %ld)\n", Dic_key(NODE), Dic_val(NODE))
+/* Define how your data structure is released */
+#define FREE_DIC_ENTRY(PTR)             free(PTR)
 
-/* Define the external structure where the LFHT is allocated */
+/* Define how your data structure is shown */
+#define SHOW_DIC_ENTRY(PTR, KEY)        printf("(%ld, %ld)\n", KEY, Dic_val(PTR))
 
+/* Define where you want to hook the LFHT data structure */
 struct benchRoot {
   dic_ptr dic; /* Memory address where you want to hook the LFHT data structures */
-  LFHT_EnvPtr dic_env;
+  LFHT_EnvPtr dic_env; /* Memory address where you want to hook the LFHT environment */
 };
 
 struct benchRoot Root;

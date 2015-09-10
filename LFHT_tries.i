@@ -13,7 +13,7 @@
 #define LFHT_NodeNext(NODE)               Dic_next(NODE)
 #define LFHT_NEW_NODE(NODE, KEY, NEXT)    NEW_DIC_ENTRY(NODE, KEY, value, NEXT)
 #define LFHT_FREE_NODE(NODE)              FREE_DIC_ENTRY(NODE)
-#define LFHT_SHOW_NODE(NODE)              SHOW_DIC_ENTRY(NODE)
+#define LFHT_SHOW_NODE(NODE)              SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)))
 
 #define LFHT_CHECK_INSERT_KEY             dic_check_insert_key
 #define LFHT_CHECK_INSERT_FIRST_CHAIN     dic_check_insert_first_chain
@@ -51,6 +51,7 @@ static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
 /* ------------------------------------------------------------------------------------*/
 
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY(LFHT_NODE_KEY_STR key LFHT_USES_ARGS) {
+  LFTH_ShiftDeleteBits(key);
   LFHT_STR_PTR first_node;
   LFHT_GetFirstNode(first_node);
   if (first_node == NULL) {
