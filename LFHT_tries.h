@@ -1,6 +1,8 @@
 #ifndef _LOCK_FREE_HASH_TRIES_H
 #define _LOCK_FREE_HASH_TRIES_H
 
+#include "LFHT_threads.h"
+
 typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
 
 /*******************************************************************************
@@ -33,7 +35,6 @@ typedef enum {LFHT_false,LFHT_true} LFHT_Bool;
 #define LFHT_BUCKET_ARRAY_SIZE            (1 << LFHT_BIT_SHIFT)
 #define LFHT_MAX_NODES_PER_BUCKET         4
 #define LFHT_CELL                         long
-#define LFHT_MAX_THREADS                  1
 
 /*******************************************************************************
  *                            LFHT macros                                      *

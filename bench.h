@@ -1,7 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include "LFHT_tries.h"
 
-/* Define your structure */
+/* Define the maximum number of simultaneous threads that you system supports */
+#define MAX_THREADS 1
+
+/* Define your node within the LFHT data structure */
 typedef struct dic {
   long key;           /* LFHT Mandatory Field */
   long value;         /* Optional  Field */
@@ -27,15 +31,18 @@ typedef struct dic {
 /* Define how a key is shown */
 #define SHOW_DIC_ENTRY(NODE)        printf("(%ld, %ld)\n", Dic_key(NODE), Dic_val(NODE))
 
-/* Define the external point from where the LFHT is called */
+/* Define the external structure where the LFHT is allocated */
 
-struct benchRoot {dic_ptr dic;};
+struct benchRoot {
+  dic_ptr dic; /* Memory address where you want to hook the LFHT data structures */
+  LFTH_ThreadLocals thread_pool[MAX_THREADS]; 
+};
+
 struct benchRoot Root;
 
 /* Include the files in the project */
 
 #define INCLUDE_DIC_LOCK_FREE_HASH_TRIE  1
-
 
 #define LFHT_DEBUG 1
 #ifdef LFHT_DEBUG

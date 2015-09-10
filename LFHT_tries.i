@@ -1,9 +1,7 @@
-#include "LFHT_tries.h"
-
 #ifdef INCLUDE_DIC_LOCK_FREE_HASH_TRIE
 /* nonpersistent macros - macros used inside the lfht model */
 
-/* Define the calls made by your bechmark - begin */
+/* Define the calls made by your bechmark */
 #define LFHT_STR                          struct dic
 #define LFHT_STR_PTR                      dic_ptr
 #define LFHT_USES_ARGS                    , long value
@@ -31,9 +29,7 @@
 #define LFHT_ABOLISH_CHAIN                dic_abolish_chain
 #define LFHT_ABOLISH_BUCKET_ARRAY         dic_abolish_bucket_array
 
-/* Define the calls made by your bechmark - end*/
-
-/*-------------- don't change nothing from this point until the end of the file ------------------ */
+/*-------------- don't change nothing from this point ------------------ */
 
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY(LFHT_NODE_KEY_STR key LFHT_USES_ARGS);
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node, LFHT_NODE_KEY_STR key, int count_nodes LFHT_USES_ARGS);
