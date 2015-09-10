@@ -11,6 +11,8 @@ int main() {
 
   //  lockFreeHashTrie_init();
 
+  //  dic_init();
+
   for (key = 1 ; key <= NKEYS  ; key++)
     dic_check_insert_key(key, value);
   printf("total_nodes = %d\n", total_nodes);

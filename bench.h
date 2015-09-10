@@ -42,4 +42,4 @@ struct benchRoot Root;
 int total_nodes = 0;
 #endif /* LFHT_DEBUG */
 
-#include "lockFreeHash.tries.i"
+#include "LFHT_tries.i"

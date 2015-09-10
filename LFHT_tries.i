@@ -1,4 +1,4 @@
-#include "lockFreeHash.tries.h"
+#include "LFHT_tries.h"
 
 #ifdef INCLUDE_DIC_LOCK_FREE_HASH_TRIE
 /* nonpersistent macros - macros used inside the lfht model */
