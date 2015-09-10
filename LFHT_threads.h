@@ -22,11 +22,11 @@ typedef struct LFHT_ToDeleteNode {
 #define LFHT_ToDeleteNext(X)  ((X)->next)
 
 typedef struct LFHT_Environment {
-  LFHT_ToDeleteNodePtr *delete_pool;                            /* Data structures to delete */
+  LFHT_ToDeleteNodePtr *to_delete_pool;  /* Data structures to delete */
   struct LFHT_ThreadEnvironment thread_pool[LFHT_MAX_THREADS];/* Thread pool */ 
 } *LFHT_EnvPtr;
 
-#define LFHT_DeletePool(X)           ((X)->delete_pool)
+#define LFHT_DeletePool(X)           ((X)->to_delete_pool)
 #define LFHT_ThreadEnv(X, Tid)       ((X)->thread_pool[Tid])
 
 #define LFHT_Init(LFHT)					                \
