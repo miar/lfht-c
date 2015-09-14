@@ -1,7 +1,7 @@
 This is a small project that implements an external version written in
 C of the Lock Free Hash Tries (LFHT) model implemented in the YapTab
 system. The LFHT can be included in any project written in C, just by
-using the files "lockFreeHash.tries.h" and "lockFreeHash.tries.i".
+using the files "LFHT_tries.h" and "LFHT_tries.h".
 
 For the moment the LFHT supports only the "check_insert" operation in
 a lock-free fashion. The benchmark given in this project is a dictionary
