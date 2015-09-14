@@ -11,9 +11,10 @@ int main() {
 
   //  lockFreeHashTrie_init();
 
-  //  dic_init();
+  //dic_init();
+  LFHT_InitEnv(Root.dic_env);
 
-  for (key = 1 ; key <= NKEYS  ; key++)
+  for (key = 1 ; key <= NKEYS; key++)
     dic_check_insert_key(key, value);
   printf("total_nodes = %d\n", total_nodes);
 

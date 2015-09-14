@@ -12,6 +12,8 @@ typedef struct LFHT_ThreadEnvironment {
 #define LFHT_ThreadMemRef(X)   ((X)->mem_ref)
 #define LFHT_UnusedNode(X)     ((X)->unused_node)
 #define LFHT_UnusedBucket(X)   ((X)->unused_bucketArray)
+#define LFHT_ThreadNextRef(X)  ((X)->mem_ref)
+
 
 typedef struct LFHT_ToDeleteNode {
   void *to_delete; /* only chain nodes for now */
@@ -21,7 +23,7 @@ typedef struct LFHT_ToDeleteNode {
 #define LFHT_ToDelete(X)      ((X)->to_delete)
 #define LFHT_ToDeleteNext(X)  ((X)->next)
 
-typedef struct LFHT_Environment {
+typedef struct LFHT_Environment{
   LFHT_ToDeleteNodePtr *to_delete_pool;  /* Data structures to delete */
   struct LFHT_ThreadEnvironment thread_pool[LFHT_MAX_THREADS];/* Thread pool */ 
 } *LFHT_EnvPtr;
@@ -29,12 +31,26 @@ typedef struct LFHT_Environment {
 #define LFHT_DeletePool(X)           ((X)->to_delete_pool)
 #define LFHT_ThreadEnv(X, Tid)       ((X)->thread_pool[Tid])
 
-#define LFHT_Init(LFHT)					                \
-  { int i; 								\
-    LFHT_DeletePool(LFHT) = NULL;					\
-    for (i = 0; i < LFHT_MAX_THREADS; i++)				\
-      LFHT_ThreadEnv(LFHT, i) = NULL;					\
+#define LFHT_InitEnv(LFHT_ENV)					                \
+  { int i; 							  	        \
+    LFHT_ThreadEnvPtr PTR;						        \
+     if ((PTR = (LFHT_EnvPtr) malloc(sizeof(struct LFHT_Environment))) == NULL) \
+       perror("Alloc LFHT Environment: malloc error");                          \
+     LFHT_DeletePool(PTR) = NULL;					        \
+     for (i = 0; i < LFHT_MAX_THREADS; i++)				        \
+       LFHT_ThreadEnv(PTR, i) = NULL;				  	        \
+
   }
+
+#define LFHT_InitThreadEnv(LFHT, Tid)	                                                    \
+  {  LFHT_ThreadEnvPtr PTR;						                    \
+     if ((PTR = (LFHT_ThreadEnvPtr) malloc(sizeof(struct LFHT_ThreadEnvironment))) == NULL) \
+       perror("Alloc Thread Environment: malloc error");                                    \
+     LFHT_ThreadMemRef(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucket(PTR) = NULL;         \
+     LFTH->thread_pool[Tid] = PTR;					                    \
+  }
+
+
 
 /*
 #define LFHT_InitThreadPool(LFHT, Tid)					\

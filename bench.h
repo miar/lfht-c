@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include "LFHT_tries.h"
+#include "LFHT_threads.h"
 
 /* Define your node within the LFHT data structure */
 typedef struct dic {
