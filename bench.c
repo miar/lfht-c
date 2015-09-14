@@ -13,6 +13,7 @@ int main() {
 
   //dic_init();
   LFHT_InitEnv(Root.dic_env);
+  LFHT_InitThreadEnv(Root.dic_env, 0);
 
   for (key = 1 ; key <= NKEYS; key++)
     dic_check_insert_key(key, value);

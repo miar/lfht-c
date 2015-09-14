@@ -24,8 +24,8 @@ typedef struct LFHT_ToDeleteNode {
 #define LFHT_ToDeleteNext(X)  ((X)->next)
 
 typedef struct LFHT_Environment{
-  LFHT_ToDeleteNodePtr *to_delete_pool;  /* Data structures to delete */
-  struct LFHT_ThreadEnvironment thread_pool[LFHT_MAX_THREADS];/* Thread pool */ 
+  LFHT_ToDeleteNodePtr to_delete_pool;            /* Data structures to delete pool*/
+  LFHT_ThreadEnvPtr thread_pool[LFHT_MAX_THREADS];/* Thread pool */ 
 } *LFHT_EnvPtr;
 
 #define LFHT_DeletePool(X)           ((X)->to_delete_pool)
@@ -33,13 +33,13 @@ typedef struct LFHT_Environment{
 
 #define LFHT_InitEnv(LFHT_ENV)					                \
   { int i; 							  	        \
-    LFHT_ThreadEnvPtr PTR;						        \
+     LFHT_EnvPtr PTR;						                \
      if ((PTR = (LFHT_EnvPtr) malloc(sizeof(struct LFHT_Environment))) == NULL) \
        perror("Alloc LFHT Environment: malloc error");                          \
      LFHT_DeletePool(PTR) = NULL;					        \
      for (i = 0; i < LFHT_MAX_THREADS; i++)				        \
        LFHT_ThreadEnv(PTR, i) = NULL;				  	        \
-
+     LFHT_ENV = PTR;							        \
   }
 
 #define LFHT_InitThreadEnv(LFHT, Tid)	                                                    \
@@ -47,19 +47,7 @@ typedef struct LFHT_Environment{
      if ((PTR = (LFHT_ThreadEnvPtr) malloc(sizeof(struct LFHT_ThreadEnvironment))) == NULL) \
        perror("Alloc Thread Environment: malloc error");                                    \
      LFHT_ThreadMemRef(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucket(PTR) = NULL;         \
-     LFTH->thread_pool[Tid] = PTR;					                    \
+     LFHT->thread_pool[Tid] = PTR;					                    \
   }
 
-
-
-/*
-#define LFHT_InitThreadPool(LFHT, Tid)					\
-  { LFHT_ThreadEnvPtr PTR;						                   \
-    if ((PTR = (LFHT_ThreadEnvPtr) malloc(sizeof(struct LFHT_ThreadEnvironment))) == NULL) \
-      perror("InitThreadLocals: malloc error") ;		    	                   \
-    LFHT_ThreadMemRef(PTR) = LFHT_UnusedNode(PTR) = UnusedBucket(PTR) = NULL;	           \
-    LFHT_THREAD_POOL(Tid)= PTR;                                                            \
-  }
-
-*/
 #endif  /* _LFHT_THREADS_H */
