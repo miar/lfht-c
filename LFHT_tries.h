@@ -23,9 +23,9 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 #else  /* STANDARD_MALLOC */
 #define LFHT_NrLowTagBits                              LFTH_LowTagDeleteKeyBits
 #define LFHT_DeleteKeyBit                              0
-#define LFHT_USES_REGS
-#define LFHT_PASS_REGS
-#define LFHT_NODE_KEY_STR                             long
+#define LFHT_USES_REGS                                 
+#define LFHT_PASS_REGS                                 
+#define LFHT_NODE_KEY_STR                              long
 #endif /*YAP_TABMALLOC */
 
 /*******************************************************************************

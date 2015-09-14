@@ -13,10 +13,12 @@ int main() {
 
   //dic_init();
   LFHT_InitEnv(Root.dic_env);
-  LFHT_InitThreadEnv(Root.dic_env, 0);
+  int tid = 0;
+  /* get thread's environment */
+  LFHT_ThreadEnvPtr tenv = LFHT_InitThreadEnv(Root.dic_env, tid);
 
   for (key = 1 ; key <= NKEYS; key++)
-    dic_check_insert_key(key, value);
+    dic_check_insert_key(key, value, tenv);
   printf("total_nodes = %d\n", total_nodes);
 
   total_nodes = 0;
@@ -25,7 +27,7 @@ int main() {
   dic_show_state();
 
   for (key = 1 ; key <= NKEYS ; key++)
-    dic_check_insert_key(key, value);
+    dic_check_insert_key(key, value, tenv);
 
   printf("total_nodes = %d\n", total_nodes);
 

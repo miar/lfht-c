@@ -4,8 +4,8 @@
 /* Define the calls made by your bechmark */
 #define LFHT_STR                          struct dic
 #define LFHT_STR_PTR                      dic_ptr
-#define LFHT_USES_ARGS                    , long value
-#define LFHT_PASS_ARGS                    , value
+#define LFHT_USES_ARGS                    , long value , LFHT_ThreadEnvPtr tenv
+#define LFHT_PASS_ARGS                    , value,  tenv
 #define LFHT_ROOT_ADDR                    (&(Root.dic))
 #define LFHT_FirstNode                    ((Root.dic))
 #define LFHT_GetFirstNode(NODE)           (NODE = ((LFHT_STR_PTR) (Root.dic)))
