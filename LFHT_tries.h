@@ -28,7 +28,6 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 #define LFHT_NODE_KEY_STR                             long
 #endif /*YAP_TABMALLOC */
 
-
 /*******************************************************************************
  *                            LFHT macros                                      *
  *******************************************************************************/

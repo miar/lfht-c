@@ -335,7 +335,6 @@ static inline void LFHT_ABOLISH_ALL_KEYS(void) {
   return;
 }
 
-
 static inline void LFHT_ABOLISH_CHAIN(LFHT_STR_PTR chain_node, LFHT_STR_PTR * end_chain) {
   if ((LFHT_STR_PTR *) chain_node == end_chain)
     return;  
