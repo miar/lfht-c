@@ -4,9 +4,10 @@
 #include "LFHT_parameters.h" 
 
 typedef struct LFHT_ThreadEnvironment {
-  void  *mem_ref;             /* Thread's memory reference */
-  void  *unused_node;         /* Thread's local buffer with an unused node */
-  void **unused_bucketArray;  /* Thread's local buffer with an unused bucket array */
+  void  *mem_ref;              /* Thread's memory reference */
+  void  *unused_node;          /* Thread's local buffer with an unused node */
+  void **unused_bucketArray;   /* Thread's local buffer with an unused bucket array */
+  void  *cache_line_padding[5]; /* Cache line padding cache_line = 64 bytes */
 } *LFHT_ThreadEnvPtr;
 
 #define LFHT_ThreadMemRef(X)   ((X)->mem_ref)
@@ -24,8 +25,8 @@ typedef struct LFHT_ToDeleteNode {
 #define LFHT_ToDeleteNext(X)  ((X)->next)
 
 typedef struct LFHT_Environment{
-  LFHT_ToDeleteNodePtr to_delete_pool;            /* Data structures to delete pool*/
-  LFHT_ThreadEnvPtr thread_pool[LFHT_MAX_THREADS];/* Thread pool */ 
+  LFHT_ToDeleteNodePtr to_delete_pool;                /* Data structures to delete pool*/
+  struct LFHT_ThreadEnvironment thread_pool[LFHT_MAX_THREADS];/* Thread pool */
 } *LFHT_EnvPtr;
 
 #define LFHT_DeletePool(X)           ((X)->to_delete_pool)
@@ -37,8 +38,6 @@ typedef struct LFHT_Environment{
      if ((PTR = (LFHT_EnvPtr) malloc(sizeof(struct LFHT_Environment))) == NULL) \
        perror("Alloc LFHT Environment: malloc error");                          \
      LFHT_DeletePool(PTR) = NULL;					        \
-     for (i = 0; i < LFHT_MAX_THREADS; i++)				        \
-       LFHT_ThreadEnv(PTR, i) = NULL;				  	        \
      LFHT_ENV = PTR;							        \
   }
 
@@ -54,11 +53,8 @@ typedef struct LFHT_Environment{
 */
 
 static inline LFHT_ThreadEnvPtr LFHT_InitThreadEnv(LFHT_EnvPtr LFHT, int Tid) {
-  LFHT_ThreadEnvPtr PTR;
-  if ((PTR = (LFHT_ThreadEnvPtr) malloc(sizeof(struct LFHT_ThreadEnvironment))) == NULL)
-    perror("Alloc Thread Environment: malloc error");
+  LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));
   LFHT_ThreadMemRef(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucket(PTR) = NULL;
-  LFHT->thread_pool[Tid] = PTR;
   return PTR;
 }
 
