@@ -33,6 +33,17 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
  *******************************************************************************/
 /* common macros - do not change*/
 
+#define LFHT_NEW_NODE(NODE, KEY, NEXT, TENV)    \
+  if ((NODE = LFHT_UnusedNode(TENV)) != NULL)	\
+    LFHT_UnusedNode(TENV) = NULL;               \
+  else {					\
+    LFHT_ALLOC_NODE(NODE, KEY, NEXT);           \
+  }
+
+#define LFHT_FREE_NODE(NODE, TENV)              \
+    LFHT_UnusedNode(TENV) = NODE
+
+
 #define LFHT_CALL_CHECK_INSERT_KEY(K)                      LFHT_CHECK_INSERT_KEY(K LFHT_PASS_ARGS)
 #define LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(F, K, S)        LFHT_CHECK_INSERT_FIRST_CHAIN(F, K, S LFHT_PASS_ARGS)
 #define LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(F, K, S)       LFHT_CHECK_INSERT_BUCKET_ARRAY(F, K, S LFHT_PASS_ARGS)

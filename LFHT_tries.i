@@ -11,8 +11,8 @@
 #define LFHT_GetFirstNode(NODE)           (NODE = ((LFHT_STR_PTR) (Root.dic)))
 #define LFHT_NodeKey(NODE)                Dic_key(NODE)
 #define LFHT_NodeNext(NODE)               Dic_next(NODE)
-#define LFHT_NEW_NODE(NODE, KEY, NEXT)    NEW_DIC_ENTRY(NODE, KEY, value, NEXT)
-#define LFHT_FREE_NODE(NODE)              FREE_DIC_ENTRY(NODE)
+#define LFHT_ALLOC_NODE(NODE, KEY, NEXT)  NEW_DIC_ENTRY(NODE, KEY, value, NEXT)
+#define LFHT_DEALLOC_NODE(NODE)           FREE_DIC_ENTRY(NODE)
 #define LFHT_SHOW_NODE(NODE)              SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)))
 
 #define LFHT_CHECK_INSERT_KEY             dic_check_insert_key
@@ -57,8 +57,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY(LFHT_NODE_KEY_STR key LFHT_USES
 
   if (LFHT_ThreadMemRef(tenv) == NULL) {
     LFHT_STR_PTR new_node;
-    LFHT_NEW_NODE(new_node, key, NULL);
-
+    LFHT_NEW_NODE(new_node, key, NULL, tenv);
     LFHT_ThreadMemRef(tenv) = new_node;
 
     if (LFHT_BoolCAS(LFHT_ROOT_ADDR, NULL, new_node)) {
@@ -67,7 +66,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY(LFHT_NODE_KEY_STR key LFHT_USES
 #endif /* LFHT_DEBUG */
       return new_node;
     }
-    LFHT_FREE_NODE(new_node);
+    LFHT_FREE_NODE(new_node, tenv);
     LFHT_GetFirstNode(LFHT_ThreadMemRef(tenv));
     if (LFHT_ThreadMemRef(tenv) == NULL)
       /* Thread has not inserted its key, otherwise the lastest "if"
@@ -88,7 +87,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY_ORIGINAL(LFHT_NODE_KEY_STR key 
   LFHT_GetFirstNode(first_node);
   if (first_node == NULL) {
     LFHT_STR_PTR new_node;
-    LFHT_NEW_NODE(new_node, key, NULL);
+    LFHT_NEW_NODE(new_node, key, NULL, tenv);
     //    if (key == 2) {
     //  LFHT_TagAsDeletedKey(new_node);     
     ///}
@@ -101,7 +100,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY_ORIGINAL(LFHT_NODE_KEY_STR key 
 #endif /* LFHT_DEBUG */
       return new_node;
     }
-    LFHT_FREE_NODE(new_node);
+    LFHT_FREE_NODE(new_node, tenv);
     LFHT_GetFirstNode(first_node);
   }
   if (LFHT_IsHashLevel(first_node))
@@ -137,7 +136,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node
 	LFHT_FreeBuckets(new_hash, bucket, LFHT_STR);
     } else {
       LFHT_STR_PTR new_node;
-      LFHT_NEW_NODE(new_node, key, NULL);
+      LFHT_NEW_NODE(new_node, key, NULL, tenv);
       if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), NULL, new_node)) {
 #ifdef LFHT_DEBUG
       //	printf("2-  ");
@@ -146,7 +145,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node
 #endif /* LFHT_DEBUG */
 	return new_node;
       }
-      LFHT_FREE_NODE(new_node);
+      LFHT_FREE_NODE(new_node, tenv);
     }
     chain_next = LFHT_NodeNext(chain_node);
     if (!LFHT_IsHashLevel(chain_next))
@@ -170,7 +169,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_has
     //    printf("3- bucket=%p n_shifts = %d hash= %p", bucket, n_shifts,curr_hash);
   if (LFHT_IsEmptyBucket(*bucket, curr_hash, LFHT_STR)) {
     LFHT_STR_PTR new_node;
-    LFHT_NEW_NODE(new_node, key, (LFHT_STR_PTR) curr_hash);
+    LFHT_NEW_NODE(new_node, key, (LFHT_STR_PTR) curr_hash, tenv);
     if (LFHT_BoolCAS(bucket, (LFHT_STR_PTR) curr_hash, new_node)) {
 #ifdef LFHT_DEBUG
       //      printf("3- bucket=%p n_shifts = %d hash= %p", bucket, n_shifts,curr_hash);
@@ -179,7 +178,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_has
 #endif /* LFHT_DEBUG */
       return new_node;
     }
-    LFHT_FREE_NODE(new_node);
+    LFHT_FREE_NODE(new_node, tenv);
   }
   LFHT_STR_PTR bucket_next = *bucket;
   if (LFHT_IsHashLevel(bucket_next))
@@ -217,7 +216,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
 	LFHT_FreeBuckets(new_hash, bucket, LFHT_STR);
     } else {
       LFHT_STR_PTR new_node;
-      LFHT_NEW_NODE(new_node, key, (LFHT_STR_PTR) curr_hash);
+      LFHT_NEW_NODE(new_node, key, (LFHT_STR_PTR) curr_hash, tenv);
       if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), (LFHT_STR_PTR) curr_hash, new_node)) {
 #ifdef LFHT_DEBUG
 	//	printf("4- insert ");
@@ -226,7 +225,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
 #endif /* LFHT_DEBUG */
 	return new_node;
       }
-      LFHT_FREE_NODE(new_node);
+      LFHT_FREE_NODE(new_node, tenv);
     }
     chain_next = LFHT_NodeNext(chain_node);
     if (!LFHT_IsHashLevel(chain_next))
@@ -409,7 +408,7 @@ static inline LFHT_Bool LFHT_CHECK_REMOVE_KEY(LFHT_NODE_KEY_STR key) {
     return LFHT_CHECK_REMOVE_BUCKET_ARRAY((LFHT_STR_PTR *) first_node);
   else {
     if (LFHT_NodeKey(first_node) == key) {
-      LFHT_FREE_NODE(first_node);
+      LFHT_FREE_NODE(first_node, tenv);
       LFHT_FirstNode = NULL;
       return LFHT_true;
     } else
@@ -444,8 +443,8 @@ static inline void LFHT_ABOLISH_CHAIN(LFHT_STR_PTR chain_node, LFHT_STR_PTR * en
 #undef LFHT_NodeNext
 #undef LFHT_GetFirstNode
 #undef LFHT_FirstNode
-#undef LFHT_NEW_NODE
-#undef LFHT_FREE_NODE
+#undef LFHT_ALLOC_NODE
+#undef LFHT_DEALLOC_NODE
 #undef LFHT_CHECK_INSERT_KEY
 #undef LFHT_CHECK_INSERT_FIRST_CHAIN
 #undef LFHT_CHECK_INSERT_BUCKET_ARRAY

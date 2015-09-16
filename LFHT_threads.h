@@ -41,21 +41,22 @@ typedef struct LFHT_Environment{
      LFHT_ENV = PTR;							        \
   }
 
-/*
-#define LFHT_InitThreadEnv2(LFHT, Tid)	                                                    \
-  {  LFHT_ThreadEnvPtr PTR;						                    \
-     if ((PTR = (LFHT_ThreadEnvPtr) malloc(sizeof(struct LFHT_ThreadEnvironment))) == NULL) \
-       perror("Alloc Thread Environment: malloc error");                                    \
-     LFHT_ThreadMemRef(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucket(PTR) = NULL;         \
-     LFHT->thread_pool[Tid] = PTR;					                    \
-  }
+#define LFHT_KillThreadEnv(LFHT_ENV, Tid)                                          \
+ {  LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));                          \
+  if (LFHT_UnusedNode(PTR) != NULL)                                                \
+    LFHT_DEALLOC_NODE(LFHT_UnusedNode(PTR));                                       \
+  if (LFHT_UnusedBucket(PTR) != NULL)                                              \
+    free(((LFHT_STR_PTR *)LFHT_UntagHashLevel(PTR)) - 1);                          \
+  LFHT_ThreadMemRef(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucket(PTR) = NULL;   \
+ }
 
-*/
+
 
 static inline LFHT_ThreadEnvPtr LFHT_InitThreadEnv(LFHT_EnvPtr LFHT, int Tid) {
   LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));
   LFHT_ThreadMemRef(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucket(PTR) = NULL;
   return PTR;
 }
+
 
 #endif  /* _LFHT_THREADS_H */
