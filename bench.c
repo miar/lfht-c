@@ -9,9 +9,6 @@ extern int total_nodes;
 int main() {
   int key, value = 2;
 
-  //  lockFreeHashTrie_init();
-
-  //dic_init();
   LFHT_InitEnv(Root.dic_env);
   int tid = 0;
   /* get thread's environment */

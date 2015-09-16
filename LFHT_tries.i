@@ -52,32 +52,33 @@ static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
 
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY(LFHT_NODE_KEY_STR key LFHT_USES_ARGS) {
   LFTH_ShiftDeleteBits(key);
-  LFHT_STR_PTR first_node = (LFHT_STR_PTR) &(LFHT_ThreadMemRef(tenv));
-  printf("1-LFHT_ThreadMemRef(tenv) = %p\n", LFHT_ThreadMemRef(tenv));
-  LFHT_GetFirstNode(first_node);
-  printf("2-LFHT_ThreadMemRef(tenv) = %p\n", LFHT_ThreadMemRef(tenv));
+ LFHT_CHECK_INSERT_KEY:
+  LFHT_GetFirstNode(LFHT_ThreadMemRef(tenv));
 
-  if (first_node == NULL) {
+  if (LFHT_ThreadMemRef(tenv) == NULL) {
     LFHT_STR_PTR new_node;
     LFHT_NEW_NODE(new_node, key, NULL);
-    //    if (key == 2) {
-    //  LFHT_TagAsDeletedKey(new_node);     
-    ///}
+
+    LFHT_ThreadMemRef(tenv) = new_node;
 
     if (LFHT_BoolCAS(LFHT_ROOT_ADDR, NULL, new_node)) {
 #ifdef LFHT_DEBUG
-      //      printf("1-  ");
-      //      SHOW_DIC_ENTRY(new_node);
       total_nodes++;
 #endif /* LFHT_DEBUG */
       return new_node;
     }
     LFHT_FREE_NODE(new_node);
-    LFHT_GetFirstNode(first_node);
+    LFHT_GetFirstNode(LFHT_ThreadMemRef(tenv));
+    if (LFHT_ThreadMemRef(tenv) == NULL)
+      /* Thread has not inserted its key, otherwise the lastest "if"
+	 would have been true.  However thread can read NULL since LFHT
+	 first node might have been removed meanwhile. In this case
+	 thread must go back to its previous state. */      
+      goto LFHT_CHECK_INSERT_KEY;
   }
-  if (LFHT_IsHashLevel(first_node))
-    return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY((LFHT_STR_PTR *) first_node, key, 0);
-  return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(first_node, key, 0);
+  if (LFHT_IsHashLevel(LFHT_ThreadMemRef(tenv)))
+    return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY((LFHT_STR_PTR *) LFHT_ThreadMemRef(tenv), key, 0);
+  return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(LFHT_ThreadMemRef(tenv), key, 0);
 }
 
 
@@ -107,10 +108,6 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY_ORIGINAL(LFHT_NODE_KEY_STR key 
     return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY((LFHT_STR_PTR *) first_node, key, 0);
   return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(first_node, key, 0);
 }
-
-
-
-
 
 
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node, LFHT_NODE_KEY_STR key, int count_nodes LFHT_USES_ARGS) {
