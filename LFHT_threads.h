@@ -5,17 +5,16 @@
 
 typedef struct LFHT_ThreadEnvironment {
   void  *mem_ref;              /* Thread's memory reference */
-  void  *mem_ref_to_insert;    /* Thread's memory reference to the new data structure that will be inserted LFHT*/
+  void  *mem_ref_next;         /* Thread's next memory reference */
   void  *unused_node;          /* Thread's local buffer with an unused node */
   void **unused_bucketArray;   /* Thread's local buffer with an unused bucket array */
   void  *cache_line_padding[4]; /* Cache line padding cache_line = 64 bytes */
 } *LFHT_ThreadEnvPtr;
 
 #define LFHT_ThreadMemRef(X)          ((X)->mem_ref)
-#define LFHT_ThreadMemRefToInsert(X)  ((X)->mem_ref_to_insert)
+#define LFHT_ThreadMemRefNext(X)      ((X)->mem_ref_next)
 #define LFHT_UnusedNode(X)            ((X)->unused_node)
 #define LFHT_UnusedBucketArray(X)     ((X)->unused_bucketArray)
-#define LFHT_ThreadNextRef(X)         ((X)->mem_ref)
 
 
 typedef struct LFHT_ToDeleteNode {
@@ -34,6 +33,16 @@ typedef struct LFHT_Environment{
 #define LFHT_DeletePool(X)           ((X)->to_delete_pool)
 #define LFHT_ThreadEnv(X, Tid)       ((X)->thread_pool[Tid])
 
+#define LFHT_SetThreadMemRefNext(TENV, MEM_REF)	  LFHT_ThreadMemRefNext(TENV) = MEM_REF
+#define LFHT_UnsetThreadMemRefNext(TENV)	  LFHT_ThreadMemRefNext(TENV) = NULL;
+
+#define LFHT_SetThreadMemRef(TENV, MEM_REF)	  LFHT_ThreadMemRef(TENV) = MEM_REF
+#define LFHT_UnsetThreadMemRef(TENV)	          LFHT_ThreadMemRef(TENV) = NULL;
+
+
+
+
+
 #define LFHT_InitEnv(LFHT_ENV)					                \
   {  LFHT_EnvPtr PTR;						                \
      if ((PTR = (LFHT_EnvPtr) malloc(sizeof(struct LFHT_Environment))) == NULL) \
@@ -48,12 +57,12 @@ typedef struct LFHT_Environment{
     LFHT_DEALLOC_NODE(LFHT_UnusedNode(PTR));                                            \
   if (LFHT_UnusedBucketArray(PTR) != NULL)                                              \
     LFHT_DeallocateBucketArray(LFHT_UnusedBucketArray(PTR));                            \
-  LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefToInsert(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL; \
+  LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefNext(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL; \
  }
 
 static inline LFHT_ThreadEnvPtr LFHT_InitThreadEnv(LFHT_EnvPtr LFHT, int Tid) {
   LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));
-  LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefToInsert(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL;
+  LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefNext(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL;
   return PTR;
 }
 
