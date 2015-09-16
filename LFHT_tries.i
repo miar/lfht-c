@@ -82,7 +82,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY(LFHT_NODE_KEY_STR key LFHT_USES
   return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(LFHT_ThreadMemRef(tenv), key, 0);
 }
 
-
+/*
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY_ORIGINAL(LFHT_NODE_KEY_STR key LFHT_USES_ARGS) {
   LFTH_ShiftDeleteBits(key);
   LFHT_STR_PTR first_node;
@@ -95,11 +95,6 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY_ORIGINAL(LFHT_NODE_KEY_STR key 
     ///}
 
     if (LFHT_BoolCAS(LFHT_ROOT_ADDR, NULL, new_node)) {
-#ifdef LFHT_DEBUG
-      //      printf("1-  ");
-      //      SHOW_DIC_ENTRY(new_node);
-      total_nodes++;
-#endif /* LFHT_DEBUG */
       return new_node;
     }
     LFHT_FREE_NODE(new_node, tenv);
@@ -109,7 +104,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_KEY_ORIGINAL(LFHT_NODE_KEY_STR key 
     return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY((LFHT_STR_PTR *) first_node, key, 0);
   return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(first_node, key, 0);
 }
-
+*/
 
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node, LFHT_NODE_KEY_STR key, int count_nodes LFHT_USES_ARGS) {
   if (LFHT_IsEqualKey(chain_node, key))
@@ -359,14 +354,15 @@ static inline void LFHT_ABOLISH_ALL_KEYS(void) {
   LFHT_STR_PTR first_node;
   LFHT_GetFirstNode(first_node);
 
-  /* For now i just do care about the deleted nodes pool */
+  /* For now i just don't care about the deleted nodes pool */
   /* CHECK THIS LATER */
   LFHT_DeletePool(LFHT_ROOT_ENV) = NULL; 
 
-  /* Make sure that thread 0 does not have any data structure in its buffers */
+  /* Making sure that thread 0 does not have any data structure in its buffers */
   LFHT_ThreadEnvPtr tenv = &(LFHT_ThreadEnv(LFHT_ROOT_ENV, 0));
   LFHT_UnusedNode(tenv) = LFHT_UnusedBucketArray(tenv) = NULL;
-  
+  /* Ready to abolish LFHT */  
+
   if (first_node == NULL) {
     printf("LFHT is empty \n");
     return;

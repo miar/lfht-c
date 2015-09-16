@@ -15,7 +15,6 @@ typedef struct LFHT_ThreadEnvironment {
 #define LFHT_UnusedBucketArray(X)   ((X)->unused_bucketArray)
 #define LFHT_ThreadNextRef(X)       ((X)->mem_ref)
 
-
 typedef struct LFHT_ToDeleteNode {
   void *to_delete; /* only chain nodes for now */
   struct LFHT_ToDeleteNode *next;
@@ -55,6 +54,5 @@ static inline LFHT_ThreadEnvPtr LFHT_InitThreadEnv(LFHT_EnvPtr LFHT, int Tid) {
   LFHT_ThreadMemRef(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL;
   return PTR;
 }
-
 
 #endif  /* _LFHT_THREADS_H */
