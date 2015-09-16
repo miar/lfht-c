@@ -2,10 +2,12 @@
 /* nonpersistent macros - macros used inside the lfht model */
 
 /* Define the calls made by your bechmark */
+#define LFHT_THREAD_ENV_PTR               tenv
+#define LFHT_ROOT_ENV                     Root.dic_env
 #define LFHT_STR                          struct dic
 #define LFHT_STR_PTR                      dic_ptr
-#define LFHT_USES_ARGS                    , long value , LFHT_ThreadEnvPtr tenv
-#define LFHT_PASS_ARGS                    , value,  tenv
+#define LFHT_USES_ARGS                    , long value, LFHT_ThreadEnvPtr LFHT_THREAD_ENV_PTR
+#define LFHT_PASS_ARGS                    , value, LFHT_THREAD_ENV_PTR
 #define LFHT_ROOT_ADDR                    (&(Root.dic))
 #define LFHT_FirstNode                    ((Root.dic))
 #define LFHT_GetFirstNode(NODE)           (NODE = ((LFHT_STR_PTR) (Root.dic)))
@@ -122,7 +124,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node
     if (cn == LFHT_MAX_NODES_PER_BUCKET) {
       LFHT_STR_PTR *new_hash;
       LFHT_STR_PTR *bucket;                                     
-      LFHT_AllocBuckets(new_hash, NULL, LFHT_STR);
+      LFHT_AllocBuckets(new_hash, NULL, LFHT_STR, tenv);
       new_hash = (LFHT_STR_PTR *) LFHT_TagAsHashLevel(new_hash);
       LFHT_GetBucket(bucket, new_hash, LFHT_NodeKey(chain_node), 0, LFHT_STR);
       //      printf ("adjust first chain bucket %p", bucket);
@@ -133,7 +135,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node
 	LFHT_FirstNode = (LFHT_STR_PTR) new_hash;
 	return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(new_hash, key, 0);
       } else
-	LFHT_FreeBuckets(new_hash, bucket, LFHT_STR);
+	LFHT_FreeBuckets(new_hash, tenv);
     } else {
       LFHT_STR_PTR new_node;
       LFHT_NEW_NODE(new_node, key, NULL, tenv);
@@ -200,7 +202,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
     if (cn == LFHT_MAX_NODES_PER_BUCKET) {
       LFHT_STR_PTR *new_hash;
       LFHT_STR_PTR *bucket;
-      LFHT_AllocBuckets(new_hash, curr_hash, LFHT_STR);
+      LFHT_AllocBuckets(new_hash, curr_hash, LFHT_STR, tenv);
       new_hash = (LFHT_STR_PTR *) LFHT_TagAsHashLevel(new_hash);
       LFHT_GetBucket(bucket, new_hash, LFHT_NodeKey(chain_node), (n_shifts + 1), LFHT_STR);
       //      printf ("adjust insert chain bucket %p n_shifts=%d hash= %p ", bucket, n_shifts+1, new_hash);
@@ -213,7 +215,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
         LFHT_SetBucket(bucket, new_hash, LFHT_STR);
 	return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(new_hash, key, (n_shifts + 1));
       } else 
-	LFHT_FreeBuckets(new_hash, bucket, LFHT_STR);
+	LFHT_FreeBuckets(new_hash, tenv);
     } else {
       LFHT_STR_PTR new_node;
       LFHT_NEW_NODE(new_node, key, (LFHT_STR_PTR) curr_hash, tenv);
@@ -279,7 +281,7 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash, LFHT_STR_PT
     if (cn == LFHT_MAX_NODES_PER_BUCKET) {
       LFHT_STR_PTR *new_hash;
       LFHT_STR_PTR *bucket;
-      LFHT_AllocBuckets(new_hash, curr_hash, LFHT_STR);
+      LFHT_AllocBuckets(new_hash, curr_hash, LFHT_STR, tenv);
       new_hash = (LFHT_STR_PTR *) LFHT_TagAsHashLevel(new_hash);
       LFHT_GetBucket(bucket, new_hash, LFHT_NodeKey(chain_node), (n_shifts + 1), LFHT_STR);
       LFHT_SetBucket(bucket, chain_node, LFHT_STR);
@@ -289,7 +291,7 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash, LFHT_STR_PT
         LFHT_SetBucket(bucket, new_hash, LFHT_STR);
 	return LFHT_CALL_INSERT_BUCKET_ARRAY(new_hash, adjust_node, (n_shifts + 1));
       } else
-	LFHT_FreeBuckets(new_hash, bucket, LFHT_STR);
+	LFHT_FreeBuckets(new_hash, tenv);
     } else {
       LFHT_NodeNext(adjust_node) = (LFHT_STR_PTR) curr_hash;
       if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), (LFHT_STR_PTR) curr_hash, adjust_node))
@@ -348,13 +350,23 @@ static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
   return;
 }
 
-/* ------------------------------------------------------------------------------------*/
-/*                     abolish keys (removes all nodes inside the LFHT)                */
-/* ------------------------------------------------------------------------------------*/
+/* -------------------------------------------------------------------*/
+/*    abolish all keys (removes all data structures inside the LFHT)  */
+/*        (MAKE SURE THAT ONLY THREAD 0 IS WORKING IN THE LFHT)       */
+/* -------------------------------------------------------------------*/
 
 static inline void LFHT_ABOLISH_ALL_KEYS(void) {
   LFHT_STR_PTR first_node;
   LFHT_GetFirstNode(first_node);
+
+  /* For now i just do care about the deleted nodes pool */
+  /* CHECK THIS LATER */
+  LFHT_DeletePool(LFHT_ROOT_ENV) = NULL; 
+
+  /* Make sure that thread 0 does not have any data structure in its buffers */
+  LFHT_ThreadEnvPtr tenv = &(LFHT_ThreadEnv(LFHT_ROOT_ENV, 0));
+  LFHT_UnusedNode(tenv) = LFHT_UnusedBucketArray(tenv) = NULL;
+  
   if (first_node == NULL) {
     printf("LFHT is empty \n");
     return;
@@ -386,7 +398,7 @@ static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
       LFHT_ABOLISH_CHAIN((LFHT_STR_PTR)*bucket, curr_hash);
     bucket++;
   }
-  LFHT_FreeBuckets(curr_hash, NULL, NULL);
+  LFHT_DeallocateBucketArray(curr_hash);
   return;
 }
 

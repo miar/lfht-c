@@ -15,23 +15,25 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 #define LFHT_ANSWER_TRIE_CHECK_INSERT_ENTRY(K, P, I)   answer_trie_check_insert_key(K, P, I PASS_REGS)
 
 /* 0 (zero) if none */
-#define LFHT_NrLowTagBits                              LFTH_LowTagDeleteKeyBits + NumberOfLowTagBits
-#define LFHT_DeleteKeyBit                              NumberOfLowTagBits
-#define LFHT_USES_REGS                                 USES_REGS
-#define LFHT_PASS_REGS                                 PASS_REGS
-#define LFHT_NODE_KEY_STR                              Term
+#define LFHT_NrLowTagBits                   LFTH_LowTagDeleteKeyBits + NumberOfLowTagBits
+#define LFHT_DeleteKeyBit                   NumberOfLowTagBits
+#define LFHT_USES_REGS                      , LFHT_ThreadEnvPtr LFHT_THREAD_ENV_PTR USES_REGS
+#define LFHT_PASS_REGS                      , LFHT_THREAD_ENV_PTR PASS_REGS
+#define LFHT_NODE_KEY_STR                   Term
 #else  /* STANDARD_MALLOC */
-#define LFHT_NrLowTagBits                              LFTH_LowTagDeleteKeyBits
-#define LFHT_DeleteKeyBit                              0
-#define LFHT_USES_REGS                                 
-#define LFHT_PASS_REGS                                 
-#define LFHT_NODE_KEY_STR                              long
+#define LFHT_NrLowTagBits                   LFTH_LowTagDeleteKeyBits
+#define LFHT_DeleteKeyBit                   0
+#define LFHT_USES_REGS                      , LFHT_ThreadEnvPtr LFHT_THREAD_ENV_PTR
+#define LFHT_PASS_REGS                      , LFHT_THREAD_ENV_PTR
+#define LFHT_NODE_KEY_STR                   long
 #endif /*YAP_TABMALLOC */
 
 /*******************************************************************************
  *                            LFHT macros                                      *
  *******************************************************************************/
 /* common macros - do not change*/
+
+
 
 #define LFHT_NEW_NODE(NODE, KEY, NEXT, TENV)    \
   if ((NODE = LFHT_UnusedNode(TENV)) != NULL)	\
@@ -106,48 +108,30 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
     }						                        \
   }
 
-#if defined(LFHT_LOCAL_THREAD_BUFFER_FOR_BUCKET_ARRAYS)
-#define LFHT_LOCAL_BUCKET_BUFFER           LOCAL_trie_buckets_buffer
-
-#define LFHT_AllocBuckets(BUCKET_PTR, PREV_HASH, STR)	    \
-  { void **alloc_bucket_ptr;				    \
-    if(LFHT_LOCAL_BUCKET_BUFFER == NULL) {		    \
-      LFHT_MemAllocBuckets(alloc_bucket_ptr);		    \
-      LFHT_InitBuckets(alloc_bucket_ptr, PREV_HASH);	    \
-    } else {						    \
-      alloc_bucket_ptr = LFHT_LOCAL_BUCKET_BUFFER;	    \
-      LFHT_LOCAL_BUCKET_BUFFER = NULL;			    \
-      *alloc_bucket_ptr++ = (void *) (PREV_HASH);	    \
-    }							    \
-    BUCKET_PTR = (STR **) alloc_bucket_ptr;	            \
-  }
-     /* V04_FREE_TRIE_HASH_BUCKETS */
-#define LFHT_FreeBuckets(PTR, BKT, STR)                                     \
-  { LFHT_SetBucket(BKT, PTR, STR);				            \
-    LFHT_LOCAL_BUCKET_BUFFER = (((void**)LFHT_UntagHashLevel(PTR)) - 1);    \
+#define LFHT_AllocBuckets(BUCKET_PTR, PREV_HASH, STR, TENV)		    \
+  { void **alloc_bucket_ptr;						    \
+    if ((alloc_bucket_ptr = LFHT_UnusedBucketArray(TENV)) != NULL)   	    \
+      LFHT_UnusedBucketArray(TENV) = NULL;                                  \
+    else						                    \
+      LFHT_MemAllocBuckets(alloc_bucket_ptr);			            \
+    LFHT_InitBuckets(alloc_bucket_ptr, PREV_HASH);                          \
+    BUCKET_PTR = (STR **) alloc_bucket_ptr;                                 \
   }
 
-#else /* !LFHT_LOCAL_THREAD_BUFFER_FOR_BUCKET_ARRAYS */
-
-#define LFHT_AllocBuckets(BUCKET_PTR, PREV_HASH, STR)	                             \
-  { void **alloc_bucket_ptr;						             \
-    LFHT_MemAllocBuckets(alloc_bucket_ptr);					     \
-    LFHT_InitBuckets(alloc_bucket_ptr, PREV_HASH);                                   \
-    BUCKET_PTR = (STR **) alloc_bucket_ptr;                                          \
-  }
+#define LFHT_FreeBuckets(PTR, TENV)                                        \
+    LFHT_UnusedBucketArray(TENV) = (void **) (((LFHT_STR_PTR *)LFHT_UntagHashLevel(PTR)) - 1)
 
 #ifdef YAP_TABMALLOC 
-#define LFHT_FreeBuckets(PTR, BKT, STR)
-
-  /* !! -- commented ... check this later */
+#define LFHT_DeallocateBucketArray(PTR)   
+  /*  -- commented ... check this later */
   /* V04_FREE_THB(((STR *) V04_UNTAG(PTR)) - 1) 
      FREE_STRUCT((union trie_hash_buckets*)STR, union trie_hash_buckets, _pages_trie_hash_buckets)
      FREE_BLOCK(((ans_node_ptr *) V04_UNTAG(STR)) - 1) */
 
 #else /* STANDARD_MALLOC */ 
-#define LFHT_FreeBuckets(PTR, _NIU1_, _NIU2_)  \
+#define LFHT_DeallocateBucketArray(PTR)			\
   free(((LFHT_STR_PTR *)LFHT_UntagHashLevel(PTR)) - 1)
 #endif
 
-#endif /* LFHT_LOCAL_THREAD_BUFFER_FOR_BUCKET_ARRAYS */
+
 #endif /* _LFHT_TRIES_H */
