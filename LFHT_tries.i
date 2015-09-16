@@ -223,7 +223,8 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN_ORIGINAL(LFHT_STR_PTR c
 
 */
 
-/*     HERE */
+/* --------------------- HERE --------------------*/
+
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash,  LFHT_NODE_KEY_STR key, int n_shifts LFHT_USES_ARGS) {
   LFHT_STR_PTR *bucket;
   LFHT_GetBucket(bucket, curr_hash, key, n_shifts, LFHT_STR);
@@ -467,7 +468,7 @@ static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
 /*                     abolish a key (removes the node with the key from the LFHT)     */
 /* ------------------------------------------------------------------------------------*/
 
- /* --------------------- HERE --------------------*/
+
 /*
 static inline LFHT_Bool LFHT_CHECK_REMOVE_KEY(LFHT_NODE_KEY_STR key) {
   LFHT_STR_PTR first_node;
