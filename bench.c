@@ -29,7 +29,7 @@ int main() {
   dic_show_state();
   printf("2-total_nodes = %d\n", total_nodes);
   */
-  dic_abolish_all_keys();
+  //dic_abolish_all_keys();
 
   /* Don't use the following functions 
      in a concurrent environment */
