@@ -223,7 +223,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN_ORIGINAL(LFHT_STR_PTR c
 
 */
 
-
+/*     HERE */
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash,  LFHT_NODE_KEY_STR key, int n_shifts LFHT_USES_ARGS) {
   LFHT_STR_PTR *bucket;
   LFHT_GetBucket(bucket, curr_hash, key, n_shifts, LFHT_STR);
