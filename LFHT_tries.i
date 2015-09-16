@@ -112,7 +112,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node
     return chain_node;  
   int cn = count_nodes + 1;
   LFHT_STR_PTR chain_next;
-  /* thread is still working with chain_node */
+  /* thread is still working in chain_node */
   chain_next = LFHT_SetThreadMemRefNext(tenv, LFHT_NodeNext(chain_node)); 
 
   if (chain_next && !LFHT_IsHashLevel(chain_next))
@@ -156,15 +156,19 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node
     if (!LFHT_IsHashLevel(chain_next))
       return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(chain_next, key, cn);
   }
-  // chain_next is refering a deeper hash level. The thread must jump its hash level
-  LFHT_STR_PTR *jump_hash, *prev_hash;
-  jump_hash = (LFHT_STR_PTR *) chain_next;
-  LFHT_GetPreviousHashLevel(prev_hash, jump_hash, LFHT_STR);
-  while (prev_hash) {
-    jump_hash = prev_hash;
-    LFHT_GetPreviousHashLevel(prev_hash, jump_hash, LFHT_STR);
+  // chain_next is refering a deeper hash level. The thread must jump its a previous hash level
+  // thread's current hash level
+  LFHT_SetThreadMemRef(tenv, chain_next); 
+
+  // thread's previous hash level
+  LFHT_GetPreviousHashLevel(LFHT_ThreadMemRefNext(tenv), LFHT_ThreadMemRef(tenv), LFHT_STR);
+
+  while (LFHT_ThreadMemRefNext(tenv)) {
+    LFHT_ThreadMemRef(tenv) = LFHT_ThreadMemRefNext(tenv);
+    LFHT_GetPreviousHashLevel(LFHT_ThreadMemRefNext(tenv), LFHT_ThreadMemRef(tenv), LFHT_STR);
   }
-  return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(jump_hash, key, 0);
+  LFHT_UnsetThreadMemRefNext(tenv);
+  return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(LFHT_ThreadMemRef(tenv), key, 0);
 }
 
 /*
