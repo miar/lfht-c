@@ -321,12 +321,16 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
       new_hash = (LFHT_STR_PTR *) LFHT_TagAsHashLevel(new_hash);
       LFHT_GetBucket(bucket, new_hash, LFHT_NodeKey(chain_node), 
 		     (n_shifts + 1), LFHT_STR);
-
       LFHT_SetBucket(bucket, chain_node, LFHT_STR);
+      LFHT_SetThreadMemRefNext(tenv, new_hash);
+
       if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), (LFHT_STR_PTR) curr_hash, 
 		       (LFHT_STR_PTR) new_hash)) {
-	LFHT_GetBucket(bucket, curr_hash, key, n_shifts, LFHT_STR);
+	/* get head of the chain to be adjusted */
+	LFHT_GetBucket(bucket, curr_hash, key, n_shifts, LFHT_STR); 
+	/* adjust nodes in the chain */
 	LFHT_CALL_ADJUST_CHAIN_NODES(new_hash, *bucket, chain_node, n_shifts);
+	/* chain bucket with next hash level */
         LFHT_SetBucket(bucket, new_hash, LFHT_STR);
 	return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(new_hash, key, (n_shifts + 1));
       } else 

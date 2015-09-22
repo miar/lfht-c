@@ -1,0 +1,7 @@
+I currently extending the model to support concurrent deletion of
+keys.  
+
+For the moment I will assume that only chain nodes will be
+deleted, i.e. buckets arrays will remain allocated.
+
+I expect to improve this in the near future....
