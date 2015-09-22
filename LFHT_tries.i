@@ -236,24 +236,27 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_has
 							  LFHT_NODE_KEY_STR key, 
 							  int n_shifts 
 							  LFHT_USES_ARGS) {
+
+  /* Don't forget that at this point LFHT_ThreadMemRef(tenv) = curr_hash */
   LFHT_STR_PTR *bucket;
   LFHT_GetBucket(bucket, curr_hash, key, n_shifts, LFHT_STR);
-  //  if (key == 5)
-    //    printf("3- bucket=%p n_shifts = %d hash= %p", bucket, n_shifts,curr_hash);
+
   if (LFHT_IsEmptyBucket(*bucket, curr_hash, LFHT_STR)) {
     LFHT_STR_PTR new_node;
     LFHT_NEW_NODE(new_node, key, (LFHT_STR_PTR) curr_hash, tenv);
+
+    LFHT_SetThreadMemRefNext(tenv, new_node);
+
     if (LFHT_BoolCAS(bucket, (LFHT_STR_PTR) curr_hash, new_node)) {
 #ifdef LFHT_DEBUG
-      //      printf("3- bucket=%p n_shifts = %d hash= %p", bucket, n_shifts,curr_hash);
-      //SHOW_DIC_ENTRY(new_node);
       total_nodes++;
 #endif /* LFHT_DEBUG */
       return new_node;
     }
+    LFHT_UnsetThreadMemRefNext(tenv);  // useless. no other thread is viewing the new_node.
     LFHT_FREE_NODE(new_node, tenv);
   }
-  LFHT_STR_PTR bucket_next = *bucket;
+  LFHT_STR_PTR bucket_next = LFHT_ThreadMemRef(tenv) = *bucket;
   if (LFHT_IsHashLevel(bucket_next))
     return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY((LFHT_STR_PTR *)bucket_next, 
 					       key, (n_shifts + 1));
