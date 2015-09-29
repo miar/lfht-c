@@ -164,7 +164,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node
     if (!LFHT_IsHashLevel(chain_next))
       return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(chain_next, key, cn);
   }
-  // chain_next is refering a deeper hash level. The worker must jump a previous hash level
+  // chain_next is refering a deeper hash level. Thread must jump a previous hash level
 
   // thread's current hash level
   LFHT_SetThreadMemRef(tenv, chain_next); 
@@ -220,7 +220,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN_ORIGINAL(LFHT_STR_PTR c
     if (!LFHT_IsHashLevel(chain_next))
       return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(chain_next, key, cn);
   }
-  // chain_next is refering a deeper hash level. The worker must jump its hash level
+  // chain_next is refering a deeper hash level. Thread must jump its hash level
   LFHT_STR_PTR *jump_hash, *prev_hash;
   jump_hash = (LFHT_STR_PTR *) chain_next;
   LFHT_GetPreviousHashLevel(prev_hash, jump_hash, LFHT_STR);
@@ -292,8 +292,6 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_has
 
 */
 
-/* --------------------- HERE --------------------*/
-
 static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash, 
 							  LFHT_STR_PTR chain_node,  
 							  LFHT_NODE_KEY_STR key, 
@@ -344,6 +342,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
     } else {
       LFHT_STR_PTR new_node;
       LFHT_NEW_NODE(new_node, key, (LFHT_STR_PTR) curr_hash, tenv);
+      LFHT_SetThreadMemRefNext(tenv, new_node);
       if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), (LFHT_STR_PTR) curr_hash, 
 		       new_node)) {
 #ifdef LFHT_DEBUG
@@ -359,7 +358,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
       return LFHT_CALL_CHECK_INSERT_BUCKET_CHAIN(curr_hash, chain_next, 
 						 key, n_shifts, cn);
   }
-  // chain_next is refering a deeper hash level. The worker must jump its hash level
+  // chain_next is refering a deeper hash level. Thread must jump its hash level
 
   LFHT_SetThreadMemRef(tenv, chain_next); 
 
@@ -426,7 +425,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
       return LFHT_CALL_CHECK_INSERT_BUCKET_CHAIN(curr_hash, chain_next, 
 						 key, n_shifts, cn);
   }
-  // chain_next is refering a deeper hash level. The worker must jump its hash level
+  // chain_next is refering a deeper hash level. Thread must jump its hash level
   LFHT_STR_PTR *jump_hash, *prev_hash;
   jump_hash = (LFHT_STR_PTR *) chain_next;
   LFHT_GetPreviousHashLevel(prev_hash, jump_hash, LFHT_STR);
@@ -438,7 +437,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
 }
 */
 
-
+/* --------------------- HERE --------------------*/
 
 static inline void LFHT_ADJUST_CHAIN_NODES(LFHT_STR_PTR *new_hash, 
 					   LFHT_STR_PTR chain_node, 
@@ -452,19 +451,19 @@ static inline void LFHT_ADJUST_CHAIN_NODES(LFHT_STR_PTR *new_hash,
   return LFHT_CALL_INSERT_BUCKET_ARRAY(new_hash, chain_node, (n_shifts + 1));   
 }
 
+
 static inline void LFHT_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash, 
 					    LFHT_STR_PTR chain_node, 
 					    int n_shifts 
 					    LFHT_USES_REGS) {
+
+  /* Don't forget that at this point LFHT_ThreadMemRef(tenv) = chain_node */
+
   LFHT_STR_PTR *bucket;
   LFHT_NodeNext(chain_node) = (LFHT_STR_PTR) curr_hash;
   LFHT_GetBucket(bucket, curr_hash, LFHT_NodeKey(chain_node), n_shifts, LFHT_STR);
   if (LFHT_IsEmptyBucket(*bucket, curr_hash, LFHT_STR))
     if (LFHT_BoolCAS(bucket, (LFHT_STR_PTR) curr_hash, chain_node)) {
-#ifdef LFHT_DEBUG
-      //      printf("1- adjust bucket = %p ", bucket);
-      //      SHOW_DIC_ENTRY(chain_node);
-#endif /* LFHT_DEBUG */
       return;
     }
   LFHT_STR_PTR bucket_next = *bucket;
@@ -474,6 +473,34 @@ static inline void LFHT_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash,
   return LFHT_CALL_INSERT_BUCKET_CHAIN(curr_hash, bucket_next, 
 				       chain_node, n_shifts, 0);
 }
+
+
+
+/*
+static inline void LFHT_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash, 
+					    LFHT_STR_PTR chain_node, 
+					    int n_shifts 
+					    LFHT_USES_REGS) {
+  LFHT_STR_PTR *bucket;
+  LFHT_NodeNext(chain_node) = (LFHT_STR_PTR) curr_hash;
+  LFHT_GetBucket(bucket, curr_hash, LFHT_NodeKey(chain_node), n_shifts, LFHT_STR);
+  if (LFHT_IsEmptyBucket(*bucket, curr_hash, LFHT_STR))
+    if (LFHT_BoolCAS(bucket, (LFHT_STR_PTR) curr_hash, chain_node)) {
+      return;
+    }
+  LFHT_STR_PTR bucket_next = *bucket;
+  if (LFHT_IsHashLevel(bucket_next))
+    return LFHT_CALL_INSERT_BUCKET_ARRAY((LFHT_STR_PTR *)bucket_next, 
+					 chain_node, (n_shifts + 1));
+  return LFHT_CALL_INSERT_BUCKET_CHAIN(curr_hash, bucket_next, 
+				       chain_node, n_shifts, 0);
+}
+*/
+
+
+
+
+
 
 static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash, 
 					    LFHT_STR_PTR chain_node, 
@@ -519,7 +546,7 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash,
 					   adjust_node, n_shifts, 
 					   cn);
   }
-  // chain_next is refering a deeper hash level. The worker must jump its hash level
+  // chain_next is refering a deeper hash level. Thread must jump its hash level
   LFHT_STR_PTR *jump_hash, *prev_hash;
   jump_hash = (LFHT_STR_PTR *) chain_next;
   LFHT_GetPreviousHashLevel(prev_hash, jump_hash, LFHT_STR);

@@ -18,11 +18,11 @@ Other issues :
       - The LFHT does not support the concurrent "delete_key"
         operation. Supports for the moment an "abolish_all_keys"
         operation, which removes all keys in the LFHT. MUST BE
-        DONE in a non-concurrent fashion (after all workers finish). 
+        DONE in a non-concurrent fashion (after all threads finish). 
 
       - The LFHT supports also a "show_state" operation, that shows
         all keys in the LFHT. MUST BE DONE in a non-concurrent fashion
-        (after all workers finish).
+        (after all threads finish).
 
 Ongoing work : 
 
