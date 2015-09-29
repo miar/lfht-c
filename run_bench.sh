@@ -7,10 +7,10 @@ rm bench.out
 
 #compile and check assembly code
 
-gcc -c -g -Wa,-a,-ad bench.c -o bench.out > foo.lst
+#gcc -c -g -Wa,-a,-ad bench.c -o bench.out > foo.lst
 
 # compile on with gcc 
-#clang -Wall bench.c -o bench.out
+clang -Wall bench.c -o bench.out
 
 #and run for the moment...
 

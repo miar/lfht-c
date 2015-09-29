@@ -119,8 +119,12 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node
   /* thread is still working in chain_node */
   chain_next = LFHT_SetThreadMemRefNext(tenv, LFHT_NodeNext(chain_node)); 
 
-  if (chain_next && !LFHT_IsHashLevel(chain_next))
+  if (chain_next && !LFHT_IsHashLevel(chain_next)) {
+    LFHT_ThreadMemRef(tenv) = chain_next;
+    LFHT_UnsetThreadMemRefNext(tenv); // this might be useless here !!
     return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(chain_next, key, cn); 
+  }
+
   // chain_next refering the end of the chain or is a hash level pointer
   if (chain_next == NULL) {
     if (cn == LFHT_MAX_NODES_PER_BUCKET) {
@@ -139,7 +143,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node
 	LFHT_FirstNode = (LFHT_STR_PTR) new_hash;
 	return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(new_hash, key, 0);
       } else {
-	LFHT_UnsetThreadMemRefNext(tenv); // useless. no other thread is viewing the new_hash.
+	LFHT_UnsetThreadMemRefNext(tenv); // useless. no other thread is viewing the new_hash
 	LFHT_FreeBuckets(new_hash, tenv);
       }
     } else {
@@ -152,7 +156,7 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node
 #endif /* LFHT_DEBUG */
 	return new_node;
       }
-      LFHT_UnsetThreadMemRefNext(tenv);  // useless. no other thread is viewing the new_node.
+      LFHT_UnsetThreadMemRefNext(tenv);  // useless. no other thread is viewing new_node.
       LFHT_FREE_NODE(new_node, tenv);
     }
     /* thread is leaving the chain_node */
@@ -160,10 +164,10 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node
     if (!LFHT_IsHashLevel(chain_next))
       return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(chain_next, key, cn);
   }
-  // chain_next is refering a deeper hash level. The thread must jump its a previous hash level
+  // chain_next is refering a deeper hash level. The worker must jump a previous hash level
+
   // thread's current hash level
   LFHT_SetThreadMemRef(tenv, chain_next); 
-
   // thread's previous hash level
   LFHT_GetPreviousHashLevel(LFHT_ThreadMemRefNext(tenv), 
 			    LFHT_ThreadMemRef(tenv), LFHT_STR);
@@ -333,8 +337,10 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
 	/* chain bucket with next hash level */
         LFHT_SetBucket(bucket, new_hash, LFHT_STR);
 	return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(new_hash, key, (n_shifts + 1));
-      } else 
+      } else {
+	LFHT_UnsetThreadMemRefNext(tenv); // useless. no other thread is viewing new_hash
 	LFHT_FreeBuckets(new_hash, tenv);
+      }
     } else {
       LFHT_STR_PTR new_node;
       LFHT_NEW_NODE(new_node, key, (LFHT_STR_PTR) curr_hash, tenv);
@@ -345,22 +351,24 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
 #endif /* LFHT_DEBUG */
 	return new_node;
       }
+      LFHT_UnsetThreadMemRefNext(tenv);  // useless. no other thread is viewing new_node.
       LFHT_FREE_NODE(new_node, tenv);
     }
-    chain_next = LFHT_NodeNext(chain_node);
+    chain_next = LFHT_SetThreadMemRef(tenv, LFHT_NodeNext(chain_node));
     if (!LFHT_IsHashLevel(chain_next))
       return LFHT_CALL_CHECK_INSERT_BUCKET_CHAIN(curr_hash, chain_next, 
 						 key, n_shifts, cn);
   }
   // chain_next is refering a deeper hash level. The worker must jump its hash level
-  LFHT_STR_PTR *jump_hash, *prev_hash;
-  jump_hash = (LFHT_STR_PTR *) chain_next;
-  LFHT_GetPreviousHashLevel(prev_hash, jump_hash, LFHT_STR);
-  while (prev_hash != curr_hash) {
-    jump_hash = prev_hash;
-    LFHT_GetPreviousHashLevel(prev_hash, jump_hash, LFHT_STR);
+
+  LFHT_SetThreadMemRef(tenv, chain_next); 
+
+  LFHT_GetPreviousHashLevel(LFHT_ThreadMemRefNext(tenv), LFHT_ThreadMemRef(tenv), LFHT_STR);
+  while (LFHT_ThreadMemRefNext(tenv) != curr_hash) {
+    LFHT_ThreadMemRef(tenv) = LFHT_ThreadMemRefNext(tenv);
+    LFHT_GetPreviousHashLevel(LFHT_ThreadMemRefNext(tenv), LFHT_ThreadMemRef(tenv), LFHT_STR);
   }
-  return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(jump_hash, key, (n_shifts + 1));
+  return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(LFHT_ThreadMemRef(tenv), key, (n_shifts + 1));
 }
 
 
