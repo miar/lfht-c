@@ -437,8 +437,24 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
 }
 */
 
-/* --------------------- HERE --------------------*/
+/* --------------------- HERE (CHECK CALLS) --------------------*/
 
+static inline void LFHT_ADJUST_CHAIN_NODES(LFHT_STR_PTR *new_hash, 
+					   LFHT_STR_PTR chain_node, 
+					   LFHT_STR_PTR last_node, 
+					   int n_shifts 
+					   LFHT_USES_REGS) {
+  /* Don't forget that at this point LFHT_ThreadMemRef(tenv) = chain_node */
+  if (chain_node == last_node)
+    return;
+  LFHT_CALL_ADJUST_CHAIN_NODES(new_hash, LFHT_NodeNext(chain_node), 
+			       last_node, n_shifts);
+  return LFHT_CALL_INSERT_BUCKET_ARRAY(new_hash, chain_node, (n_shifts + 1));   
+}
+
+
+
+/*
 static inline void LFHT_ADJUST_CHAIN_NODES(LFHT_STR_PTR *new_hash, 
 					   LFHT_STR_PTR chain_node, 
 					   LFHT_STR_PTR last_node, 
@@ -450,6 +466,10 @@ static inline void LFHT_ADJUST_CHAIN_NODES(LFHT_STR_PTR *new_hash,
 			       last_node, n_shifts);
   return LFHT_CALL_INSERT_BUCKET_ARRAY(new_hash, chain_node, (n_shifts + 1));   
 }
+
+*/
+
+
 
 
 static inline void LFHT_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash, 
