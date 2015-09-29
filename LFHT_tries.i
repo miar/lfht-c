@@ -445,10 +445,19 @@ static inline void LFHT_ADJUST_CHAIN_NODES(LFHT_STR_PTR *new_hash,
 					   int n_shifts 
 					   LFHT_USES_REGS) {
   /* Don't forget that at this point LFHT_ThreadMemRef(tenv) = chain_node */
+
+  /* At this point only one thread is working in these nodes ... */
+
   if (chain_node == last_node)
     return;
   LFHT_CALL_ADJUST_CHAIN_NODES(new_hash, LFHT_NodeNext(chain_node), 
 			       last_node, n_shifts);
+
+  if (LFHT_IsDeletedKey(chain_node)) {
+    /* proceed to delete the node - remove it or pass it to the chain of toBeDeleted */
+    return /*    */;
+  }
+
   return LFHT_CALL_INSERT_BUCKET_ARRAY(new_hash, chain_node, (n_shifts + 1));   
 }
 

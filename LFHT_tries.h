@@ -59,7 +59,7 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 
 #define LFHT_TagAsDeletedKey(NODE)        (LFHT_NodeKey(NODE) = LFHT_NodeKey(NODE) | (LFHT_CELL) 0x1)
 
-#define LFHT_IsDeletedKey(NODE)            (LFHT_NodeKey(NODE) | (LFHT_CELL) 0x1)
+#define LFHT_IsDeletedKey(NODE)            (LFHT_NodeKey(NODE) & (LFHT_CELL) 0x1)
 
 #define LFHT_IsEqualKey(NODE, KEY)        (LFHT_NodeKey(NODE) == KEY)
 #define LFHT_IsHashLevel(PTR)             ((LFHT_CELL)(PTR) & (LFHT_CELL)(0x1))
