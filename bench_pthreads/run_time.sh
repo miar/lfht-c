@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #export LD_PRELOAD='/home/miguelareias/conferences/2012/icpads2012/other_memory_allocators/compiled_ma/libhoard.so' # this one freezes in the FREE_BLOCK(HASH) instruction
-export LD_PRELOAD='/home/miguelareias/conferences/iclp2013/jemalloc-3.1.0/lib/libjemalloc.so'
+#export LD_PRELOAD='/home/miguelareias/conferences/iclp2013/jemalloc-3.1.0/lib/libjemalloc.so' ## import this file 
 
 #export LD_PRELOAD='/home/miguelareias/c-hash/other_mem_alloc/lockless_allocator_linux/64bit/libllalloc.so.1.4' 
 
