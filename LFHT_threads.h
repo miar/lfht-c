@@ -4,10 +4,11 @@
 #include "LFHT_parameters.h" 
 
 typedef struct LFHT_ThreadEnvironment {
-  void  *mem_ref;              /* Thread's memory reference */
-  void  *mem_ref_next;         /* Thread's next memory reference */
-  void  *unused_node;          /* Thread's local buffer with an unused node */
-  void **unused_bucketArray;   /* Thread's local buffer with an unused bucket array */
+  void  *mem_ref;               /* Thread's memory reference */
+  void  *mem_ref_next;          /* Thread's next memory reference */
+  void  *unused_node;           /* Thread's local buffer with an unused node */
+  void **unused_bucketArray;    /* Thread's local buffer with an unused bucket array */
+  //  long   state;                 /* 0 - unused and 1 - in use (Improve this later) */
   void  *cache_line_padding[4]; /* Cache line padding cache_line = 64 bytes */
 } *LFHT_ThreadEnvPtr;
 
@@ -40,9 +41,6 @@ typedef struct LFHT_Environment{
 #define LFHT_UnsetThreadMemRef(TENV)	          LFHT_ThreadMemRef(TENV) = NULL;
 
 
-
-
-
 #define LFHT_InitEnv(LFHT_ENV)					                \
   {  LFHT_EnvPtr PTR;						                \
      if ((PTR = (LFHT_EnvPtr) malloc(sizeof(struct LFHT_Environment))) == NULL) \
@@ -51,18 +49,20 @@ typedef struct LFHT_Environment{
      LFHT_ENV = PTR;							        \
   }
 
-#define LFHT_KillThreadEnv(LFHT_ENV, Tid)                                               \
- {  LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));                               \
-  if (LFHT_UnusedNode(PTR) != NULL)                                                     \
-    LFHT_DEALLOC_NODE(LFHT_UnusedNode(PTR));                                            \
-  if (LFHT_UnusedBucketArray(PTR) != NULL)                                              \
-    LFHT_DeallocateBucketArray(LFHT_UnusedBucketArray(PTR));                            \
-  LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefNext(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL; \
+#define LFHT_KillThreadEnv(LFHT_ENV, Tid)                                       \
+ {  LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));                       \
+  if (LFHT_UnusedNode(PTR) != NULL)                                             \
+    LFHT_DEALLOC_NODE(LFHT_UnusedNode(PTR));                                    \
+  if (LFHT_UnusedBucketArray(PTR) != NULL)                                      \
+    LFHT_DeallocateBucketArray(LFHT_UnusedBucketArray(PTR));                    \
+  LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefNext(PTR) =                         \
+    LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL;                  \
  }
 
 static inline LFHT_ThreadEnvPtr LFHT_InitThreadEnv(LFHT_EnvPtr LFHT, int Tid) {
   LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));
-  LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefNext(PTR) = LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL;
+  LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefNext(PTR) = 
+    LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL;
   return PTR;
 }
 

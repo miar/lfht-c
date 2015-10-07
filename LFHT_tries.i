@@ -586,19 +586,43 @@ static inline void
 			  LFHT_STR_PTR last_node, 
 			  int n_shifts 
 			  LFHT_USES_REGS) {
-  /* Don't forget that at this point
-     LFHT_ThreadMemRef(tenv) = chain_node
-     only one thread is working in these nodes ... */
+  /* Don't forget that: 
+      - only one thread is working on a particular chain
+      - LFHT_ThreadMemRef(tenv) = last_node on the first call
+      
+  */
 
   if (chain_node == last_node)
     return;
+
+  LFHT_SetThreadMemRefNext(tenv, LFHT_NodeNext(chain_node));
+
   LFHT_CALL_ADJUST_CHAIN_NODES(new_hash, LFHT_NodeNext(chain_node), 
     last_node, n_shifts);
 
+
   if (LFHT_IsDeletedKey(chain_node)) {
-    /* proceed to delete the node - remove it or pass it 
-       to the chain of toBeDeleted */
-    return /*    */;
+    /* proceed to delete the node - 
+       ley idea is to remove node or pass it
+       to the chain of toBeDeleted 
+       for the moment thread will delete physically the node if if it can.      
+    */
+    LFHT_NodeNext(((LFHT_STR_PTR)LFHT_ThreadMemRefNext(tenv))) = 
+      (LFHT_STR_PTR) new_hash;
+    LFHT_EnvPtr lfht_env = LFHT_ROOT_ENV;
+    int i;
+    
+    /* optimize this search ...please */
+    for (i = 0; i < LFHT_MAX_THREADS; i++) {
+      /* pass all macros to this format ... instead of derrefing */
+
+      if (LFHT_ThreadEnv(lfht_env, i).mem_ref == chain_node ||
+	  LFHT_ThreadEnv(lfht_env, i).mem_ref_next == chain_node)
+	/* unable to free chain_node */
+	return;
+    }
+    LFHT_FREE_NODE(chain_node, tenv);
+    return;
   }
 
   return LFHT_CALL_INSERT_BUCKET_ARRAY(new_hash, 

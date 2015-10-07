@@ -43,8 +43,10 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
   }
 
 #define LFHT_FREE_NODE(NODE, TENV)              \
-    LFHT_UnusedNode(TENV) = NODE
-
+  if (LFHT_UnusedNode(TENV) == NULL)            \
+    LFHT_UnusedNode(TENV) = NODE;               \
+  else                                          \
+    LFHT_DEALLOC_NODE(NODE)
 
 #define LFHT_CALL_CHECK_INSERT_KEY(K)                      LFHT_CHECK_INSERT_KEY(K LFHT_PASS_ARGS)
 #define LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(F, K, S)        LFHT_CHECK_INSERT_FIRST_CHAIN(F, K, S LFHT_PASS_ARGS)
