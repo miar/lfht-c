@@ -586,7 +586,6 @@ static inline void
 
   LFHT_CALL_ADJUST_CHAIN_NODES(new_hash, LFHT_NodeNext(chain_node), n_shifts);
 
-
   if (LFHT_IsDeletedKey(chain_node)) {
     /* proceed to delete the node - 
        ley idea is to remove node or pass it
