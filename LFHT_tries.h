@@ -42,17 +42,18 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
     LFHT_ALLOC_NODE(NODE, KEY, NEXT);           \
   }
 
-#define LFHT_FREE_NODE(NODE, TENV)              \
-  if (LFHT_UnusedNode(TENV) == NULL)            \
-    LFHT_UnusedNode(TENV) = NODE;               \
-  else                                          \
+#define LFHT_FREE_NODE(NODE, TENV)                      \
+  if (LFHT_UnusedNode(TENV) == NULL) {	  	        \
+    LFHT_NodeKey(NODE) = 0;  /* untag delete bit */	\
+    LFHT_UnusedNode(TENV) = NODE;                       \
+  } else					        \
     LFHT_DEALLOC_NODE(NODE)
 
 #define LFHT_CALL_CHECK_INSERT_KEY(K)                      LFHT_CHECK_INSERT_KEY(K LFHT_PASS_ARGS)
 #define LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(F, K, S)        LFHT_CHECK_INSERT_FIRST_CHAIN(F, K, S LFHT_PASS_ARGS)
 #define LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(F, K, S)       LFHT_CHECK_INSERT_BUCKET_ARRAY(F, K, S LFHT_PASS_ARGS)
 #define LFHT_CALL_CHECK_INSERT_BUCKET_CHAIN(H, N, K, S, C) LFHT_CHECK_INSERT_BUCKET_CHAIN(H, N, K, S, C LFHT_PASS_ARGS)
-#define LFHT_CALL_ADJUST_CHAIN_NODES(H, N, L, S)           LFHT_ADJUST_CHAIN_NODES(H, N, L, S LFHT_PASS_REGS)
+#define LFHT_CALL_ADJUST_CHAIN_NODES(H, N, S)              LFHT_ADJUST_CHAIN_NODES(H, N, S LFHT_PASS_REGS)
 #define LFHT_CALL_INSERT_BUCKET_ARRAY(B, C, S)             LFHT_INSERT_BUCKET_ARRAY(B, C, S LFHT_PASS_REGS)
 #define LFHT_CALL_INSERT_BUCKET_CHAIN(H, N, L, S, C)       LFHT_INSERT_BUCKET_CHAIN(H, N, L, S, C LFHT_PASS_REGS)
 
