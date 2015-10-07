@@ -615,7 +615,7 @@ static inline void
   LFHT_CALL_INSERT_BUCKET_ARRAY(new_hash, chain_node, (n_shifts + 1));
 
   LFHT_ThreadMemRef(tenv) = LFHT_ThreadMemRefNext(tenv);
- LFHT_ThreadMemRefNext(tenv);
+  LFHT_ThreadMemRefNext(tenv);
   return;
 }
 
