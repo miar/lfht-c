@@ -23,20 +23,24 @@
 #define LFHT_GetFirstNode(NODE)           \
   (NODE = ((LFHT_STR_PTR) (Root.dic)))
 
-#define LFHT_NodeKey(NODE)                Dic_key(NODE)
+#define LFHT_NodeKey(NODE)                \
+  Dic_key(NODE)
 
-#define LFHT_NodeNext(NODE)               Dic_next(NODE)
+#define LFHT_NodeNext(NODE)               \
+  Dic_next(NODE)
 
 #define LFHT_ALLOC_NODE(NODE, KEY, NEXT)  \
   NEW_DIC_ENTRY(NODE, KEY, value, NEXT)
 
-#define LFHT_DEALLOC_NODE(NODE)           FREE_DIC_ENTRY(NODE)
+#define LFHT_DEALLOC_NODE(NODE)           \
+  FREE_DIC_ENTRY(NODE)
 
 #define LFHT_SHOW_NODE(NODE)              \
   SHOW_DIC_ENTRY(NODE,                    \
   LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)))
 
-#define LFHT_CHECK_INSERT_KEY             dic_check_insert_key
+#define LFHT_CHECK_INSERT_KEY             \
+  dic_check_insert_key
 
 #define LFHT_CHECK_INSERT_FIRST_CHAIN     \
   dic_check_insert_first_chain
@@ -587,26 +591,11 @@ static inline void
   LFHT_CALL_ADJUST_CHAIN_NODES(new_hash, LFHT_NodeNext(chain_node), n_shifts);
 
   if (LFHT_IsDeletedKey(chain_node)) {
-    /* proceed to delete the node - 
-       ley idea is to remove node or pass it
-       to the chain of toBeDeleted 
-       for the moment thread will delete physically the node if if it can.      
-    */
-    LFHT_NodeNext(((LFHT_STR_PTR)LFHT_ThreadMemRefNext(tenv))) = 
-      (LFHT_STR_PTR) new_hash;
+    LFHT_NodeNext(chain_node) = (LFHT_STR_PTR) new_hash;
+    LFHT_InsertOnDeletePool(chain_node);
+    // LFHT_NodeNext(((LFHT_STR_PTR)LFHT_ThreadMemRefNext(tenv))) = 
+    //  (LFHT_STR_PTR) new_hash;
 
-    int i;
-    
-    /* optimize this search ...please */
-    for (i = 0; i < LFHT_MAX_THREADS; i++) {
-      /* pass all macros to this format ... instead of derrefing */
-
-      if (LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref == chain_node ||
-	  LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref_next == chain_node)
-	/* unable to free chain_node */
-	return;
-    }
-    LFHT_FREE_NODE(chain_node, tenv);
     return;
   }
 

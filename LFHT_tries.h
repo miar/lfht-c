@@ -1,6 +1,7 @@
 #ifndef _LFHT_TRIES_H
 #define _LFHT_TRIES_H
 
+#include "LFHT_common.h"
 #include "LFHT_threads.h"
 
 typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
@@ -74,8 +75,6 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 #define LFHT_UntagHashLevel(PTR)          ((LFHT_CELL)(PTR) & ~(LFHT_CELL)(0x1))
        /* V04_SET_HASH_BUCKET */
 #define LFHT_SetBucket(BUCKET, V, STR)    (*(BUCKET) = (STR *) V)
-     /* LFHT_BOOL_CAS */
-#define LFHT_BoolCAS(PTR, OLD, NEW)       __sync_bool_compare_and_swap((PTR), (OLD), (NEW))
      /* V04_SHIFT_ENTRY */
 #define LFHT_ShiftKeyBits(KEY, NS)        ((KEY) >> ((LFHT_BIT_SHIFT * NS) + LFHT_NrLowTagBits))
      /* V04_HASH_ENTRY */
@@ -135,6 +134,5 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 #define LFHT_DeallocateBucketArray(PTR)			\
   free(((LFHT_STR_PTR *)LFHT_UntagHashLevel(PTR)) - 1)
 #endif
-
 
 #endif /* _LFHT_TRIES_H */
