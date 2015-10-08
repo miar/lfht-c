@@ -586,7 +586,8 @@ static inline void
   if (chain_node == (LFHT_STR_PTR) new_hash)
     return;
 
-  LFHT_SetThreadMemRefNext(tenv, LFHT_NodeNext(chain_node));
+  LFHT_ThreadMemRef(tenv) = chain_node;
+  LFHT_ThreadMemRefNext(tenv) = LFHT_NodeNext(chain_node);
 
   LFHT_CALL_ADJUST_CHAIN_NODES(new_hash, LFHT_NodeNext(chain_node), n_shifts);
 
@@ -595,7 +596,6 @@ static inline void
     LFHT_InsertOnDeletePool(chain_node);
     // LFHT_NodeNext(((LFHT_STR_PTR)LFHT_ThreadMemRefNext(tenv))) = 
     //  (LFHT_STR_PTR) new_hash;
-
     return;
   }
 
@@ -604,7 +604,7 @@ static inline void
   LFHT_CALL_INSERT_BUCKET_ARRAY(new_hash, chain_node, (n_shifts + 1));
 
   LFHT_ThreadMemRef(tenv) = LFHT_ThreadMemRefNext(tenv);
-  LFHT_ThreadMemRefNext(tenv);
+
   return;
 }
 
