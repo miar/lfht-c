@@ -206,8 +206,8 @@ static inline LFHT_STR_PTR
   int cn = count_nodes + 1;
   LFHT_STR_PTR chain_next;
   /* thread is still working in chain_node */
-  chain_next = LFHT_SetThreadMemRefNext(tenv, 
-	         LFHT_NodeNext(chain_node)); 
+  chain_next = LFHT_ThreadMemRefNext(tenv) =
+	         LFHT_NodeNext(chain_node); 
 
   if (chain_next && !LFHT_IsHashLevel(chain_next)) {
     LFHT_ThreadMemRef(tenv) = chain_next;
@@ -225,8 +225,6 @@ static inline LFHT_STR_PTR
       new_hash = 
 	(LFHT_STR_PTR *) LFHT_TagAsHashLevel(new_hash);
 
-      LFHT_SetThreadMemRefNext(tenv, new_hash);
-
       if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), NULL, 
 		       (LFHT_STR_PTR) new_hash)) {
 	LFHT_CALL_ADJUST_CHAIN_NODES(new_hash, LFHT_FirstNode, (- 1));
@@ -234,10 +232,6 @@ static inline LFHT_STR_PTR
 	return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(new_hash, 
 		key, 0);
       } else {
-	LFHT_UnsetThreadMemRefNext(tenv); /* useless. 
-					     no other thread 
-					     is viewing the 
-					     new_hash */
 	LFHT_FreeBuckets(new_hash, tenv);
       }
     } else {
@@ -269,7 +263,7 @@ static inline LFHT_STR_PTR
      Thread must jump a previous hash level */
 
   // thread's current hash level
-  LFHT_SetThreadMemRef(tenv, chain_next); 
+  LFHT_ThreadMemRef(tenv) = chain_next; 
   // thread's previous hash level
   LFHT_GetPreviousHashLevel(LFHT_ThreadMemRefNext(tenv), 
     LFHT_ThreadMemRef(tenv), LFHT_STR);
@@ -353,7 +347,7 @@ static inline LFHT_STR_PTR
     LFHT_NEW_NODE(new_node, key, (LFHT_STR_PTR) curr_hash,
       tenv);
 
-    LFHT_SetThreadMemRefNext(tenv, new_node);
+    LFHT_ThreadMemRefNext(tenv) = new_node;
 
     if (LFHT_BoolCAS(bucket, (LFHT_STR_PTR) curr_hash, 
 		     new_node)) {
@@ -362,9 +356,6 @@ static inline LFHT_STR_PTR
 #endif /* LFHT_DEBUG */
       return new_node;
     }
-    LFHT_UnsetThreadMemRefNext(tenv);  /* useless. no other 
-					  thread is viewing 
-					  the new_node. */
     LFHT_FREE_NODE(new_node, tenv);
   }
   LFHT_STR_PTR bucket_next =
@@ -570,13 +561,6 @@ static inline void
 			  LFHT_STR_PTR chain_node, 
 			  int n_shifts 
 			  LFHT_USES_REGS) {
-  /* Don't forget that: 
-      - only one thread is working on a particular chain
-      - LFHT_ThreadMemRef(tenv) = last node on the first call
-
-  LFHT_ThreadMemRef(tenv) = chain_node;
-  LFHT_ThreadMemRefNext(tenv) = LFHT_NodeNext(chain_node);
-  */
 
   if (chain_node == (LFHT_STR_PTR) new_hash)
     return;
