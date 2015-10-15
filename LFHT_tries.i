@@ -59,8 +59,7 @@
 #define LFHT_SHOW_BUCKET_ARRAY            dic_show_bucket_array
 #define LFHT_ABOLISH_ALL_KEYS             dic_abolish_all_keys
 #define LFHT_ABOLISH_CHAIN                dic_abolish_chain
-#define LFHT_ABOLISH_BUCKET_ARRAY         \
-  dic_abolish_bucket_array
+#define LFHT_ABOLISH_BUCKET_ARRAY         dic_abolish_bucket_array
 
 /*-------------- don't change nothing from this point ------- */
 
@@ -742,10 +741,6 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash,
 }
 
 */
-
-
-
-
 
 
 
