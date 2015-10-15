@@ -595,8 +595,6 @@ static inline void LFHT_ADJUST_CHAIN_NODES(LFHT_STR_PTR *new_hash,
 */
 
 
-/* --------------------- HERE (CHECK CALLS) -------------*/
-
 static inline void LFHT_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash, 
 					    LFHT_STR_PTR chain_node, 
 					    int n_shifts 
@@ -613,7 +611,7 @@ static inline void LFHT_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash,
 		     chain_node)) {
       return;
     }
-  LFHT_STR_PTR bucket_next = *bucket;
+  LFHT_STR_PTR bucket_next = LFHT_ThreadMemRefNext(tenv) = *bucket;
   if (LFHT_IsHashLevel(bucket_next))
     return LFHT_CALL_INSERT_BUCKET_ARRAY((LFHT_STR_PTR *)bucket_next, 
 	     chain_node, (n_shifts + 1));
@@ -651,6 +649,70 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash,
 					    int n_shifts, 
 					    int count_nodes 
 					    LFHT_USES_REGS) {
+
+  /* LFHT_ThreadMemRef(tenv) = adjust_node
+     LFHT_ThreadMemRefNext(tenv) = chain_node */
+
+  LFHT_NODE_KEY_STR key = LFHT_NodeKey(adjust_node);
+  int cn = count_nodes + 1;
+  LFHT_STR_PTR chain_next;
+  chain_next = LFHT_ThreadMemRefNext(tenv) = LFHT_NodeNext(chain_node);
+  if (!LFHT_IsHashLevel(chain_next))
+    return LFHT_CALL_INSERT_BUCKET_CHAIN(curr_hash, chain_next, 
+  	     adjust_node, n_shifts, cn);
+  // chain_next is a hash pointer
+  if ((LFHT_STR_PTR *)chain_next == curr_hash) {
+    if (cn == LFHT_MAX_NODES_PER_BUCKET) {
+      LFHT_STR_PTR *new_hash;
+      LFHT_STR_PTR *bucket;
+      LFHT_AllocBuckets(new_hash, curr_hash, LFHT_STR, tenv);
+      new_hash = (LFHT_STR_PTR *) LFHT_TagAsHashLevel(new_hash);
+      if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), (LFHT_STR_PTR) curr_hash, 
+		       (LFHT_STR_PTR) new_hash)) {
+	LFHT_GetBucket(bucket, curr_hash, key, n_shifts, LFHT_STR);
+        LFHT_ThreadMemRef(tenv) = *bucket;
+	LFHT_UnsetThreadMemRefNext(tenv);
+	LFHT_CALL_ADJUST_CHAIN_NODES(new_hash, *bucket, n_shifts);
+	LFHT_ThreadMemRef(tenv) = adjust_node;
+        LFHT_SetBucket(bucket, new_hash, LFHT_STR);
+	return LFHT_CALL_INSERT_BUCKET_ARRAY(new_hash,
+                 adjust_node, (n_shifts + 1));
+      } else
+	LFHT_FreeBuckets(new_hash, tenv);
+    } else {
+      LFHT_NodeNext(adjust_node) = (LFHT_STR_PTR) curr_hash;
+      if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), (LFHT_STR_PTR) curr_hash,
+		       adjust_node)) {
+	LFHT_UnsetThreadMemRefNext(tenv);
+	return;
+      }
+    }
+    chain_next = LFHT_ThreadMemRefNext(tenv) = LFHT_NodeNext(chain_node);
+    if (!LFHT_IsHashLevel(chain_next))
+      return LFHT_CALL_INSERT_BUCKET_CHAIN(curr_hash, chain_next, 
+	       adjust_node, n_shifts, cn);
+  }
+  // chain_next is refering a deeper hash level. Thread must jump its hash level
+  LFHT_STR_PTR *jump_hash, *prev_hash;
+  jump_hash = (LFHT_STR_PTR *) chain_next;
+  LFHT_GetPreviousHashLevel(prev_hash, jump_hash, LFHT_STR);
+  while (prev_hash != curr_hash) {
+    jump_hash = prev_hash;
+    LFHT_GetPreviousHashLevel(prev_hash, jump_hash, LFHT_STR);
+  }
+  return LFHT_CALL_INSERT_BUCKET_ARRAY(jump_hash,
+           adjust_node, (n_shifts + 1));
+}
+
+
+/*
+static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash, 
+					    LFHT_STR_PTR chain_node, 
+					    LFHT_STR_PTR adjust_node, 
+					    int n_shifts, 
+					    int count_nodes 
+					    LFHT_USES_REGS) {
+
   LFHT_NODE_KEY_STR key = LFHT_NodeKey(adjust_node);
   int cn = count_nodes + 1;
   LFHT_STR_PTR chain_next;
@@ -697,6 +759,14 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash,
   return LFHT_CALL_INSERT_BUCKET_ARRAY(jump_hash,
            adjust_node, (n_shifts + 1));
 }
+
+*/
+
+
+
+
+
+
 
 /* ------------------------------------------------------------------------------------*/
 /*                     show state (prints the nodes inside the LFHT)                   */
