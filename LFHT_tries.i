@@ -857,6 +857,8 @@ static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
 /* -----------------------------------------------------*/
 
 
+/*------------------------- HERE -----------------------*/
+
 static inline LFHT_STR_PTR 
   LFHT_CHECK_DELETE_KEY(LFHT_NODE_KEY_STR key 
 			LFHT_USES_ARGS) {
