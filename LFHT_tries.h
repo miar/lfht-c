@@ -34,8 +34,6 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
  *******************************************************************************/
 /* common macros - do not change*/
 
-
-
 #define LFHT_NEW_NODE(NODE, KEY, NEXT, TENV)    \
   if ((NODE = LFHT_UnusedNode(TENV)) != NULL)	\
     LFHT_UnusedNode(TENV) = NULL;               \
@@ -43,25 +41,52 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
     LFHT_ALLOC_NODE(NODE, KEY, NEXT);           \
   }
 
-#define LFHT_FREE_NODE(NODE, TENV)                      \
-  if (LFHT_UnusedNode(TENV) == NULL) {	  	        \
-    LFHT_NodeKey(NODE) = 0;  /* untag delete bit */	\
-    LFHT_UnusedNode(TENV) = NODE;                       \
-  } else					        \
+#define LFHT_FREE_NODE(NODE, TENV)                       \
+  if (LFHT_UnusedNode(TENV) == NULL) {	  	         \
+    LFHT_NodeKey(NODE) = 0;  /* untag delete bit */	 \
+    LFHT_UnusedNode(TENV) = NODE;                        \
+  } else					         \
     LFHT_DEALLOC_NODE(NODE)
 
-#define LFHT_CALL_CHECK_INSERT_KEY(K)                      LFHT_CHECK_INSERT_KEY(K LFHT_PASS_ARGS)
-#define LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(F, K, S)        LFHT_CHECK_INSERT_FIRST_CHAIN(F, K, S LFHT_PASS_ARGS)
-#define LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(F, K, S)       LFHT_CHECK_INSERT_BUCKET_ARRAY(F, K, S LFHT_PASS_ARGS)
-#define LFHT_CALL_CHECK_INSERT_BUCKET_CHAIN(H, N, K, S, C) LFHT_CHECK_INSERT_BUCKET_CHAIN(H, N, K, S, C LFHT_PASS_ARGS)
-#define LFHT_CALL_ADJUST_CHAIN_NODES(H, N, S)              LFHT_ADJUST_CHAIN_NODES(H, N, S LFHT_PASS_REGS)
-#define LFHT_CALL_INSERT_BUCKET_ARRAY(B, C, S)             LFHT_INSERT_BUCKET_ARRAY(B, C, S LFHT_PASS_REGS)
-#define LFHT_CALL_INSERT_BUCKET_CHAIN(H, N, L, S, C)       LFHT_INSERT_BUCKET_CHAIN(H, N, L, S, C LFHT_PASS_REGS)
+#define LFHT_CALL_CHECK_INSERT_KEY(K)                    \
+  LFHT_CHECK_INSERT_KEY(K LFHT_PASS_ARGS)
+
+#define LFHT_CALL_CHECK_DELETE_KEY(K)                    \
+  LFHT_CHECK_DELETE_KEY(K LFHT_PASS_ARGS)
+
+#define LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(F, K, S)      \
+  LFHT_CHECK_INSERT_FIRST_CHAIN(F, K, S LFHT_PASS_ARGS)
+
+#define LFHT_CALL_CHECK_DELETE_FIRST_CHAIN(F, K, S)      \
+  LFHT_CHECK_DELETE_FIRST_CHAIN(F, K, S LFHT_PASS_ARGS)
+
+#define LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(F, K, S)     \
+  LFHT_CHECK_INSERT_BUCKET_ARRAY(F, K, S LFHT_PASS_ARGS)
+
+#define LFHT_CALL_CHECK_DELETE_BUCKET_ARRAY(F, K, S)     \
+  LFHT_CHECK_DELETE_BUCKET_ARRAY(F, K, S LFHT_PASS_ARGS)
+
+#define LFHT_CALL_CHECK_INSERT_BUCKET_CHAIN(H, N, K, S, C) \
+  LFHT_CHECK_INSERT_BUCKET_CHAIN(H, N, K, S, C LFHT_PASS_ARGS)
+
+#define LFHT_CALL_CHECK_DELETE_BUCKET_CHAIN(H, N, K, S, C) \
+  LFHT_CHECK_DELETE_BUCKET_CHAIN(H, N, K, S, C LFHT_PASS_ARGS)
+
+#define LFHT_CALL_ADJUST_CHAIN_NODES(H, N, S)              \
+  LFHT_ADJUST_CHAIN_NODES(H, N, S LFHT_PASS_REGS)
+
+#define LFHT_CALL_INSERT_BUCKET_ARRAY(B, C, S)             \
+  LFHT_INSERT_BUCKET_ARRAY(B, C, S LFHT_PASS_REGS)
+
+#define LFHT_CALL_INSERT_BUCKET_CHAIN(H, N, L, S, C)       \
+  LFHT_INSERT_BUCKET_CHAIN(H, N, L, S, C LFHT_PASS_REGS)
 
 #define LFTH_ShiftDeleteBits(KEY)         ((KEY = KEY << LFTH_LowTagDeleteKeyBits))
+
 #define LFTH_UnshiftDeleteBits(KEY)       ((KEY >> LFTH_LowTagDeleteKeyBits))
 
-#define LFHT_TagAsDeletedKey(NODE)        (LFHT_NodeKey(NODE) = LFHT_NodeKey(NODE) | (LFHT_CELL) 0x1)
+#define LFHT_TagAsDeletedKey(NODE)        \
+  (LFHT_NodeKey(NODE) = LFHT_NodeKey(NODE) | (LFHT_CELL) 0x1)
 
 #define LFHT_IsDeletedKey(NODE)            (LFHT_NodeKey(NODE) & (LFHT_CELL) 0x1)
 
@@ -76,13 +101,18 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
        /* V04_SET_HASH_BUCKET */
 #define LFHT_SetBucket(BUCKET, V, STR)    (*(BUCKET) = (STR *) V)
      /* V04_SHIFT_ENTRY */
-#define LFHT_ShiftKeyBits(KEY, NS)        ((KEY) >> ((LFHT_BIT_SHIFT * NS) + LFHT_NrLowTagBits))
+#define LFHT_ShiftKeyBits(KEY, NS)        \
+  ((KEY) >> ((LFHT_BIT_SHIFT * NS) + LFHT_NrLowTagBits))
+
      /* V04_HASH_ENTRY */
-#define LFHT_KeyOffset(KEY, NS)           (LFHT_ShiftKeyBits(KEY, NS) & (LFHT_BUCKET_ARRAY_SIZE - 1))
+#define LFHT_KeyOffset(KEY, NS)           \
+  (LFHT_ShiftKeyBits(KEY, NS) & (LFHT_BUCKET_ARRAY_SIZE - 1))
       /* V04_GET_HASH_BUCKET */
-#define LFHT_GetBucket(B, H, K, NS, STR)  (B = (STR **) LFHT_UntagHashLevel(H) + LFHT_KeyOffset((LFHT_CELL)K, NS))
+#define LFHT_GetBucket(B, H, K, NS, STR)  \
+  (B = (STR **) LFHT_UntagHashLevel(H) + LFHT_KeyOffset((LFHT_CELL)K, NS))
      /* V04_GET_PREV_HASH */
-#define LFHT_GetPreviousHashLevel(PH, CH, STR)  (PH = (STR **) *(((STR **) LFHT_UntagHashLevel(CH)) - 1))
+#define LFHT_GetPreviousHashLevel(PH, CH, STR)  \
+  (PH = (STR **) *(((STR **) LFHT_UntagHashLevel(CH)) - 1))
 
 /* Memory allocation stuff */
 
