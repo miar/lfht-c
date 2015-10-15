@@ -856,9 +856,6 @@ static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
 /*        abolish a key (removes key from the LFHT)     */
 /* -----------------------------------------------------*/
 
-
-/*------------------------- HERE -----------------------*/
-
 static inline LFHT_STR_PTR 
   LFHT_CHECK_DELETE_KEY(LFHT_NODE_KEY_STR key 
 			LFHT_USES_ARGS) {
@@ -869,15 +866,14 @@ static inline LFHT_STR_PTR
     return NULL;
   
   if (LFHT_IsHashLevel(LFHT_ThreadMemRef(tenv)))
-    return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(
+    return LFHT_CALL_CHECK_DELETE_BUCKET_ARRAY(
             (LFHT_STR_PTR *) LFHT_ThreadMemRef(tenv),  key, 0);
 
-  return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(
+  return LFHT_CALL_CHECK_DELETE_FIRST_CHAIN(
            LFHT_ThreadMemRef(tenv), key, 0);
 }
 
-
-
+/*------------------------- HERE -----------------------*/
 
 
 
