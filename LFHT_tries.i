@@ -20,37 +20,28 @@
 
 #define LFHT_FirstNode                    ((Root.dic))
 
-#define LFHT_GetFirstNode(NODE)           \
-  (NODE = ((LFHT_STR_PTR) (Root.dic)))
+#define LFHT_GetFirstNode(NODE)           (NODE = ((LFHT_STR_PTR) (Root.dic)))
 
-#define LFHT_NodeKey(NODE)                \
-  Dic_key(NODE)
+#define LFHT_NodeKey(NODE)                Dic_key(NODE)
 
-#define LFHT_NodeNext(NODE)               \
-  Dic_next(NODE)
+#define LFHT_NodeNext(NODE)               Dic_next(NODE)
 
-#define LFHT_ALLOC_NODE(NODE, KEY, NEXT)  \
-  NEW_DIC_ENTRY(NODE, KEY, value, NEXT)
+#define LFHT_ALLOC_NODE(NODE, KEY, NEXT)  NEW_DIC_ENTRY(NODE, KEY, value, NEXT)
 
-#define LFHT_DEALLOC_NODE(NODE)           \
-  FREE_DIC_ENTRY(NODE)
+#define LFHT_DEALLOC_NODE(NODE)           FREE_DIC_ENTRY(NODE)
 
 #define LFHT_SHOW_NODE(NODE)              \
   SHOW_DIC_ENTRY(NODE,                    \
   LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)))
 
-#define LFHT_CHECK_INSERT_KEY             \
-  dic_check_insert_key
-
-#define LFHT_CHECK_INSERT_FIRST_CHAIN     \
-  dic_check_insert_first_chain
-
-#define LFHT_CHECK_INSERT_BUCKET_ARRAY    \
-  dic_check_insert_bucket_array
-
-#define LFHT_CHECK_INSERT_BUCKET_CHAIN    \
-  dic_check_insert_bucket_chain
-
+#define LFHT_CHECK_INSERT_KEY             dic_check_insert_key
+#define LFHT_CHECK_DELETE_KEY             dic_check_delete_key
+#define LFHT_CHECK_INSERT_FIRST_CHAIN     dic_check_insert_first_chain
+#define LFHT_CHECK_DELETE_FIRST_CHAIN     dic_check_delete_first_chain
+#define LFHT_CHECK_INSERT_BUCKET_ARRAY    dic_check_insert_bucket_array
+#define LFHT_CHECK_DELETE_BUCKET_ARRAY    dic_check_delete_bucket_array
+#define LFHT_CHECK_INSERT_BUCKET_CHAIN    dic_check_insert_bucket_chain
+#define LFHT_CHECK_DELETE_BUCKET_CHAIN    dic_check_delete_bucket_chain
 #define LFHT_ADJUST_CHAIN_NODES           dic_adjust_chain_nodes
 #define LFHT_INSERT_BUCKET_ARRAY          dic_insert_bucket_array
 #define LFHT_INSERT_BUCKET_CHAIN          dic_insert_bucket_chain
@@ -68,9 +59,19 @@ static inline LFHT_STR_PTR
 			LFHT_USES_ARGS);
 
 static inline LFHT_STR_PTR 
+  LFHT_CHECK_DELETE_KEY(LFHT_NODE_KEY_STR key 
+                        LFHT_USES_ARGS);
+
+static inline LFHT_STR_PTR 
   LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node, 
 				LFHT_NODE_KEY_STR key, 
 				int count_nodes 
+				LFHT_USES_ARGS);
+
+static inline LFHT_STR_PTR 
+  LFHT_CHECK_DELETE_FIRST_CHAIN(LFHT_STR_PTR chain_node,
+				LFHT_NODE_KEY_STR key,
+				int count_nodes
 				LFHT_USES_ARGS);
 
 static inline LFHT_STR_PTR 
@@ -80,7 +81,20 @@ static inline LFHT_STR_PTR
 				 LFHT_USES_ARGS);
 
 static inline LFHT_STR_PTR 
+  LFHT_CHECK_DELETE_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash,  
+				 LFHT_NODE_KEY_STR key, 
+				 int n_shifts 
+				 LFHT_USES_ARGS);
+
+static inline LFHT_STR_PTR 
   LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash,
+				 LFHT_STR_PTR chain_node,
+				 LFHT_NODE_KEY_STR key, 
+				 int n_shifts, 
+				 int count_nodes 
+				 LFHT_USES_ARGS);
+static inline LFHT_STR_PTR 
+  LFHT_CHECK_DELETE_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash,
 				 LFHT_STR_PTR chain_node,
 				 LFHT_NODE_KEY_STR key, 
 				 int n_shifts, 
@@ -838,43 +852,48 @@ static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
   return;
 }
 
-/* ------------------------------------------------------------------------------------*/
-/*                     abolish a key (removes the node with the key from the LFHT)     */
-/* ------------------------------------------------------------------------------------*/
+/* -----------------------------------------------------*/
+/*        abolish a key (removes key from the LFHT)     */
+/* -----------------------------------------------------*/
 
 
-/*
-static inline LFHT_Bool LFHT_CHECK_REMOVE_KEY(LFHT_NODE_KEY_STR key) {
-  LFHT_STR_PTR first_node;
-  LFHT_GetFirstNode(first_node);
-  if (first_node == NULL) {
-    printf("LFHT is empty \n");
-    return LFHT_false;
+static inline LFHT_STR_PTR 
+  LFHT_CHECK_DELETE_KEY(LFHT_NODE_KEY_STR key 
+			LFHT_USES_ARGS) {
+  LFTH_ShiftDeleteBits(key);
+ LFHT_CHECK_INSERT_KEY:
+  LFHT_GetFirstNode(LFHT_ThreadMemRef(tenv));
+
+  if (LFHT_ThreadMemRef(tenv) == NULL) {
+    LFHT_STR_PTR new_node;
+    LFHT_NEW_NODE(new_node, key, NULL, tenv);
+    LFHT_ThreadMemRef(tenv) = new_node;
+
+    if (LFHT_BoolCAS(LFHT_ROOT_ADDR, NULL, new_node)) {
+#ifdef LFHT_DEBUG
+      total_nodes++;
+#endif /* LFHT_DEBUG */
+      return new_node;
+    }
+    LFHT_FREE_NODE(new_node, tenv);
+    LFHT_GetFirstNode(LFHT_ThreadMemRef(tenv));
+    if (LFHT_ThreadMemRef(tenv) == NULL)
+      /* Thread has not inserted its key, otherwise the 
+	 lastest "if" would have been true.  However thread 
+         can read NULL since LFHT first node might have been 
+         removed meanwhile. In this case thread must go back 
+	 to its previous state. */      
+      goto LFHT_CHECK_INSERT_KEY;
   }
- 
-  if (LFHT_IsHashLevel(first_node))
-    return LFHT_CHECK_REMOVE_BUCKET_ARRAY((LFHT_STR_PTR *) first_node);
-  else {
-    if (LFHT_NodeKey(first_node) == key) {
-      LFHT_FREE_NODE(first_node, tenv);
-      LFHT_FirstNode = NULL;
-      return LFHT_true;
-    } else
-      return LFHT_CHECK_REMOVE_CHAIN(first_node, (LFHT_STR_PTR *)NULL);
-  }
+  if (LFHT_IsHashLevel(LFHT_ThreadMemRef(tenv)))
+    return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(
+            (LFHT_STR_PTR *) LFHT_ThreadMemRef(tenv),  key, 0);
+  return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(
+           LFHT_ThreadMemRef(tenv), key, 0);
 }
 
-static inline void LFHT_ABOLISH_CHAIN(LFHT_STR_PTR chain_node, LFHT_STR_PTR * end_chain) {
 
 
-  if ((LFHT_STR_PTR *) chain_node == end_chain)
-    return LFHT_false;
-
-  LFHT_ABOLISH_CHAIN(LFHT_NodeNext(chain_node), end_chain);
-  FREE_DIC_ENTRY(chain_node);
-  return;
-}
-*/
 
 
 
@@ -894,9 +913,13 @@ static inline void LFHT_ABOLISH_CHAIN(LFHT_STR_PTR chain_node, LFHT_STR_PTR * en
 #undef LFHT_ALLOC_NODE
 #undef LFHT_DEALLOC_NODE
 #undef LFHT_CHECK_INSERT_KEY
+#undef LFHT_CHECK_DELETE_KEY
 #undef LFHT_CHECK_INSERT_FIRST_CHAIN
+#undef LFHT_CHECK_DELETE_FIRST_CHAIN
 #undef LFHT_CHECK_INSERT_BUCKET_ARRAY
+#undef LFHT_CHECK_DELETE_BUCKET_ARRAY
 #undef LFHT_CHECK_INSERT_BUCKET_CHAIN
+#undef LFHT_CHECK_DELETE_BUCKET_CHAIN
 #undef LFHT_ADJUST_CHAIN_NODES
 #undef LFHT_INSERT_BUCKET_ARRAY
 #undef LFHT_INSERT_BUCKET_CHAIN
