@@ -39,7 +39,7 @@
   else								      \
     printf(" V\n")						      \
 
-
+/* --------------------- HERE --------------------*/
 #define LFHT_ShowDeletePool()						\
   { LFHT_ToDeletePtr PTR = LFHT_DeletePool(LFHT_ROOT_ENV);		\
     while (PTR) {							\
