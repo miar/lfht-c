@@ -30,9 +30,24 @@
 
 #define LFHT_DEALLOC_NODE(NODE)           FREE_DIC_ENTRY(NODE)
 
-#define LFHT_SHOW_NODE(NODE)              \
-  SHOW_DIC_ENTRY(NODE,                    \
-  LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)))
+#ifdef LFHT_DEBUG
+
+
+#define LFHT_SHOW_NODE(NODE)                                          \
+  SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
+  if (LFHT_IsDeletedKey(NODE))				              \
+    printf(" D\n");						      \
+  else								      \
+    printf(" V\n")						      \
+
+#else /* !LFHT_DEBUG */
+
+#define LFHT_SHOW_NODE(NODE)                                          \
+  SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
+  printf("\n")
+
+#endif /* !LFHT_DEBUG */
+
 
 #define LFHT_CHECK_INSERT_KEY             dic_check_insert_key
 #define LFHT_CHECK_DELETE_KEY             dic_check_delete_key
@@ -755,7 +770,6 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash,
 }
 
 */
-
 
 
 /* ------------------------------------------------------------------------------------*/

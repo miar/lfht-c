@@ -2,7 +2,7 @@
 
 //#define NKEYS 10000
 
-#define NKEYS 10
+#define NKEYS 100
 
 extern int total_nodes; 
 
@@ -14,12 +14,21 @@ int main() {
   /* get thread's environment */
   LFHT_ThreadEnvPtr tenv = LFHT_InitThreadEnv(Root.dic_env, tid);
 
+  printf("------ INSERT -------\n");
   for (key = 1 ; key <= NKEYS; key++)
     dic_check_insert_key(key, value, tenv);
   printf("1-total_nodes = %d\n", total_nodes);
 
   total_nodes = 0;
   dic_show_state();
+
+  printf("------ DELETE -------\n");
+
+  for (key = 10 ; key <= 20; key++)
+    dic_check_delete_key(key, value, tenv);
+
+  dic_show_state();
+
   dic_abolish_all_keys();
   dic_show_state();
   /*
