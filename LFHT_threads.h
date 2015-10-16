@@ -60,16 +60,15 @@ typedef struct LFHT_Environment{
      LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL;                 \
  }
 
-
 #define LFHT_InsertOnDeletePool(NODE)                                            \
  { LFHT_ToDeletePtr PTR;                                                         \
    if ((PTR = (LFHT_ToDeletePtr) malloc(sizeof(struct LFHT_ToDelete))) == NULL)  \
      perror("Alloc LFHT ToDelete node: malloc error");                           \
    LFHT_ToDeleteNode(PTR) = (void *) NODE;		                         \
-   do {                                                                          \
-     LFHT_ToDeleteNext(PTR) = LFHT_DeletePool(LFHT_ROOT_ENV);                    \
-   } while(LFHT_BoolCAS(&(LFHT_ToDeleteNext(PTR)),                               \
-                        LFHT_DeletePool(LFHT_ROOT_ENV), PTR));                   \
+   do {									         \
+     LFHT_ToDeleteNext(PTR) = LFHT_DeletePool(LFHT_ROOT_ENV);		         \
+   } while(!LFHT_BoolCAS((&(LFHT_DeletePool(LFHT_ROOT_ENV))),		         \
+			LFHT_ToDeleteNext(PTR), PTR));                           \
  }
 
 static inline

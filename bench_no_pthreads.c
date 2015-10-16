@@ -14,26 +14,29 @@ int main() {
   /* get thread's environment */
   LFHT_ThreadEnvPtr tenv = LFHT_InitThreadEnv(Root.dic_env, tid);
 
-  printf("------ INSERT -------\n");
-  for (key = 1 ; key <= NKEYS; key++)
+  printf("------ INSERT / DELETE -------\n");
+  for (key = 1 ; key <= NKEYS; key++) {
+    printf("key - %d\n", key);
     dic_check_insert_key(key, value, tenv);
+    if (key % 5 == 0)
+      dic_check_delete_key(key, value, tenv);
+  }
   printf("1-total_nodes = %d\n", total_nodes);
 
   total_nodes = 0;
-  dic_show_state();
+  //  dic_show_state();
 
-  printf("------ DELETE -------\n");
 
-  for (key = 10 ; key <= 20; key++)
-    dic_check_delete_key(key, value, tenv);
 
-  dic_show_state();
 
-  dic_abolish_all_keys();
   dic_show_state();
 
   printf("------ DELETE POOL  -------\n");
   LFHT_ShowDeletePool();
+
+  dic_abolish_all_keys();
+  dic_show_state();
+
 
   /*
   for (key = 1 ; key <= NKEYS ; key++)
