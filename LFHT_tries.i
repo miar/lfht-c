@@ -39,14 +39,10 @@
   else								      \
     printf(" V\n")						      \
 
-/* --------------------- HERE --------------------*/
-
 #define LFHT_ShowDeletePool()						\
   { LFHT_ToDeletePtr PTR = LFHT_DeletePool(LFHT_ROOT_ENV);		\
-    /* LFHT_STR_PTR node ;  = (LFHT_STR_PTR) LFHT_ToDeleteNode(PTR)); */	\
-    /* printf("%ld \n", node->key);*/					\
     while (PTR) {							\
-      /* LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(PTR)); */	\
+       LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(PTR));         	\
       PTR = LFHT_ToDeleteNext(PTR);			                \
     }									\
   }
@@ -1023,12 +1019,14 @@ static inline LFHT_STR_PTR
 /* ------------------------------------------------------------------------------------*/
 
 #undef LFHT_STR
+#ifndef LFHT_DEBUG
 #undef LFHT_STR_PTR
+#undef LFHT_NodeKey
+#undef LFHT_NodeNext
+#endif /* LFHT_DEBUG */
 #undef LFHT_USES_ARGS
 #undef LFHT_PASS_ARGS
 #undef LFHT_ROOT_ADDR
-#undef LFHT_NodeKey
-#undef LFHT_NodeNext
 #undef LFHT_GetFirstNode
 #undef LFHT_FirstNode
 #undef LFHT_ALLOC_NODE

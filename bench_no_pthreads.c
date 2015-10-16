@@ -26,9 +26,6 @@ int main() {
   total_nodes = 0;
   //  dic_show_state();
 
-
-
-
   dic_show_state();
 
   printf("------ DELETE POOL  -------\n");

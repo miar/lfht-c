@@ -71,6 +71,7 @@ typedef struct LFHT_Environment{
 			LFHT_ToDeleteNext(PTR), PTR));                           \
  }
 
+
 static inline
   LFHT_ThreadEnvPtr LFHT_InitThreadEnv(LFHT_EnvPtr LFHT,
 				       int Tid) {
