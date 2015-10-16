@@ -43,7 +43,8 @@
 
 #define LFHT_ShowDeletePool()						\
   { LFHT_ToDeletePtr PTR = LFHT_DeletePool(LFHT_ROOT_ENV);		\
-    printf("%p", PTR); \
+    LFHT_STR_PTR node ; /* = (LFHT_STR_PTR) LFHT_ToDeleteNode(PTR)); */	\
+    printf("%ld \n", node->key); \
     while (PTR) {							\
       /* LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(PTR)); */	\
       PTR = LFHT_ToDeleteNext(PTR);			                \
