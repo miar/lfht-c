@@ -73,7 +73,7 @@ typedef struct LFHT_Environment{
 
 static inline
   LFHT_ThreadEnvPtr LFHT_InitThreadEnv(LFHT_EnvPtr LFHT,
-						   int Tid) {
+				       int Tid) {
   LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));
   LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefNext(PTR) = 
     LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL;

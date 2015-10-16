@@ -43,8 +43,8 @@
 
 #define LFHT_ShowDeletePool()						\
   { LFHT_ToDeletePtr PTR = LFHT_DeletePool(LFHT_ROOT_ENV);		\
-    LFHT_STR_PTR node ; /* = (LFHT_STR_PTR) LFHT_ToDeleteNode(PTR)); */	\
-    printf("%ld \n", node->key); \
+    /* LFHT_STR_PTR node ;  = (LFHT_STR_PTR) LFHT_ToDeleteNode(PTR)); */	\
+    /* printf("%ld \n", node->key);*/					\
     while (PTR) {							\
       /* LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(PTR)); */	\
       PTR = LFHT_ToDeleteNext(PTR);			                \
@@ -880,7 +880,7 @@ static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
 }
 
 /* -----------------------------------------------------*/
-/*        abolish a key (removes key from the LFHT)     */
+/*        deletes a key from the LFHT                   */
 /* -----------------------------------------------------*/
 
 static inline LFHT_STR_PTR 
@@ -926,28 +926,8 @@ static inline LFHT_STR_PTR
   }
   /* chain_next refering the end of the chain or 
      is a hash level pointer */
-  if (chain_next == NULL) {
-    if (cn == LFHT_MAX_NODES_PER_BUCKET) {
-      LFHT_STR_PTR *new_hash;
-      LFHT_AllocBuckets(new_hash, NULL, LFHT_STR, tenv);
-      new_hash = 
-	(LFHT_STR_PTR *) LFHT_TagAsHashLevel(new_hash);
-
-      if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), NULL, 
-		       (LFHT_STR_PTR) new_hash)) {
-	LFHT_CALL_ADJUST_CHAIN_NODES(new_hash, LFHT_FirstNode, (- 1));
-	LFHT_FirstNode = (LFHT_STR_PTR) new_hash;
-	return LFHT_CALL_CHECK_DELETE_BUCKET_ARRAY(new_hash, key, 0);
-      } else
-	LFHT_FreeBuckets(new_hash, tenv);      
-    }
-    /* thread is leaving the chain_node */
-    chain_next = 
-      LFHT_ThreadMemRef(tenv) = LFHT_NodeNext(chain_node);
-
-    if (!LFHT_IsHashLevel(chain_next))
-      return LFHT_CALL_CHECK_DELETE_FIRST_CHAIN(chain_next, key, cn);
-  }
+  if (chain_next == NULL)
+    return NULL;  
   /* chain_next is refering a deeper hash level. 
      Thread must jump a previous hash level */
   LFHT_UnsetThreadMemRef(tenv);
@@ -1018,39 +998,9 @@ static inline LFHT_STR_PTR
 	     chain_next, key, n_shifts, cn);
   }  
   // chain_next is a hash pointer
-  if ((LFHT_STR_PTR *)chain_next == curr_hash) {
-    if (cn == LFHT_MAX_NODES_PER_BUCKET) {
-      LFHT_STR_PTR *new_hash;
-      LFHT_STR_PTR *bucket;
-      LFHT_AllocBuckets(new_hash, curr_hash, LFHT_STR, tenv);
-      new_hash = 
-	(LFHT_STR_PTR *) LFHT_TagAsHashLevel(new_hash);
-
-      if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), 
-		       (LFHT_STR_PTR) curr_hash,
-		       (LFHT_STR_PTR) new_hash)) {
-	/* get head of the chain to be adjusted */
-	LFHT_GetBucket(bucket, curr_hash, key, n_shifts, 
-	  LFHT_STR); 
-	/* adjust nodes in the chain */
-	LFHT_CALL_ADJUST_CHAIN_NODES(new_hash, *bucket, n_shifts);
-	LFHT_ThreadMemRef(tenv) = (LFHT_STR_PTR) new_hash;
-	/* chain bucket with next hash level */
-        LFHT_SetBucket(bucket, new_hash, LFHT_STR);
-	return LFHT_CALL_CHECK_DELETE_BUCKET_ARRAY(new_hash, 
-		 key, (n_shifts + 1));
-      } else {
-	LFHT_FreeBuckets(new_hash, tenv);
-      }
-    } else
-      return NULL;
+  if ((LFHT_STR_PTR *)chain_next == curr_hash) 
+    return NULL;
     
-    chain_next = LFHT_ThreadMemRef(tenv) = LFHT_NodeNext(chain_node);
-
-    if (!LFHT_IsHashLevel(chain_next))
-      return LFHT_CALL_CHECK_DELETE_BUCKET_CHAIN(curr_hash,
-     	       chain_next, key, n_shifts, cn);
-  }
   /* chain_next is refering a deeper hash level. 
      Thread must jump its hash level */
 
