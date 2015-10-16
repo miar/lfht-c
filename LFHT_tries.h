@@ -34,17 +34,17 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
  *******************************************************************************/
 /* common macros - do not change*/
 
-#define LFHT_NEW_NODE(NODE, KEY, NEXT, TENV)    \
-  if ((NODE = LFHT_UnusedNode(TENV)) != NULL)	\
-    LFHT_UnusedNode(TENV) = NULL;               \
-  else {					\
-    LFHT_ALLOC_NODE(NODE, KEY, NEXT);           \
+#define LFHT_NEW_NODE(NODE, KEY, NEXT, TENV)            \
+  if ((NODE = LFHT_ThreadUnusedNode(TENV)) != NULL)	\
+    LFHT_ThreadUnusedNode(TENV) = NULL;                 \
+  else {					        \
+    LFHT_ALLOC_NODE(NODE, KEY, NEXT);                   \
   }
 
 #define LFHT_FREE_NODE(NODE, TENV)                       \
-  if (LFHT_UnusedNode(TENV) == NULL) {	  	         \
+  if (LFHT_ThreadUnusedNode(TENV) == NULL) {	         \
     LFHT_NodeKey(NODE) = 0;  /* untag delete bit */	 \
-    LFHT_UnusedNode(TENV) = NODE;                        \
+    LFHT_ThreadUnusedNode(TENV) = NODE;                  \
   } else					         \
     LFHT_DEALLOC_NODE(NODE)
 
@@ -130,20 +130,20 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 
 #endif /* YAP_TABMALLOC */
 
-#define LFHT_InitBuckets(BUCKET_PTR, PREV_HASH)                         \
-  { int i; void **init_bucket_ptr;                                      \
-    *BUCKET_PTR++ = (void *) (PREV_HASH);                               \
-    init_bucket_ptr = (void *) BUCKET_PTR;                             \
-    for (i = LFHT_BUCKET_ARRAY_SIZE; i != 0; i--)  {			\
-      /*printf("init bucket = %p \n",init_bucket_ptr); */		\
+#define LFHT_InitBuckets(BUCKET_PTR, PREV_HASH)                          \
+  { int i; void **init_bucket_ptr;                                       \
+    *BUCKET_PTR++ = (void *) (PREV_HASH);                                \
+    init_bucket_ptr = (void *) BUCKET_PTR;                               \
+    for (i = LFHT_BUCKET_ARRAY_SIZE; i != 0; i--)  {			 \
+      /*printf("init bucket = %p \n",init_bucket_ptr); */		 \
       *init_bucket_ptr++ = (void **) LFHT_TagAsHashLevel(BUCKET_PTR);    \
-    }						                        \
+    }						                         \
   }
 
 #define LFHT_AllocBuckets(BUCKET_PTR, PREV_HASH, STR, TENV)		    \
   { void **alloc_bucket_ptr;						    \
-    if ((alloc_bucket_ptr = LFHT_UnusedBucketArray(TENV)) != NULL)   	    \
-      LFHT_UnusedBucketArray(TENV) = NULL;                                  \
+    if ((alloc_bucket_ptr = LFHT_ThreadUnusedBucketArray(TENV)) != NULL)    \
+      LFHT_ThreadUnusedBucketArray(TENV) = NULL;                            \
     else						                    \
       LFHT_MemAllocBuckets(alloc_bucket_ptr);			            \
     LFHT_InitBuckets(alloc_bucket_ptr, PREV_HASH);                          \
@@ -151,7 +151,8 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
   }
 
 #define LFHT_FreeBuckets(PTR, TENV)                                        \
-    LFHT_UnusedBucketArray(TENV) = (void **) (((LFHT_STR_PTR *)LFHT_UntagHashLevel(PTR)) - 1)
+  LFHT_ThreadUnusedBucketArray(TENV) =                                     \
+    (void **) (((LFHT_STR_PTR *)LFHT_UntagHashLevel(PTR)) - 1)
 
 #ifdef YAP_TABMALLOC 
 #define LFHT_DeallocateBucketArray(PTR)   

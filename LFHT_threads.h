@@ -9,14 +9,15 @@ typedef struct LFHT_ThreadEnvironment {
   void  *mem_ref_next;          /* Thread's next memory reference */
   void  *unused_node;           /* Thread's local buffer with an unused node */
   void **unused_bucketArray;    /* Thread's local buffer with an unused bucket array */
-  //  long   state;                 /* 0 - unused and 1 - in use (Improve this later) */
-  void  *cache_line_padding[4]; /* Cache line padding cache_line = 64 bytes */
+  long   number_of_operations;  /* Number os insert / delete key operations done */
+  void  *cache_line_padding[3]; /* Cache line padding cache_line = 64 bytes */
 } *LFHT_ThreadEnvPtr;
 
-#define LFHT_ThreadMemRef(X)          ((X)->mem_ref)
-#define LFHT_ThreadMemRefNext(X)      ((X)->mem_ref_next)
-#define LFHT_UnusedNode(X)            ((X)->unused_node)
-#define LFHT_UnusedBucketArray(X)     ((X)->unused_bucketArray)
+#define LFHT_ThreadMemRef(X)             ((X)->mem_ref)
+#define LFHT_ThreadMemRefNext(X)         ((X)->mem_ref_next)
+#define LFHT_ThreadUnusedNode(X)         ((X)->unused_node)
+#define LFHT_ThreadUnusedBucketArray(X)  ((X)->unused_bucketArray)
+#define LFHT_ThreadNrOfOps(X)            ((X)->number_of_operations)
 
 
 typedef struct LFHT_ToDelete {
@@ -52,12 +53,12 @@ typedef struct LFHT_Environment{
 
 #define LFHT_KillThreadEnv(LFHT_ENV, Tid)                                       \
  { LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));                        \
-   if (LFHT_UnusedNode(PTR) != NULL)                                            \
-     LFHT_DEALLOC_NODE(LFHT_UnusedNode(PTR));                                   \
-   if (LFHT_UnusedBucketArray(PTR) != NULL)                                     \
-     LFHT_DeallocateBucketArray(LFHT_UnusedBucketArray(PTR));                   \
+   if (LFHT_ThreadUnusedNode(PTR) != NULL)                                      \
+     LFHT_DEALLOC_NODE(LFHT_ThreadUnusedNode(PTR));                             \
+   if (LFHT_ThreadUnusedBucketArray(PTR) != NULL)                               \
+     LFHT_DeallocateBucketArray(LFHT_ThreadUnusedBucketArray(PTR));             \
    LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefNext(PTR) =                        \
-     LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL;                 \
+     LFHT_ThreadUnusedNode(PTR) = LFHT_ThreadUnusedBucketArray(PTR) = NULL;     \
  }
 
 #define LFHT_InsertOnDeletePool(NODE)                                            \
@@ -77,7 +78,8 @@ static inline
 				       int Tid) {
   LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));
   LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefNext(PTR) = 
-    LFHT_UnusedNode(PTR) = LFHT_UnusedBucketArray(PTR) = NULL;
+    LFHT_ThreadUnusedNode(PTR) = LFHT_ThreadUnusedBucketArray(PTR) = NULL;
+  LFHT_ThreadNrOfOps(PTR) = 0;
   return PTR;
 }
 

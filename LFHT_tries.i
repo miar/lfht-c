@@ -39,12 +39,12 @@
   else								      \
     printf(" V\n")						      \
 
-#define LFHT_ShowDeletePool()						\
-  { LFHT_ToDeletePtr PTR = LFHT_DeletePool(LFHT_ROOT_ENV);		\
-    while (PTR) {							\
-       LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(PTR));         	\
-      PTR = LFHT_ToDeleteNext(PTR);			                \
-    }									\
+#define LFHT_ShowDeletePool()					      \
+  { LFHT_ToDeletePtr PTR = LFHT_DeletePool(LFHT_ROOT_ENV);	      \
+    while (PTR) {						      \
+       LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(PTR));         \
+      PTR = LFHT_ToDeleteNext(PTR);			              \
+    }								      \
   }
 
 #else /* !LFHT_DEBUG */
@@ -836,7 +836,7 @@ static inline void LFHT_ABOLISH_ALL_KEYS(void) {
 
   /* Making sure that thread 0 does not have any data structure in its buffers */
   LFHT_ThreadEnvPtr tenv = &(LFHT_ThreadEnv(LFHT_ROOT_ENV, 0));
-  LFHT_UnusedNode(tenv) = LFHT_UnusedBucketArray(tenv) = NULL;
+  LFHT_ThreadUnusedNode(tenv) = LFHT_ThreadUnusedBucketArray(tenv) = NULL;
   /* Ready to abolish LFHT */  
 
   if (first_node == NULL) {
