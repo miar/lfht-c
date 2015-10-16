@@ -888,12 +888,21 @@ static inline LFHT_STR_PTR
   if (LFHT_ThreadMemRef(tenv) == NULL)
     return NULL;
   
+  LFHT_STR_PTR node;
   if (LFHT_IsHashLevel(LFHT_ThreadMemRef(tenv)))
-    return LFHT_CALL_CHECK_DELETE_BUCKET_ARRAY(
+    node = LFHT_CALL_CHECK_DELETE_BUCKET_ARRAY(
             (LFHT_STR_PTR *) LFHT_ThreadMemRef(tenv),  key, 0);
-
-  return LFHT_CALL_CHECK_DELETE_FIRST_CHAIN(
+  else
+    node = LFHT_CALL_CHECK_DELETE_FIRST_CHAIN(
            LFHT_ThreadMemRef(tenv), key, 0);
+
+  if (++LFHT_ThreadNrOfOps(tenv) == LFHT_CLEAN_DELETE_POOL) {
+    LFHT_ThreadNrOfOps(tenv) = 0;
+    /* ------------------ HERE -------------------- */
+    //    LFHT_CleanDeletePool();
+  }
+
+  return node;
 }
 
 static inline LFHT_STR_PTR 
