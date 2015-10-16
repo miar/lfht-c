@@ -31,6 +31,10 @@ int main() {
 
   dic_abolish_all_keys();
   dic_show_state();
+
+  printf("------ DELETE POOL  -------\n");
+  LFHT_ShowDeletePool();
+
   /*
   for (key = 1 ; key <= NKEYS ; key++)
     dic_check_insert_key(key, value, tenv);

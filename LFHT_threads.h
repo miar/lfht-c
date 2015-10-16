@@ -70,7 +70,7 @@ typedef struct LFHT_Environment{
      LFHT_ToDeleteNext(PTR) = LFHT_DeletePool(LFHT_ROOT_ENV);                    \
    } while(LFHT_BoolCAS(&(LFHT_ToDeleteNext(PTR)),                               \
                         LFHT_DeletePool(LFHT_ROOT_ENV), PTR));                   \
-}
+ }
 
 static inline
   LFHT_ThreadEnvPtr LFHT_InitThreadEnv(LFHT_EnvPtr LFHT,

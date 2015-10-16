@@ -32,13 +32,21 @@
 
 #ifdef LFHT_DEBUG
 
-
 #define LFHT_SHOW_NODE(NODE)                                          \
   SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
   if (LFHT_IsDeletedKey(NODE))				              \
     printf(" D\n");						      \
   else								      \
     printf(" V\n")						      \
+
+
+#define LFHT_ShowDeletePool()						\
+  { LFHT_ToDeletePtr PTR = LFHT_DeletePool(LFHT_ROOT_ENV);		\
+    while (PTR) {							\
+      LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(PTR)); 	\
+      PTR = LFHT_ToDeleteNext(PTR);			                \
+    }									\
+  }
 
 #else /* !LFHT_DEBUG */
 
