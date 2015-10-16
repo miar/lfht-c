@@ -197,11 +197,21 @@ static inline LFHT_STR_PTR
 	 to its previous state. */      
       goto LFHT_CHECK_INSERT_KEY;
   }
+
+  LFHT_STR_PTR node;
   if (LFHT_IsHashLevel(LFHT_ThreadMemRef(tenv)))
-    return LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(
+    node = LFHT_CALL_CHECK_INSERT_BUCKET_ARRAY(
             (LFHT_STR_PTR *) LFHT_ThreadMemRef(tenv),  key, 0);
-  return LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(
-           LFHT_ThreadMemRef(tenv), key, 0);
+  else
+    node = LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(LFHT_ThreadMemRef(tenv), key, 0);
+
+  if (++LFHT_ThreadNrOfOps(tenv) == LFHT_CLEAN_DELETE_POOL) {
+    LFHT_ThreadNrOfOps(tenv) = 0;
+    /* ------------------ HERE -------------------- */
+    //    LFHT_CleanTheDeletePool();
+  }
+  
+  return node;
 }
 
 /*
@@ -899,7 +909,7 @@ static inline LFHT_STR_PTR
   if (++LFHT_ThreadNrOfOps(tenv) == LFHT_CLEAN_DELETE_POOL) {
     LFHT_ThreadNrOfOps(tenv) = 0;
     /* ------------------ HERE -------------------- */
-    //    LFHT_CleanDeletePool();
+    //    LFHT_CleanTheDeletePool();
   }
 
   return node;
