@@ -976,8 +976,6 @@ static inline LFHT_STR_PTR
      LFHT_ThreadMemRef(tenv) = chain_node */
 
   if (LFHT_IsEqualKey(chain_node, key)) {
-    printf("ola\n");
-
     LFHT_TagAsDeletedKey(chain_node);
     return chain_node;
   }
