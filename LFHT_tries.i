@@ -1061,7 +1061,8 @@ static inline LFHT_STR_PTR
 static inline
   void LFHT_FreeToDeletePool(void) {
     LFHT_ToDeletePtr to_delete_node;
-    LFHT_ToDeletePtr unfree_chain = NULL;
+    LFHT_ToDeletePtr unfree_head = NULL;
+    LFHT_ToDeletePtr unfree_tail = NULL;
       
     if ((to_delete_node = LFHT_ValCAS((&(LFHT_DeletePool(LFHT_ROOT_ENV))),
 			    LFHT_DeletePool(LFHT_ROOT_ENV), NULL)) == NULL)
@@ -1084,12 +1085,19 @@ static inline
 	free(chain_node);
 	free(free_to_delete_node);
       } else {
-	LFHT_ToDeleteNext(free_to_delete_node) = unfree_chain;
-	unfree_chain = free_to_delete_node;
+	LFHT_ToDeleteNext(free_to_delete_node) = unfree_head;
+	unfree_head = free_to_delete_node;
+	if (unfree_tail == NULL)
+	  unfree_tail = unfree_head;
       }
     }
-    if (unfree_chain != NULL)
+    if (unfree_tail != NULL) {
       /* join again to the toDeletePool */
+      do { 
+	LFHT_ToDeleteNext(unfree_tail) = LFHT_DeletePool(LFHT_ROOT_ENV);
+      } while(!LFHT_BoolCAS((&(LFHT_DeletePool(LFHT_ROOT_ENV))),	
+			    LFHT_ToDeleteNext(unfree_tail), unfree_head));
+    }
 
     return;
 }
