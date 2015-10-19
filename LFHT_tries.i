@@ -1072,16 +1072,28 @@ static inline
       void *chain_node = (void *) LFHT_ToDeleteNode(to_delete_node);
       int i;
       /* optimize this search ...please  */
-      for (i = 0; i < LFHT_MAX_THREADS; i++) {
+      for (i = 0; i < LFHT_MAX_THREADS; i++)
 	if (LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref == chain_node ||
 	    LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref_next == chain_node)
+	  break;
 
+      LFHT_ToDeletePtr free_to_delete_node = to_delete_node;
+      to_delete_node = LFHT_ToDeleteNext(to_delete_node);
 
+      if (i == LFHT_MAX_THREADS) {
+	free(chain_node);
+	free(free_to_delete_node);
+      } else {
+	LFHT_ToDeleteNext(free_to_delete_node) = unfree_chain;
+	unfree_chain = free_to_delete_node;
+      }
+    }
+    if (unfree_chain != NULL)
+      /* join again to the toDeletePool */
 
-
-      
-
-
+    return;
+}
+	
 
    /*  int i; */
    /* /\* optimize this search ...please *\/ */
@@ -1094,26 +1106,6 @@ static inline
    /* 	return; */
    /*  } */
    /*  LFHT_FREE_NODE(chain_node, tenv); */
-
-
-
-
-
-
-
-    }
-   
-
-    
-
-
-    
-
-
-
-
-}
-
 
 
 
