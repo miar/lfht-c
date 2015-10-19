@@ -205,10 +205,10 @@ static inline LFHT_STR_PTR
   else
     node = LFHT_CALL_CHECK_INSERT_FIRST_CHAIN(LFHT_ThreadMemRef(tenv), key, 0);
 
-  if (++LFHT_ThreadNrOfOps(tenv) == LFHT_CLEAN_DELETE_POOL) {
+  if (++LFHT_ThreadNrOfOps(tenv) == LFHT_FREE_TO_DELETE_POOL) {
     LFHT_ThreadNrOfOps(tenv) = 0;
     /* ------------------ HERE -------------------- */
-    //    LFHT_CleanTheDeletePool();
+    //    LFHT_FreeToDeletePool();
   }
   
   return node;
@@ -906,10 +906,10 @@ static inline LFHT_STR_PTR
     node = LFHT_CALL_CHECK_DELETE_FIRST_CHAIN(
            LFHT_ThreadMemRef(tenv), key, 0);
 
-  if (++LFHT_ThreadNrOfOps(tenv) == LFHT_CLEAN_DELETE_POOL) {
+  if (++LFHT_ThreadNrOfOps(tenv) == LFHT_FREE_TO_DELETE_POOL) {
     LFHT_ThreadNrOfOps(tenv) = 0;
     /* ------------------ HERE -------------------- */
-    //    LFHT_CleanTheDeletePool();
+    //    LFHT_FreeToDeletePool();
   }
 
   return node;
