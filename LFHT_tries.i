@@ -1060,7 +1060,7 @@ static inline LFHT_STR_PTR
 
 
 /* -------------------------------------------------------*/
-/*                 Free ToDeletePool                      */
+/*                 Free To Delete Pool                    */
 /* -------------------------------------------------------*/
 
 static inline
