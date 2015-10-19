@@ -84,6 +84,22 @@ static inline
 }
 
 
+static inline
+  void LFHT_FreeToDeletePool(void) {
+  LFHT_ToDeletePtr node;
+  
+
+
+
+
+  if ((node = LFHT_ValCAS(PTR, OLD, NEW))
+
+
+  return;
+}
+
+
+
 /* unused code - misc */
 
 /* static inline  */

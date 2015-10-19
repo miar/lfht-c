@@ -208,7 +208,7 @@ static inline LFHT_STR_PTR
   if (++LFHT_ThreadNrOfOps(tenv) == LFHT_FREE_TO_DELETE_POOL) {
     LFHT_ThreadNrOfOps(tenv) = 0;
     /* ------------------ HERE -------------------- */
-    //    LFHT_FreeToDeletePool();
+    LFHT_FreeToDeletePool();
   }
   
   return node;
@@ -909,7 +909,7 @@ static inline LFHT_STR_PTR
   if (++LFHT_ThreadNrOfOps(tenv) == LFHT_FREE_TO_DELETE_POOL) {
     LFHT_ThreadNrOfOps(tenv) = 0;
     /* ------------------ HERE -------------------- */
-    //    LFHT_FreeToDeletePool();
+    LFHT_FreeToDeletePool();
   }
 
   return node;
