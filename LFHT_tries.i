@@ -40,9 +40,9 @@
 #define LFHT_SHOW_NODE(NODE)                                          \
   SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
   if (LFHT_IsDeletedKey(NODE))				              \
-    printf(" D\n");						      \
+    printf(" D\n"); /* Deleted */				      \
   else								      \
-    printf(" V\n")
+    printf(" V\n")  /* Valid */
 
 #else /* !LFHT_DEBUG */
 
@@ -235,7 +235,6 @@ static inline LFHT_STR_PTR
 
   if (++LFHT_ThreadNrOfOps(tenv) == LFHT_FREE_TO_DELETE_POOL) {
     LFHT_ThreadNrOfOps(tenv) = 0;
-    /* ------------------ HERE -------------------- */
     LFHT_FreeToDeletePool();
   }
   
@@ -627,8 +626,7 @@ static inline void
   LFHT_NodeNext(chain_node) = (LFHT_STR_PTR) new_hash;
   LFHT_ThreadMemRef(tenv) = chain_node;
 
-  if (LFHT_IsDeletedKey(chain_node)) {
-
+  if (LFHT_IsDeletedKey(chain_node)) {    
     LFHT_InsertOnDeletePool(chain_node);
     return;
   }
@@ -936,7 +934,6 @@ static inline LFHT_STR_PTR
 
   if (++LFHT_ThreadNrOfOps(tenv) == LFHT_FREE_TO_DELETE_POOL) {
     LFHT_ThreadNrOfOps(tenv) = 0;
-    /* ------------------ HERE -------------------- */
     LFHT_FreeToDeletePool();
   }
 
