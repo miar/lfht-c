@@ -37,15 +37,7 @@
   if (LFHT_IsDeletedKey(NODE))				              \
     printf(" D\n");						      \
   else								      \
-    printf(" V\n")						      \
-
-#define LFHT_ShowDeletePool()					      \
-  { LFHT_ToDeletePtr PTR = LFHT_DeletePool(LFHT_ROOT_ENV);	      \
-    while (PTR) {						      \
-       LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(PTR));         \
-      PTR = LFHT_ToDeleteNext(PTR);			              \
-    }								      \
-  }
+    printf(" V\n")
 
 #else /* !LFHT_DEBUG */
 
@@ -164,6 +156,35 @@ static inline void
   LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
 
 #endif /* INCLUDE_DIC_LOCK_FREE_HASH_TRIE */
+
+/* ----------------------------------------------------------*/
+/*                      To Delete Pool Stuff                 */
+/* ----------------------------------------------------------*/
+
+#define LFHT_InsertOnDeletePool(NODE)                                            \
+ { LFHT_ToDeletePtr PTR;                                                         \
+   if ((PTR = (LFHT_ToDeletePtr) malloc(sizeof(struct LFHT_ToDelete))) == NULL)  \
+     perror("Alloc LFHT ToDelete node: malloc error");                           \
+   LFHT_ToDeleteNode(PTR) = (void *) NODE;		                         \
+   do {									         \
+     LFHT_ToDeleteNext(PTR) = LFHT_DeletePool(LFHT_ROOT_ENV);		         \
+   } while(!LFHT_BoolCAS((&(LFHT_DeletePool(LFHT_ROOT_ENV))),		         \
+			LFHT_ToDeleteNext(PTR), PTR));                           \
+ }
+
+
+
+#define LFHT_ShowDeletePool()					      \
+  { LFHT_ToDeletePtr PTR = LFHT_DeletePool(LFHT_ROOT_ENV);	      \
+    while (PTR) {						      \
+       LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(PTR));         \
+      PTR = LFHT_ToDeleteNext(PTR);			              \
+    }								      \
+  }
+
+static inline
+  void LFHT_FreeToDeletePool(void); 
+
 
 /* ----------------------------------------------------------*/
 /*                      check_insert                         */
@@ -1029,6 +1050,71 @@ static inline LFHT_STR_PTR
   }
   return LFHT_CALL_CHECK_DELETE_BUCKET_ARRAY(jump_hash, key, (n_shifts + 1));
 }
+
+
+/* -------------------------------------------------------*/
+/*                 Free ToDeletePool                      */
+/* -------------------------------------------------------*/
+
+
+
+static inline
+  void LFHT_FreeToDeletePool(void) {
+    LFHT_ToDeletePtr to_delete_node;
+    LFHT_ToDeletePtr unfree_chain = NULL;
+      
+    if ((to_delete_node = LFHT_ValCAS((&(LFHT_DeletePool(LFHT_ROOT_ENV))),
+			    LFHT_DeletePool(LFHT_ROOT_ENV), NULL)) == NULL)
+      /* ToDeletePool is empty */
+      return;
+
+    while (to_delete_node) {
+      void *chain_node = (void *) LFHT_ToDeleteNode(to_delete_node);
+      int i;
+      /* optimize this search ...please  */
+      for (i = 0; i < LFHT_MAX_THREADS; i++) {
+	if (LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref == chain_node ||
+	    LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref_next == chain_node)
+
+
+
+
+      
+
+
+
+   /*  int i; */
+   /* /\* optimize this search ...please *\/ */
+   /*  for (i = 0; i < LFHT_MAX_THREADS; i++) { */
+   /*    /\* pass all macros to this format ... instead of derrefing *\/ */
+
+   /*    if (LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref == chain_node || */
+   /* 	  LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref_next == chain_node) */
+   /* 	/\* unable to free chain_node *\/ */
+   /* 	return; */
+   /*  } */
+   /*  LFHT_FREE_NODE(chain_node, tenv); */
+
+
+
+
+
+
+
+    }
+   
+
+    
+
+
+    
+
+
+
+
+}
+
+
 
 
 /* ------------------------------------------------------------------------------------*/

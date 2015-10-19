@@ -4,6 +4,8 @@
 #include "LFHT_parameters.h" 
 #include "LFHT_common.h"
 
+//extern LFHT_ROOT_ENV; 
+
 typedef struct LFHT_ThreadEnvironment {
   void  *mem_ref;               /* Thread's memory reference */
   void  *mem_ref_next;          /* Thread's next memory reference */
@@ -61,17 +63,6 @@ typedef struct LFHT_Environment{
      LFHT_ThreadUnusedNode(PTR) = LFHT_ThreadUnusedBucketArray(PTR) = NULL;     \
  }
 
-#define LFHT_InsertOnDeletePool(NODE)                                            \
- { LFHT_ToDeletePtr PTR;                                                         \
-   if ((PTR = (LFHT_ToDeletePtr) malloc(sizeof(struct LFHT_ToDelete))) == NULL)  \
-     perror("Alloc LFHT ToDelete node: malloc error");                           \
-   LFHT_ToDeleteNode(PTR) = (void *) NODE;		                         \
-   do {									         \
-     LFHT_ToDeleteNext(PTR) = LFHT_DeletePool(LFHT_ROOT_ENV);		         \
-   } while(!LFHT_BoolCAS((&(LFHT_DeletePool(LFHT_ROOT_ENV))),		         \
-			LFHT_ToDeleteNext(PTR), PTR));                           \
- }
-
 
 static inline
   LFHT_ThreadEnvPtr LFHT_InitThreadEnv(LFHT_EnvPtr LFHT,
@@ -82,22 +73,6 @@ static inline
   LFHT_ThreadNrOfOps(PTR) = 0;
   return PTR;
 }
-
-
-static inline
-  void LFHT_FreeToDeletePool(void) {
-  LFHT_ToDeletePtr node;
-  
-
-
-
-
-  if ((node = LFHT_ValCAS(PTR, OLD, NEW))
-
-
-  return;
-}
-
 
 
 /* unused code - misc */
