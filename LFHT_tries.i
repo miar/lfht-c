@@ -32,6 +32,11 @@
 
 #ifdef LFHT_DEBUG
 
+#define LFHT_SHOW_TO_DELETE_NODE(NODE)                                \
+  SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
+  printf(" F\n"); /* Free */
+
+
 #define LFHT_SHOW_NODE(NODE)                                          \
   SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
   if (LFHT_IsDeletedKey(NODE))				              \
@@ -40,6 +45,8 @@
     printf(" V\n")
 
 #else /* !LFHT_DEBUG */
+
+#define LFHT_SHOW_TO_DELETE_NODE(NODE)
 
 #define LFHT_SHOW_NODE(NODE)                                          \
   SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
@@ -1056,8 +1063,6 @@ static inline LFHT_STR_PTR
 /*                 Free ToDeletePool                      */
 /* -------------------------------------------------------*/
 
-
-
 static inline
   void LFHT_FreeToDeletePool(void) {
     LFHT_ToDeletePtr to_delete_node;
@@ -1082,6 +1087,7 @@ static inline
       to_delete_node = LFHT_ToDeleteNext(to_delete_node);
 
       if (i == LFHT_MAX_THREADS) {
+	LFHT_SHOW_TO_DELETE_NODE((LFHT_STR_PTR) chain_node);
 	free(chain_node);
 	free(free_to_delete_node);
       } else {
@@ -1098,23 +1104,8 @@ static inline
       } while(!LFHT_BoolCAS((&(LFHT_DeletePool(LFHT_ROOT_ENV))),	
 			    LFHT_ToDeleteNext(unfree_tail), unfree_head));
     }
-
     return;
 }
-	
-
-   /*  int i; */
-   /* /\* optimize this search ...please *\/ */
-   /*  for (i = 0; i < LFHT_MAX_THREADS; i++) { */
-   /*    /\* pass all macros to this format ... instead of derrefing *\/ */
-
-   /*    if (LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref == chain_node || */
-   /* 	  LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref_next == chain_node) */
-   /* 	/\* unable to free chain_node *\/ */
-   /* 	return; */
-   /*  } */
-   /*  LFHT_FREE_NODE(chain_node, tenv); */
-
 
 
 /* ------------------------------------------------------------------------------------*/
