@@ -834,7 +834,7 @@ static inline void LFHT_SHOW_STATE(void) {
 }
 
 static inline void LFHT_SHOW_CHAIN(LFHT_STR_PTR chain_node,
-				   LFHT_STR_PTR * end_chain) {
+				   LFHT_STR_PTR *end_chain) {
   
   if ((LFHT_STR_PTR *) chain_node == end_chain)
     return;  
@@ -848,9 +848,11 @@ static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
   LFHT_STR_PTR *bucket;
   bucket = (LFHT_STR_PTR *) LFHT_UntagHashLevel(curr_hash);
   for (i = 0; i < LFHT_BUCKET_ARRAY_SIZE ; i++) {
-    if (LFHT_IsHashLevel((*bucket))) {
-	LFHT_SHOW_BUCKET_ARRAY((LFHT_STR_PTR *) *bucket);
-    }else
+    if (LFHT_IsHashLevel((*bucket))) {	
+      if ((LFHT_STR_PTR *) *bucket == curr_hash)
+	continue;
+      LFHT_SHOW_BUCKET_ARRAY((LFHT_STR_PTR *) *bucket);
+    } else
       LFHT_SHOW_CHAIN((LFHT_STR_PTR)*bucket, curr_hash);
     bucket++;
   }
@@ -901,9 +903,11 @@ static inline void LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
   LFHT_STR_PTR *bucket;
   bucket = (LFHT_STR_PTR *) LFHT_UntagHashLevel(curr_hash);
   for (i = 0; i < LFHT_BUCKET_ARRAY_SIZE ; i++) {
-    if (LFHT_IsHashLevel((*bucket)))
+    if (LFHT_IsHashLevel((*bucket))) {
+      if ((LFHT_STR_PTR *) *bucket == curr_hash)
+	continue;      
       LFHT_ABOLISH_BUCKET_ARRAY((LFHT_STR_PTR *) *bucket);
-    else
+    } else
       LFHT_ABOLISH_CHAIN((LFHT_STR_PTR)*bucket, curr_hash);
     bucket++;
   }
