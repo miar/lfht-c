@@ -146,7 +146,7 @@ void createTestAndSolution(void){
 int main() {
   pthread_t threads[NUM_THREADS];  
   int wid = 0;
-  createTestAndSolution();       
+  createTestAndSolution();
   /* run test */  
   new_answer_trie_hash_node(); 
   FP = fopen(fdata_set, "r");

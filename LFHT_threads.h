@@ -4,8 +4,6 @@
 #include "LFHT_parameters.h" 
 #include "LFHT_common.h"
 
-//extern LFHT_ROOT_ENV; 
-
 typedef struct LFHT_ThreadEnvironment {
   void  *mem_ref;               /* Thread's memory reference */
   void  *mem_ref_next;          /* Thread's next memory reference */
