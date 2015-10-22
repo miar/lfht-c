@@ -166,4 +166,26 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
   free(((LFHT_STR_PTR *)LFHT_UntagHashLevel(PTR)) - 1)
 #endif
 
+
+#ifdef LFHT_STATISTICS
+
+struct LFHT_StatisticsCounters {
+  int total_nodes;
+  int total_buckets;
+  int total_empties;
+  int total_max_nodes;
+  int total_min_nodes;
+};
+
+struct LFHT_StatisticsCounters LFHT_Statistics;
+
+
+#define LFHT_StatisticsResetCounters()     \
+  
+
+
+#endif /* FLUSH_STATISTICS */
+
+
+
 #endif /* _LFHT_TRIES_H */
