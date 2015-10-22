@@ -177,12 +177,17 @@ struct LFHT_StatisticsCounters {
   long chain_nodes_free;            /* number of freed chain nodes */
   long chain_nodes_min_per_chain;   /* non empty bucket entries */  
   long chain_nodes_max_per_chain;   /* non empty bucket entries */
+  long delete_pool_attempts_to_enter;
+  long delete_pool_sucessfull_entries;
+  long delete_pool_visited_nodes;
+  long delete_pool_attempts_to_free_nodes;
+  long delete_pool_max_list_size;
+  long buckets_allocated;           /* total number of allocated and used buckets */
+  long buckets_not_used;            /* total number of allocated and unused buckets */
+  long buckets_min_level;
+  long buckets_max_level;
 
-
-
-  long buckets;                 /* total number of buckets */
   long empty_bucket_entries;    
-
 };
 
 struct LFHT_StatisticsCounters LFHT_Statistics;
