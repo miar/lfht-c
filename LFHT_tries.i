@@ -55,23 +55,26 @@
 #endif /* LFHT_DEBUG */
 
 
-#define LFHT_CHECK_INSERT_KEY             dic_check_insert_key
-#define LFHT_CHECK_DELETE_KEY             dic_check_delete_key
-#define LFHT_CHECK_INSERT_FIRST_CHAIN     dic_check_insert_first_chain
-#define LFHT_CHECK_DELETE_FIRST_CHAIN     dic_check_delete_first_chain
-#define LFHT_CHECK_INSERT_BUCKET_ARRAY    dic_check_insert_bucket_array
-#define LFHT_CHECK_DELETE_BUCKET_ARRAY    dic_check_delete_bucket_array
-#define LFHT_CHECK_INSERT_BUCKET_CHAIN    dic_check_insert_bucket_chain
-#define LFHT_CHECK_DELETE_BUCKET_CHAIN    dic_check_delete_bucket_chain
-#define LFHT_ADJUST_CHAIN_NODES           dic_adjust_chain_nodes
-#define LFHT_INSERT_BUCKET_ARRAY          dic_insert_bucket_array
-#define LFHT_INSERT_BUCKET_CHAIN          dic_insert_bucket_chain
-#define LFHT_SHOW_STATE                   dic_show_state
-#define LFHT_SHOW_CHAIN                   dic_show_chain
-#define LFHT_SHOW_BUCKET_ARRAY            dic_show_bucket_array
-#define LFHT_ABOLISH_ALL_KEYS             dic_abolish_all_keys
-#define LFHT_ABOLISH_CHAIN                dic_abolish_chain
-#define LFHT_ABOLISH_BUCKET_ARRAY         dic_abolish_bucket_array
+#define LFHT_CHECK_INSERT_KEY               dic_check_insert_key
+#define LFHT_CHECK_DELETE_KEY               dic_check_delete_key
+#define LFHT_CHECK_INSERT_FIRST_CHAIN       dic_check_insert_first_chain
+#define LFHT_CHECK_DELETE_FIRST_CHAIN       dic_check_delete_first_chain
+#define LFHT_CHECK_INSERT_BUCKET_ARRAY      dic_check_insert_bucket_array
+#define LFHT_CHECK_DELETE_BUCKET_ARRAY      dic_check_delete_bucket_array
+#define LFHT_CHECK_INSERT_BUCKET_CHAIN      dic_check_insert_bucket_chain
+#define LFHT_CHECK_DELETE_BUCKET_CHAIN      dic_check_delete_bucket_chain
+#define LFHT_ADJUST_CHAIN_NODES             dic_adjust_chain_nodes
+#define LFHT_INSERT_BUCKET_ARRAY            dic_insert_bucket_array
+#define LFHT_INSERT_BUCKET_CHAIN            dic_insert_bucket_chain
+#define LFHT_SHOW_STATE                     dic_show_state
+#define LFHT_SHOW_CHAIN                     dic_show_chain
+#define LFHT_SHOW_BUCKET_ARRAY              dic_show_bucket_array
+#define LFHT_SHOW_STATISTICS                dic_show_statistics
+#define LFHT_SHOW_STATISTICS_CHAIN          dic_show_statistics_chain
+#define LFHT_SHOW_STATISTICS_BUCKET_ARRAY   dic_show_statistics_bucket_array
+#define LFHT_ABOLISH_ALL_KEYS               dic_abolish_all_keys
+#define LFHT_ABOLISH_CHAIN                  dic_abolish_chain
+#define LFHT_ABOLISH_BUCKET_ARRAY           dic_abolish_bucket_array
 
 /*-------------- don't change nothing from this point ------- */
 
@@ -151,6 +154,21 @@ static inline void
 
 static inline void 
   LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
+
+static inline void 
+  LFHT_SHOW_STATISTICS_STATE(void);
+
+static inline void 
+  LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node, 
+		  LFHT_STR_PTR * end_chain);
+
+static inline void 
+  LFHT_SHOW_STATISTICS_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
+
+
+
+
+
 
 static inline void 
   LFHT_ABOLISH_ALL_KEYS(void);
@@ -858,6 +876,72 @@ static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
   }
   return;
 }
+
+
+/* ------------------------------------------------------------------------------------*/
+/*                     show statistics                                                 */
+/* ------------------------------------------------------------------------------------*/
+
+static inline void LFHT_SHOW_STATISTICS(void) {
+  LFHT_STR_PTR first_node;
+  LFHT_GetFirstNode(first_node);
+  if (first_node == NULL) {
+    printf("LFHT is empty \n");
+    return;
+  }  
+  if (LFHT_IsHashLevel(first_node))
+    return LFHT_SHOW_STATISTICS_BUCKET_ARRAY((LFHT_STR_PTR *) first_node);
+  return LFHT_SHOW_STATISTICS_CHAIN(first_node, (LFHT_STR_PTR *)NULL);
+}
+
+static inline void LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node,
+					      LFHT_STR_PTR *end_chain) {
+  
+  if ((LFHT_STR_PTR *) chain_node == end_chain)
+    return;  
+  LFHT_SHOW_STATISTICS_CHAIN(LFHT_NodeNext(chain_node), end_chain);
+  LFHT_SHOW_STATISTICS_NODE(chain_node);
+  return;
+}
+
+static inline void LFHT_SHOW_STATISTICS_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
+  int i;
+  LFHT_STR_PTR *bucket;
+  bucket = (LFHT_STR_PTR *) LFHT_UntagHashLevel(curr_hash);
+  for (i = 0; i < LFHT_BUCKET_ARRAY_SIZE; i++) {
+    if ((LFHT_STR_PTR *) *bucket != curr_hash) {
+      if (LFHT_IsHashLevel((*bucket))) {      
+	LFHT_SHOW_STATISTICS_BUCKET_ARRAY((LFHT_STR_PTR *) *bucket);
+      } else
+	LFHT_SHOW_STATISTICS_CHAIN((LFHT_STR_PTR)*bucket, curr_hash);
+    }
+    bucket++;
+  }
+  return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* -------------------------------------------------------------------*/
 /*    abolish all keys (removes all data structures inside the LFHT)  */
