@@ -204,10 +204,12 @@ struct LFHT_StatisticsCounters {
 struct LFHT_StatisticsCounters LFHT_Statistics;
 
 #define LFHT_StatisticsResetCounters()            \
+  /*
   LFHT_Statistics.buckets =                       \
   LFHT_Statistics.empty_bucket_entries =          \
   LFHT_Statistics.max_chain_nodes =               \
   LFHT_Statistics.min_chain_nodes = 0
+  */
 
 #else  /* !LFHT_STATISTICS */
 
