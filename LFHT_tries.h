@@ -170,11 +170,19 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 #ifdef LFHT_STATISTICS
 
 struct LFHT_StatisticsCounters {
-  int chain_nodes;
-  int buckets;
-  int empty_bucket_entries;
-  int max_chain_nodes;         /* per bucket entry */
-  int min_chain_nodes;         /* per bucket entry */
+  long chain_nodes_allocated;       /* total number of allocated and used chain nodes */
+  long chain_nodes_not_used;        /* total number of allocated and unused chain nodes */
+  long chain_nodes_valid;           /* number of valid chain nodes */
+  long chain_nodes_deleted;         /* number of deleted chain nodes */
+  long chain_nodes_free;            /* number of freed chain nodes */
+  long chain_nodes_min_per_chain;   /* non empty bucket entries */  
+  long chain_nodes_max_per_chain;   /* non empty bucket entries */
+
+
+
+  long buckets;                 /* total number of buckets */
+  long empty_bucket_entries;    
+
 };
 
 struct LFHT_StatisticsCounters LFHT_Statistics;

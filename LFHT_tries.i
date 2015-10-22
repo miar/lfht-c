@@ -165,11 +165,6 @@ static inline void
 static inline void 
   LFHT_SHOW_STATISTICS_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
 
-
-
-
-
-
 static inline void 
   LFHT_ABOLISH_ALL_KEYS(void);
 
@@ -884,14 +879,17 @@ static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
 
 static inline void LFHT_SHOW_STATISTICS(void) {
   LFHT_STR_PTR first_node;
+  LFHT_StatisticsResetCounters();
   LFHT_GetFirstNode(first_node);
   if (first_node == NULL) {
     printf("LFHT is empty \n");
     return;
   }  
+
   if (LFHT_IsHashLevel(first_node))
     return LFHT_SHOW_STATISTICS_BUCKET_ARRAY((LFHT_STR_PTR *) first_node);
-  return LFHT_SHOW_STATISTICS_CHAIN(first_node, (LFHT_STR_PTR *)NULL);
+  return LFHT_SHOW_STATISTICS_CHAIN(first_node, (LFHT_STR_PTR *) NULL);
+  
 }
 
 static inline void LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node,
@@ -913,7 +911,7 @@ static inline void LFHT_SHOW_STATISTICS_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
       if (LFHT_IsHashLevel((*bucket))) {      
 	LFHT_SHOW_STATISTICS_BUCKET_ARRAY((LFHT_STR_PTR *) *bucket);
       } else
-	LFHT_SHOW_STATISTICS_CHAIN((LFHT_STR_PTR)*bucket, curr_hash);
+	LFHT_SHOW_STATISTICS_CHAIN((LFHT_STR_PTR) *bucket, curr_hash);
     }
     bucket++;
   }
