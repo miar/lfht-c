@@ -21,10 +21,19 @@
  *                            LFHT internals                                   *
  *******************************************************************************/
 
+/* LFHT statistics are calculated at the end of the execution of all
+   threads.  When the main thread calls the show_statistics
+   function. No synchronization envolved. */
+
 #define LFHT_STATISTICS       1
 
+/* LFHT statistics are taken during the execution of threads. 
+   Threads have local counters and at the end of their execution they  
+   pass their values to the global counters. Synchronization occurs then threads 
+   end their execution. OBS: The main thread has to call the show_statistics
+   function. */
 
-
+#define LFHT_STATISTICS       1
 
 
 
