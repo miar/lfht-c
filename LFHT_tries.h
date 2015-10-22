@@ -192,6 +192,9 @@ struct LFHT_StatisticsCounters {
 
   long threads_visited_nodes_valid;
   long threads_visited_nodes_deleted;
+  long threads_visited_nodes_max_followed_valid;
+  long threads_visited_nodes_max_followed_deleted;
+
   long threads_visited_buckets;
   long threads_accesses;
   long threads_keys_found;
@@ -201,7 +204,6 @@ struct LFHT_StatisticsCounters {
 struct LFHT_StatisticsCounters LFHT_Statistics;
 
 #define LFHT_StatisticsResetCounters()            \
-  LFHT_Statistics.chain_nodes =                   \
   LFHT_Statistics.buckets =                       \
   LFHT_Statistics.empty_bucket_entries =          \
   LFHT_Statistics.max_chain_nodes =               \
