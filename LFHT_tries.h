@@ -170,22 +170,25 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 #ifdef LFHT_STATISTICS
 
 struct LFHT_StatisticsCounters {
-  int total_nodes;
-  int total_buckets;
-  int total_empties;
-  int total_max_nodes;
-  int total_min_nodes;
+  int chain_nodes;
+  int buckets;
+  int empty_bucket_entries;
+  int max_chain_nodes;         /* per bucket entry */
+  int min_chain_nodes;         /* per bucket entry */
 };
 
 struct LFHT_StatisticsCounters LFHT_Statistics;
 
+#define LFHT_StatisticsResetCounters()            \
+  LFHT_Statistics.chain_nodes =                   \
+  LFHT_Statistics.buckets =                       \
+  LFHT_Statistics.empty_bucket_entries =          \
+  LFHT_Statistics.max_chain_nodes =               \
+  LFHT_Statistics.min_chain_nodes = 0
 
-#define LFHT_StatisticsResetCounters()     \
-  
+#else  /* !LFHT_STATISTICS */
 
+#define LFHT_StatisticsResetCounters()
 
-#endif /* FLUSH_STATISTICS */
-
-
-
+#endif /* LFHT_STATISTICS */
 #endif /* _LFHT_TRIES_H */
