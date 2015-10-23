@@ -891,8 +891,24 @@ static inline void LFHT_SHOW_STATISTICS(void) {
     LFHT_SHOW_STATISTICS_CHAIN(first_node, (LFHT_STR_PTR *) NULL);
 
   printf("************** ************* *********\n");
-  printf("*              Keys                  *\n");
-  printf("************** ************* *********\n");        
+  printf("*                  Keys              *\n");
+  printf("************** ************* *********\n");
+
+
+  LFHT_Statistics.nodes_valid
+  LFHT_Statistics.nodes_min_valid_per_chain
+  LFHT_Statistics.nodes_avg_valid_per_chain
+  LFHT_Statistics.nodes_max_valid_per_chain
+  LFHT_Statistics.nodes_deleted
+  LFHT_Statistics.nodes_min_deleted_per_chain
+  LFHT_Statistics.nodes_avg_deleted_per_chain
+  LFHT_Statistics.nodes_max_deleted_per_chain
+  LFHT_Statistics.bucket_empty_entries
+  LFHT_Statistics.buckets_used
+  LFHT_Statistics.buckets_min_level
+  LFHT_Statistics.buckets_avg_level
+  LFHT_Statistics.buckets_max_level
+
   printf("Valid (V)     = %ld Minimum per chain = %ld Maximum per chain = %ld \n",
 	 LFHT_Statistics.nodes_valid);
 
@@ -903,18 +919,6 @@ static inline void LFHT_SHOW_STATISTICS(void) {
   else
     printf("Ratio (V/D)   = %.2lf \n", (double)
 	   LFHT_Statistics.nodes_valid / LFHT_Statistics.nodes_deleted);
-
-
-  /*
-  LFHT_Statistics.bucket_empty_entries =	  \
-  LFHT_Statistics.buckets_used =                  \
-  LFHT_Statistics.buckets_min_level =		  \
-  LFHT_Statistics.buckets_max_level =             \
-  LFHT_Statistics.nodes_min_per_chain =           \
-  LFHT_Statistics.nodes_max_per_chain = 0
-  */
-
-
   
 }
 

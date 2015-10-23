@@ -226,6 +226,4 @@ struct LFHT_StatisticsCounters LFHT_Statistics;
   LFHT_Statistics.buckets_min_level =               \
   LFHT_Statistics.buckets_avg_level =               \
   LFHT_Statistics.buckets_max_level = 0
-
-
 #endif /* _LFHT_TRIES_H */
