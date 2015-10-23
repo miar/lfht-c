@@ -919,28 +919,6 @@ static inline void LFHT_SHOW_STATISTICS_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* -------------------------------------------------------------------*/
 /*    abolish all keys (removes all data structures inside the LFHT)  */
 /*        (MAKE SURE THAT ONLY THREAD 0 IS WORKING IN THE LFHT)       */

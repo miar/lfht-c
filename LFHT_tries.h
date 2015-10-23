@@ -166,34 +166,33 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
   free(((LFHT_STR_PTR *)LFHT_UntagHashLevel(PTR)) - 1)
 #endif
 
-
-#ifdef LFHT_STATISTICS
-
 struct LFHT_StatisticsCounters {
-  long nodes_allocated;       /* total number of allocated and used chain nodes */
-  long nodes_not_used;        /* total number of allocated and unused chain nodes */
-  long nodes_valid;           /* number of valid chain nodes */
-  long nodes_deleted;         /* number of deleted chain nodes */
-  long nodes_free;            /* number of freed chain nodes */
-  long nodes_min_per_chain;   /* non empty bucket entries */  
-  long nodes_max_per_chain;   /* non empty bucket entries */
-
-  long buckets_allocated;           /* total number of allocated and used buckets */
-  long buckets_not_used;            /* total number of allocated and unused buckets */
+  long nodes_valid;                /* number of valid chain nodes */
+  long nodes_deleted;              /* number of deleted chain nodes */
+  long bucket_empty_entries;
+  long buckets_used;               /* total number of allocated and used buckets */
   long buckets_min_level;
   long buckets_max_level;
-  long bucket_empty_entries;
+  long nodes_min_per_chain;        /* non empty bucket entries */  
+  long nodes_max_per_chain;        /* non empty bucket entries */
 
-  long delete_pool_attempts_to_enter;
-  long delete_pool_sucessfull_entries;
-  long delete_pool_visited_nodes;
-  long delete_pool_attempts_to_free_nodes;
-  long delete_pool_max_list_size;
+
+  long threads_nodes_allocated;    /* total number of allocated and used chain nodes */
+  long threads_nodes_not_used;     /* total number of allocated and unused chain nodes */
+  long threads_nodes_free;         /* number of freed chain nodes */
+  long threads_buckets_not_used;   /* total number of allocated and unused buckets */
+
+  long threads_delete_pool_attempts_to_enter;
+  long threads_delete_pool_sucessfull_entries;
+  long threads_delete_pool_visited_nodes;
+  long threads_delete_pool_attempts_to_free_nodes;
+  long threads_delete_pool_max_list_size;
 
   long threads_visited_nodes_valid;
   long threads_visited_nodes_deleted;
-  long threads_visited_nodes_max_followed_valid;
-  long threads_visited_nodes_max_followed_deleted;
+  long threads_visited_nodes_max_consecutive_valid;
+  long threads_visited_nodes_max_consecutive_deleted;
+  long threads_visited_buckets_max_consecutive;
 
   long threads_visited_buckets;
   long threads_accesses;
@@ -203,13 +202,9 @@ struct LFHT_StatisticsCounters {
 
 struct LFHT_StatisticsCounters LFHT_Statistics;
 
+#ifdef LFHT_STATISTICS
+
 #define LFHT_StatisticsResetCounters()            \
-  /*
-  LFHT_Statistics.buckets =                       \
-  LFHT_Statistics.empty_bucket_entries =          \
-  LFHT_Statistics.max_chain_nodes =               \
-  LFHT_Statistics.min_chain_nodes = 0
-  */
 
 #else  /* !LFHT_STATISTICS */
 
