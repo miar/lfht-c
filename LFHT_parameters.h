@@ -26,7 +26,7 @@
    the LFHT data structures are traversed and statistics are taken. No
    synchronization envolved. */
 
-#define LFHT_STATISTICS       1
+//#define LFHT_STATISTICS       1 --> NOT USED
 
 /* LFHT statistics are taken during the execution of threads. 
    Threads have local counters and at the end of their execution they  
@@ -34,8 +34,7 @@
    end their execution. OBS: The main thread still has to call the show_statistics
    function to display the data. */
 
-#define LFHT_STATISTICS       1
-
+#define LFHT_THREAD_STATISTICS       1
 
 
 #endif /* _LFHT_PARAMETERS_H */

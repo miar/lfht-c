@@ -156,9 +156,6 @@ static inline void
   LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
 
 static inline void 
-  LFHT_SHOW_STATISTICS_STATE(void);
-
-static inline void 
   LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node, 
 		  LFHT_STR_PTR * end_chain);
 
@@ -879,16 +876,45 @@ static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
 
 static inline void LFHT_SHOW_STATISTICS(void) {
   LFHT_STR_PTR first_node;
-  LFHT_StatisticsResetCounters();
   LFHT_GetFirstNode(first_node);
   if (first_node == NULL) {
-    printf("LFHT is empty \n");
+    printf("************** ************* *********\n");
+    printf("*              LFHT is empty         *\n");
+    printf("************** ************* *********\n");    
     return;
   }  
-
+  LFHT_StatisticsResetGeneralCounters();
+  
   if (LFHT_IsHashLevel(first_node))
-    return LFHT_SHOW_STATISTICS_BUCKET_ARRAY((LFHT_STR_PTR *) first_node);
-  return LFHT_SHOW_STATISTICS_CHAIN(first_node, (LFHT_STR_PTR *) NULL);
+    LFHT_SHOW_STATISTICS_BUCKET_ARRAY((LFHT_STR_PTR *) first_node);
+  else
+    LFHT_SHOW_STATISTICS_CHAIN(first_node, (LFHT_STR_PTR *) NULL);
+
+  printf("************** ************* *********\n");
+  printf("*              Keys                  *\n");
+  printf("************** ************* *********\n");        
+  printf("Valid (V)     = %ld Minimum per chain = %ld Maximum per chain = %ld \n",
+	 LFHT_Statistics.nodes_valid);
+
+  printf("Deleted (D)   = %ld \n", LFHT_Statistics.nodes_deleted);
+
+  if (LFHT_Statistics.nodes_deleted == 0)
+    printf("Ratio (V/D)   = N.A.\n");
+  else
+    printf("Ratio (V/D)   = %.2lf \n", (double)
+	   LFHT_Statistics.nodes_valid / LFHT_Statistics.nodes_deleted);
+
+
+  /*
+  LFHT_Statistics.bucket_empty_entries =	  \
+  LFHT_Statistics.buckets_used =                  \
+  LFHT_Statistics.buckets_min_level =		  \
+  LFHT_Statistics.buckets_max_level =             \
+  LFHT_Statistics.nodes_min_per_chain =           \
+  LFHT_Statistics.nodes_max_per_chain = 0
+  */
+
+
   
 }
 
@@ -898,7 +924,7 @@ static inline void LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node,
   if ((LFHT_STR_PTR *) chain_node == end_chain)
     return;  
   LFHT_SHOW_STATISTICS_CHAIN(LFHT_NodeNext(chain_node), end_chain);
-  LFHT_SHOW_STATISTICS_NODE(chain_node);
+  //  LFHT_SHOW_STATISTICS_NODE(chain_node);
   return;
 }
 

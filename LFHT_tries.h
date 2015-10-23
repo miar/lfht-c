@@ -167,16 +167,24 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 #endif
 
 struct LFHT_StatisticsCounters {
-  long nodes_valid;                /* number of valid chain nodes */
-  long nodes_deleted;              /* number of deleted chain nodes */
+  long nodes_valid;                  /* number of valid chain nodes */
+  long nodes_min_valid_per_chain;    /* non empty bucket entries */
+  long nodes_avg_valid_per_chain;    /* non empty bucket entries */
+  long nodes_max_valid_per_chain;    /* non empty bucket entries */  
+
+  long nodes_deleted;                /* number of deleted chain nodes */
+  long nodes_min_deleted_per_chain;  /* non empty bucket entries */
+  long nodes_avg_deleted_per_chain;  /* non empty bucket entries */
+  long nodes_max_deleted_per_chain;  /* non empty bucket entries */  
+
   long bucket_empty_entries;
   long buckets_used;               /* total number of allocated and used buckets */
   long buckets_min_level;
+  long buckets_avg_level;
+
   long buckets_max_level;
-  long nodes_min_per_chain;        /* non empty bucket entries */  
-  long nodes_max_per_chain;        /* non empty bucket entries */
 
-
+#ifdef LFHT_THREAD_STATISTICS
   long threads_nodes_allocated;    /* total number of allocated and used chain nodes */
   long threads_nodes_not_used;     /* total number of allocated and unused chain nodes */
   long threads_nodes_free;         /* number of freed chain nodes */
@@ -186,29 +194,38 @@ struct LFHT_StatisticsCounters {
   long threads_delete_pool_sucessfull_entries;
   long threads_delete_pool_visited_nodes;
   long threads_delete_pool_attempts_to_free_nodes;
-  long threads_delete_pool_max_list_size;
 
+  long threads_delete_pool_max_list_size;
   long threads_visited_nodes_valid;
   long threads_visited_nodes_deleted;
   long threads_visited_nodes_max_consecutive_valid;
+
   long threads_visited_nodes_max_consecutive_deleted;
   long threads_visited_buckets_max_consecutive;
-
   long threads_visited_buckets;
   long threads_accesses;
+
   long threads_keys_found;
   long threads_movements_to_previous_levels;
+#endif /* LFHT_THREAD_STATISTICS */
 };
 
 struct LFHT_StatisticsCounters LFHT_Statistics;
 
-#ifdef LFHT_STATISTICS
+#define LFHT_StatisticsResetGeneralCounters()       \
+  LFHT_Statistics.nodes_valid =			    \
+  LFHT_Statistics.nodes_min_valid_per_chain =       \
+  LFHT_Statistics.nodes_avg_valid_per_chain =       \
+  LFHT_Statistics.nodes_max_valid_per_chain =       \
+  LFHT_Statistics.nodes_deleted =                   \
+  LFHT_Statistics.nodes_min_deleted_per_chain =     \
+  LFHT_Statistics.nodes_avg_deleted_per_chain =     \
+  LFHT_Statistics.nodes_max_deleted_per_chain =     \
+  LFHT_Statistics.bucket_empty_entries =            \
+  LFHT_Statistics.buckets_used =                    \
+  LFHT_Statistics.buckets_min_level =               \
+  LFHT_Statistics.buckets_avg_level =               \
+  LFHT_Statistics.buckets_max_level = 0
 
-#define LFHT_StatisticsResetCounters()            \
 
-#else  /* !LFHT_STATISTICS */
-
-#define LFHT_StatisticsResetCounters()
-
-#endif /* LFHT_STATISTICS */
 #endif /* _LFHT_TRIES_H */
