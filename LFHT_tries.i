@@ -72,6 +72,7 @@
 #define LFHT_SHOW_STATISTICS                dic_show_statistics
 #define LFHT_SHOW_STATISTICS_CHAIN          dic_show_statistics_chain
 #define LFHT_SHOW_STATISTICS_BUCKET_ARRAY   dic_show_statistics_bucket_array
+#define LFHT_SHOW_DELETE_POOL               dic_show_delete_pool
 #define LFHT_ABOLISH_ALL_KEYS               dic_abolish_all_keys
 #define LFHT_ABOLISH_CHAIN                  dic_abolish_chain
 #define LFHT_ABOLISH_BUCKET_ARRAY           dic_abolish_bucket_array
@@ -157,7 +158,7 @@ static inline void
 
 static inline void 
   LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node, 
-		  LFHT_STR_PTR * end_chain);
+   		             LFHT_STR_PTR * end_chain);
 
 static inline void 
   LFHT_SHOW_STATISTICS_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
@@ -171,6 +172,9 @@ static inline void
 
 static inline void 
   LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
+
+static inline void 
+  LFHT_SHOW_DELETE_POOL(void);
 
 #endif /* INCLUDE_DIC_LOCK_FREE_HASH_TRIE */
 
@@ -190,18 +194,20 @@ static inline void
  }
 
 
-
-#define LFHT_ShowDeletePool()					      \
-  { LFHT_ToDeletePtr PTR = LFHT_DeletePool(LFHT_ROOT_ENV);	      \
-    while (PTR) {						      \
-       LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(PTR));         \
-      PTR = LFHT_ToDeleteNext(PTR);			              \
-    }								      \
-  }
+static inline void 
+  LFHT_SHOW_DELETE_POOL(void) { 
+    printf("****************************** ************** *************************\n"); 
+    printf("*                                Delete Pool                          *\n");
+    printf("****************************** ************** *************************\n");
+    LFHT_ToDeletePtr PTR = LFHT_DeletePool(LFHT_ROOT_ENV);
+    while (PTR) {
+      LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(PTR));
+      PTR = LFHT_ToDeleteNext(PTR);
+    }
+}
 
 static inline
   void LFHT_FreeToDeletePool(void); 
-
 
 /* ----------------------------------------------------------*/
 /*                      check_insert                         */

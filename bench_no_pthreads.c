@@ -24,14 +24,12 @@ int main() {
   printf("1-total_nodes = %d\n", total_nodes);
 
   total_nodes = 0;
-  //  dic_show_state();
 
   dic_show_state();
   
   dic_show_statistics();
 
-  printf("------ DELETE POOL  -------\n");
-  LFHT_ShowDeletePool();
+  dic_show_delete_pool();
 
   dic_abolish_all_keys();
   dic_show_state();
