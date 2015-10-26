@@ -181,12 +181,13 @@ struct LFHT_StatisticsCounters {
   long nodes_avg_deleted_per_chain;  /* non empty bucket entries */
   long nodes_max_deleted_per_chain;  /* non empty bucket entries */  
 
-  long bucket_empty_entries;
-  long buckets_used;               /* total number of allocated and used buckets */
   long buckets_min_level;
   long buckets_avg_level;
   long buckets_max_level;
 #endif /* __NOT_IMPLEMENTED__ */
+  long bucket_used_entries;
+  long bucket_empty_entries;
+  long buckets_used;               /* total number of allocated and used buckets */
 
 #ifdef LFHT_THREAD_STATISTICS
   long threads_nodes_allocated;    /* total number of allocated and used chain nodes */
@@ -218,5 +219,8 @@ struct LFHT_StatisticsCounters LFHT_Statistics;
 
 #define LFHT_StatisticsResetGeneralCounters()       \
   LFHT_Statistics.nodes_valid =			    \
+  LFHT_Statistics.bucket_used_entries =	            \
+  LFHT_Statistics.bucket_empty_entries =	    \
+  LFHT_Statistics.buckets_used =		    \
   LFHT_Statistics.nodes_deleted = 0
 #endif /* _LFHT_TRIES_H */

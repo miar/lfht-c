@@ -2,7 +2,7 @@
 
 //#define NKEYS 10000
 
-#define NKEYS 10
+#define NKEYS 100
 
 extern int total_nodes; 
 
@@ -26,10 +26,9 @@ int main() {
   total_nodes = 0;
 
   dic_show_state();
+  dic_show_delete_pool();
   
   dic_show_statistics();
-
-  dic_show_delete_pool();
 
   dic_abolish_all_keys();
   dic_show_state();

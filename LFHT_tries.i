@@ -874,7 +874,6 @@ static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
   return;
 }
 
-
 /* ------------------------------------------------------------------------------------*/
 /*                     show statistics                                                 */
 /* ------------------------------------------------------------------------------------*/
@@ -923,6 +922,23 @@ static inline void LFHT_SHOW_STATISTICS(void) {
   printf("Not Freed Nodes (DP) = %ld ", del_pool_sum);
   printf("Ratio (DP/TN) = %.2lf \n", ((double)  del_pool_sum / total_nodes));
 
+  long total_bucket_entries = LFHT_Statistics.bucket_used_entries + 
+                              LFHT_Statistics.bucket_empty_entries;
+
+  if (total_bucket_entries == 0)
+    printf("Bucket Array Entries (BAE)= 0 \n");
+  else {
+    printf("Bucket Array Entries (BAE)= %ld \n", LFHT_Statistics.buckets_used);
+    printf("Bucket Entries (BE) = %ld ",  LFHT_Statistics.bucket_used_entries);
+    printf("Ratio (BE/BAE) = %.2lf \n", ((double) LFHT_Statistics.bucket_used_entries / 
+					 total_bucket_entries));
+    printf("Empty Bucket Entries (EBE) = %ld ", LFHT_Statistics.bucket_empty_entries);
+    printf("Ratio (BE/BAE) = %.2lf \n", ((double) LFHT_Statistics.bucket_empty_entries / 
+					 total_bucket_entries));
+  }
+  printf("****************************** ************** ******************************\n");
+
+
   return;
 }
 
@@ -944,14 +960,17 @@ static inline void LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node,
 static inline void LFHT_SHOW_STATISTICS_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
   int i;
   LFHT_STR_PTR *bucket;
+  LFHT_Statistics.buckets_used++;
   bucket = (LFHT_STR_PTR *) LFHT_UntagHashLevel(curr_hash);
   for (i = 0; i < LFHT_BUCKET_ARRAY_SIZE; i++) {
     if ((LFHT_STR_PTR *) *bucket != curr_hash) {
+      LFHT_Statistics.bucket_used_entries++;
       if (LFHT_IsHashLevel((*bucket))) {      
 	LFHT_SHOW_STATISTICS_BUCKET_ARRAY((LFHT_STR_PTR *) *bucket);
       } else
 	LFHT_SHOW_STATISTICS_CHAIN((LFHT_STR_PTR) *bucket, curr_hash);
-    }
+    } else
+      LFHT_Statistics.bucket_empty_entries++;
     bucket++;
   }
   return;
