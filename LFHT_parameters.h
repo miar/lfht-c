@@ -34,7 +34,7 @@
    end their execution. OBS: The main thread still has to call the show_statistics
    function to display the data. */
 
-#define LFHT_THREAD_STATISTICS       1
+//#define LFHT_THREAD_STATISTICS       1  --> NOT IMPLEMENTED YET
 
 
 #endif /* _LFHT_PARAMETERS_H */

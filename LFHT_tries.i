@@ -893,33 +893,14 @@ static inline void LFHT_SHOW_STATISTICS(void) {
   printf("************** ************* *********\n");
   printf("*                  Keys              *\n");
   printf("************** ************* *********\n");
+  long total_keys = LFHT_Statistics.nodes_valid + LFHT_Statistics.nodes_deleted;
+  printf("Total   (T) = %ld \n", total_keys);
+  printf("Valid   (V) = %ld ", LFHT_Statistics.nodes_valid);
+  printf("Ratio (V/T) = %.2lf \n", (double) LFHT_Statistics.nodes_valid / total_keys);
 
-
-  LFHT_Statistics.nodes_valid
-  LFHT_Statistics.nodes_min_valid_per_chain
-  LFHT_Statistics.nodes_avg_valid_per_chain
-  LFHT_Statistics.nodes_max_valid_per_chain
-  LFHT_Statistics.nodes_deleted
-  LFHT_Statistics.nodes_min_deleted_per_chain
-  LFHT_Statistics.nodes_avg_deleted_per_chain
-  LFHT_Statistics.nodes_max_deleted_per_chain
-  LFHT_Statistics.bucket_empty_entries
-  LFHT_Statistics.buckets_used
-  LFHT_Statistics.buckets_min_level
-  LFHT_Statistics.buckets_avg_level
-  LFHT_Statistics.buckets_max_level
-
-  printf("Valid (V)     = %ld Minimum per chain = %ld Maximum per chain = %ld \n",
-	 LFHT_Statistics.nodes_valid);
-
-  printf("Deleted (D)   = %ld \n", LFHT_Statistics.nodes_deleted);
-
-  if (LFHT_Statistics.nodes_deleted == 0)
-    printf("Ratio (V/D)   = N.A.\n");
-  else
-    printf("Ratio (V/D)   = %.2lf \n", (double)
-	   LFHT_Statistics.nodes_valid / LFHT_Statistics.nodes_deleted);
-  
+  printf("Deleted (D) = %ld ", LFHT_Statistics.nodes_deleted);
+  printf("Ratio (D/T) = %.2lf \n", ((double) LFHT_Statistics.nodes_deleted / total_keys));
+  return;
 }
 
 static inline void LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node,
@@ -928,6 +909,11 @@ static inline void LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node,
   if ((LFHT_STR_PTR *) chain_node == end_chain)
     return;  
   LFHT_SHOW_STATISTICS_CHAIN(LFHT_NodeNext(chain_node), end_chain);
+  if (LFHT_IsDeletedKey(chain_node))
+    LFHT_Statistics.nodes_deleted++;
+  else
+    LFHT_Statistics.nodes_valid++;
+
   //  LFHT_SHOW_STATISTICS_NODE(chain_node);
   return;
 }

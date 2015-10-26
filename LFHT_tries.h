@@ -167,12 +167,16 @@ typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 #endif
 
 struct LFHT_StatisticsCounters {
+
   long nodes_valid;                  /* number of valid chain nodes */
+#ifdef __NOT_IMPLEMENTED__
   long nodes_min_valid_per_chain;    /* non empty bucket entries */
   long nodes_avg_valid_per_chain;    /* non empty bucket entries */
   long nodes_max_valid_per_chain;    /* non empty bucket entries */  
-
+#endif /* __NOT_IMPLEMENTED__ */
   long nodes_deleted;                /* number of deleted chain nodes */
+
+#ifdef __NOT_IMPLEMENTED__
   long nodes_min_deleted_per_chain;  /* non empty bucket entries */
   long nodes_avg_deleted_per_chain;  /* non empty bucket entries */
   long nodes_max_deleted_per_chain;  /* non empty bucket entries */  
@@ -181,8 +185,8 @@ struct LFHT_StatisticsCounters {
   long buckets_used;               /* total number of allocated and used buckets */
   long buckets_min_level;
   long buckets_avg_level;
-
   long buckets_max_level;
+#endif /* __NOT_IMPLEMENTED__ */
 
 #ifdef LFHT_THREAD_STATISTICS
   long threads_nodes_allocated;    /* total number of allocated and used chain nodes */
@@ -214,16 +218,5 @@ struct LFHT_StatisticsCounters LFHT_Statistics;
 
 #define LFHT_StatisticsResetGeneralCounters()       \
   LFHT_Statistics.nodes_valid =			    \
-  LFHT_Statistics.nodes_min_valid_per_chain =       \
-  LFHT_Statistics.nodes_avg_valid_per_chain =       \
-  LFHT_Statistics.nodes_max_valid_per_chain =       \
-  LFHT_Statistics.nodes_deleted =                   \
-  LFHT_Statistics.nodes_min_deleted_per_chain =     \
-  LFHT_Statistics.nodes_avg_deleted_per_chain =     \
-  LFHT_Statistics.nodes_max_deleted_per_chain =     \
-  LFHT_Statistics.bucket_empty_entries =            \
-  LFHT_Statistics.buckets_used =                    \
-  LFHT_Statistics.buckets_min_level =               \
-  LFHT_Statistics.buckets_avg_level =               \
-  LFHT_Statistics.buckets_max_level = 0
+  LFHT_Statistics.nodes_deleted = 0
 #endif /* _LFHT_TRIES_H */
