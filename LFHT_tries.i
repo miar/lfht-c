@@ -929,7 +929,7 @@ static inline void LFHT_SHOW_STATISTICS(void) {
     printf("Bucket Array Entries (BAE)= 0 \n");
   else {
     printf("Bucket Array Entries (BAE)= %ld \n", LFHT_StatisticsUsedBucketArrayEntries);
-    printf("Bucket Entries (BE) = %ld ",  LFHT_StatisticsUsedBucketEntries);
+    printf("Non-Empty Bucket Entries (BE) = %ld ",  LFHT_StatisticsUsedBucketEntries);
     printf("Ratio (BE/BAE) = %.2lf \n", ((double) LFHT_StatisticsUsedBucketEntries / 
 					 total_bucket_entries));
     printf("Empty Bucket Entries (EBE) = %ld ",LFHT_StatisticsEmptyBucketEntries);
