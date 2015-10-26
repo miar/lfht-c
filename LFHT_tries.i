@@ -890,16 +890,34 @@ static inline void LFHT_SHOW_STATISTICS(void) {
   else
     LFHT_SHOW_STATISTICS_CHAIN(first_node, (LFHT_STR_PTR *) NULL);
 
-  printf("************** ************* *********\n");
-  printf("*                  Keys              *\n");
-  printf("************** ************* *********\n");
-  long total_keys = LFHT_Statistics.nodes_valid + LFHT_Statistics.nodes_deleted;
-  printf("Total   (T) = %ld \n", total_keys);
-  printf("Valid   (V) = %ld ", LFHT_Statistics.nodes_valid);
-  printf("Ratio (V/T) = %.2lf \n", (double) LFHT_Statistics.nodes_valid / total_keys);
+  printf("****************************** ************** ******************************\n");
+  printf("*                                Statistics                                *\n");
+  printf("****************************** ************** ******************************\n");
+  
+  LFHT_ToDeletePtr del_node = LFHT_DeletePool(LFHT_ROOT_ENV);
+  long del_pool_sum = 0;
+  while(del_node != NULL) {
+    del_pool_sum++;
+    del_node = LFHT_ToDeleteNext(del_node);
+  }
+  
+  long total_nodes = LFHT_Statistics.nodes_valid + 
+                     LFHT_Statistics.nodes_deleted + del_pool_sum;
 
-  printf("Deleted (D) = %ld ", LFHT_Statistics.nodes_deleted);
-  printf("Ratio (D/T) = %.2lf \n", ((double) LFHT_Statistics.nodes_deleted / total_keys));
+  printf("Total Nodes     (TN) = %ld ", total_nodes);
+  printf("  [ Nodes in Hash Tries (HT) = %ld ", 
+	 LFHT_Statistics.nodes_valid + LFHT_Statistics.nodes_deleted);
+  printf(" | Nodes in Delete Pool (DP) = %ld ]\n", del_pool_sum);
+
+  printf("Valid Nodes     (VN) = %ld ", LFHT_Statistics.nodes_valid);
+  printf("Ratio (VN/TN) = %.2lf \n", (double) LFHT_Statistics.nodes_valid / total_nodes);
+
+  printf("Deleted Nodes   (DN) = %ld ", LFHT_Statistics.nodes_deleted);
+  printf("Ratio (DN/TN) = %.2lf \n", ((double) LFHT_Statistics.nodes_deleted / total_nodes));
+
+  printf("Not Freed Nodes (DP) = %ld ", del_pool_sum);
+  printf("Ratio (DP/TN) = %.2lf \n", ((double)  del_pool_sum / total_nodes));
+
   return;
 }
 
