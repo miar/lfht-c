@@ -193,7 +193,6 @@ static inline void
 			LFHT_ToDeleteNext(PTR), PTR));                           \
  }
 
-
 static inline void 
   LFHT_SHOW_DELETE_POOL(void) { 
     printf("****************************** ************** *************************\n"); 
