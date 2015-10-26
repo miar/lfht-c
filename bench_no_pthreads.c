@@ -2,7 +2,7 @@
 
 //#define NKEYS 10000
 
-#define NKEYS 10
+#define NKEYS 12
 
 extern int total_nodes; 
 

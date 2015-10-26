@@ -197,12 +197,16 @@ static inline void
   LFHT_SHOW_DELETE_POOL(void) { 
     printf("****************************** ************** *************************\n"); 
     printf("*                                Delete Pool                          *\n");
-    printf("****************************** ************** *************************\n");
-    LFHT_ToDeletePtr PTR = LFHT_DeletePool(LFHT_ROOT_ENV);
-    while (PTR) {
-      LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(PTR));
-      PTR = LFHT_ToDeleteNext(PTR);
+    LFHT_ToDeletePtr node = LFHT_DeletePool(LFHT_ROOT_ENV);
+    if (node == NULL)
+      printf("                                Empty                              \n");
+    else {
+      do {
+	LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(node));
+	node = LFHT_ToDeleteNext(node);
+      } while (node);
     }
+    printf("****************************** ************** *************************\n");
 }
 
 static inline
@@ -881,10 +885,12 @@ static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
 static inline void LFHT_SHOW_STATISTICS(void) {
   LFHT_STR_PTR first_node;
   LFHT_GetFirstNode(first_node);
+  printf("****************************** ************** ******************************\n");
+  printf("*                                Statistics                                *\n");
+  
   if (first_node == NULL) {
-    printf("************** ************* *********\n");
-    printf("*              LFHT is empty         *\n");
-    printf("************** ************* *********\n");    
+    printf("                                Empty                                     \n");
+    printf("****************************** ************** ******************************\n");
     return;
   }  
   LFHT_StatisticsResetGeneralCounters();
@@ -894,10 +900,6 @@ static inline void LFHT_SHOW_STATISTICS(void) {
   else
     LFHT_SHOW_STATISTICS_CHAIN(first_node, (LFHT_STR_PTR *) NULL);
 
-  printf("****************************** ************** ******************************\n");
-  printf("*                                Statistics                                *\n");
-  printf("****************************** ************** ******************************\n");
-  
   LFHT_ToDeletePtr del_node = LFHT_DeletePool(LFHT_ROOT_ENV);
   long del_pool_sum = 0;
   while(del_node != NULL) {
@@ -926,9 +928,9 @@ static inline void LFHT_SHOW_STATISTICS(void) {
                              LFHT_StatisticsEmptyBucketEntries;
 
   if (total_bucket_entries == 0)
-    printf("Bucket Array Entries (BAE)= 0 \n");
+    printf("Bucket Array Entries (BAE) = 0 \n");
   else {
-    printf("Bucket Array Entries (BAE)= %ld \n", LFHT_StatisticsUsedBucketArrayEntries);
+    printf("Bucket Array Entries (BAE) = %ld \n", LFHT_StatisticsUsedBucketArrayEntries);
     printf("Non-Empty Bucket Entries (BE) = %ld ",  LFHT_StatisticsUsedBucketEntries);
     printf("Ratio (BE/BAE) = %.2lf \n", ((double) LFHT_StatisticsUsedBucketEntries / 
 					 total_bucket_entries));
@@ -937,8 +939,6 @@ static inline void LFHT_SHOW_STATISTICS(void) {
 					 total_bucket_entries));
   }
   printf("****************************** ************** ******************************\n");
-
-
   return;
 }
 
