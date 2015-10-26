@@ -32,7 +32,7 @@ typedef struct dic {
 
 /* Define where you want to hook the LFHT data structure */
 struct benchRoot {
-  dic_ptr dic; /* Memory address where you want to hook the LFHT data structures */
+  dic_ptr dic;         /* Memory address where you want to hook the LFHT data structures */
   LFHT_EnvPtr dic_env; /* Memory address where you want to hook the LFHT environment */
 };
 
