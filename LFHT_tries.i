@@ -905,35 +905,35 @@ static inline void LFHT_SHOW_STATISTICS(void) {
     del_node = LFHT_ToDeleteNext(del_node);
   }
   
-  long total_nodes = LFHT_Statistics.nodes_valid + 
-                     LFHT_Statistics.nodes_deleted + del_pool_sum;
+  long total_nodes = LFHT_StatisticsValidNodes + 
+                     LFHT_StatisticsDeletedNodes + del_pool_sum;
 
   printf("Total Nodes     (TN) = %ld ", total_nodes);
   printf("  [ Nodes in Hash Tries (HT) = %ld ", 
-	 LFHT_Statistics.nodes_valid + LFHT_Statistics.nodes_deleted);
+	 LFHT_StatisticsValidNodes + LFHT_StatisticsDeletedNodes);
   printf(" | Nodes in Delete Pool (DP) = %ld ]\n", del_pool_sum);
 
-  printf("Valid Nodes     (VN) = %ld ", LFHT_Statistics.nodes_valid);
-  printf("Ratio (VN/TN) = %.2lf \n", (double) LFHT_Statistics.nodes_valid / total_nodes);
+  printf("Valid Nodes     (VN) = %ld ", LFHT_StatisticsValidNodes);
+  printf("Ratio (VN/TN) = %.2lf \n", (double) LFHT_StatisticsValidNodes / total_nodes);
 
-  printf("Deleted Nodes   (DN) = %ld ", LFHT_Statistics.nodes_deleted);
-  printf("Ratio (DN/TN) = %.2lf \n", ((double) LFHT_Statistics.nodes_deleted / total_nodes));
+  printf("Deleted Nodes   (DN) = %ld ", LFHT_StatisticsDeletedNodes);
+  printf("Ratio (DN/TN) = %.2lf \n", ((double) LFHT_StatisticsDeletedNodes / total_nodes));
 
   printf("Not Freed Nodes (DP) = %ld ", del_pool_sum);
   printf("Ratio (DP/TN) = %.2lf \n", ((double)  del_pool_sum / total_nodes));
 
-  long total_bucket_entries = LFHT_Statistics.bucket_used_entries + 
-                              LFHT_Statistics.bucket_empty_entries;
+  long total_bucket_entries = LFHT_StatisticsUsedBucketEntries + 
+                             LFHT_StatisticsEmptyBucketEntries;
 
   if (total_bucket_entries == 0)
     printf("Bucket Array Entries (BAE)= 0 \n");
   else {
-    printf("Bucket Array Entries (BAE)= %ld \n", LFHT_Statistics.buckets_used);
-    printf("Bucket Entries (BE) = %ld ",  LFHT_Statistics.bucket_used_entries);
-    printf("Ratio (BE/BAE) = %.2lf \n", ((double) LFHT_Statistics.bucket_used_entries / 
+    printf("Bucket Array Entries (BAE)= %ld \n", LFHT_StatisticsUsedBucketArrayEntries);
+    printf("Bucket Entries (BE) = %ld ",  LFHT_StatisticsUsedBucketEntries);
+    printf("Ratio (BE/BAE) = %.2lf \n", ((double) LFHT_StatisticsUsedBucketEntries / 
 					 total_bucket_entries));
-    printf("Empty Bucket Entries (EBE) = %ld ", LFHT_Statistics.bucket_empty_entries);
-    printf("Ratio (BE/BAE) = %.2lf \n", ((double) LFHT_Statistics.bucket_empty_entries / 
+    printf("Empty Bucket Entries (EBE) = %ld ",LFHT_StatisticsEmptyBucketEntries);
+    printf("Ratio (BE/BAE) = %.2lf \n", ((double)LFHT_StatisticsEmptyBucketEntries / 
 					 total_bucket_entries));
   }
   printf("****************************** ************** ******************************\n");
@@ -949,9 +949,9 @@ static inline void LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node,
     return;  
   LFHT_SHOW_STATISTICS_CHAIN(LFHT_NodeNext(chain_node), end_chain);
   if (LFHT_IsDeletedKey(chain_node))
-    LFHT_Statistics.nodes_deleted++;
+    LFHT_StatisticsDeletedNodes++;
   else
-    LFHT_Statistics.nodes_valid++;
+    LFHT_StatisticsValidNodes++;
 
   //  LFHT_SHOW_STATISTICS_NODE(chain_node);
   return;
@@ -960,17 +960,17 @@ static inline void LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node,
 static inline void LFHT_SHOW_STATISTICS_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
   int i;
   LFHT_STR_PTR *bucket;
-  LFHT_Statistics.buckets_used++;
+  LFHT_StatisticsUsedBucketArrayEntries++;
   bucket = (LFHT_STR_PTR *) LFHT_UntagHashLevel(curr_hash);
   for (i = 0; i < LFHT_BUCKET_ARRAY_SIZE; i++) {
     if ((LFHT_STR_PTR *) *bucket != curr_hash) {
-      LFHT_Statistics.bucket_used_entries++;
+      LFHT_StatisticsUsedBucketEntries++;
       if (LFHT_IsHashLevel((*bucket))) {      
 	LFHT_SHOW_STATISTICS_BUCKET_ARRAY((LFHT_STR_PTR *) *bucket);
       } else
 	LFHT_SHOW_STATISTICS_CHAIN((LFHT_STR_PTR) *bucket, curr_hash);
     } else
-      LFHT_Statistics.bucket_empty_entries++;
+     LFHT_StatisticsEmptyBucketEntries++;
     bucket++;
   }
   return;

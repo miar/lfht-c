@@ -1,8 +1,6 @@
 #ifndef _LFHT_COMMON_H
 #define _LFHT_COMMON_H
 
-
-
 struct LFHT_StatisticsCounters {
   long nodes_valid;                  /* number of valid chain nodes */
 #ifdef __NOT_IMPLEMENTED__
@@ -51,14 +49,12 @@ struct LFHT_StatisticsCounters {
 #endif /* LFHT_THREAD_STATISTICS */
 };
 
-struct LFHT_StatisticsCounters LFHT_Statistics;
-
 #define LFHT_StatisticsResetGeneralCounters()       \
-  LFHT_Statistics.nodes_valid =			    \
-  LFHT_Statistics.bucket_used_entries =	            \
-  LFHT_Statistics.bucket_empty_entries =	    \
-  LFHT_Statistics.buckets_used =		    \
-  LFHT_Statistics.nodes_deleted = 0
+  LFHT_StatisticsValidNodes =			    \
+  LFHT_StatisticsUsedBucketEntries =	            \
+  LFHT_StatisticsEmptyBucketEntries =	            \
+  LFHT_StatisticsUsedBucketArrayEntries =	    \
+  LFHT_StatisticsDeletedNodes = 0
 
 #define LFHT_BoolCAS(PTR, OLD, NEW)    __sync_bool_compare_and_swap((PTR), (OLD), (NEW))
 #define LFHT_ValCAS(PTR, OLD, NEW)     __sync_val_compare_and_swap((PTR), (OLD), (NEW))

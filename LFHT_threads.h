@@ -29,12 +29,27 @@ typedef struct LFHT_ToDelete {
 #define LFHT_ToDeleteNext(X)  ((X)->next)
 
 typedef struct LFHT_Environment{
-
-  struct LFHT_StatisticsCounters LFHT_Statistics;
-
-  LFHT_ToDeletePtr to_delete_pool;                /* Data structures to delete pool*/
-  struct LFHT_ThreadEnvironment thread_pool[LFHT_MAX_THREADS];/* Thread pool */
+  struct LFHT_StatisticsCounters statistics;
+  LFHT_ToDeletePtr to_delete_pool;                
+  struct LFHT_ThreadEnvironment thread_pool[LFHT_MAX_THREADS];
 } *LFHT_EnvPtr;
+
+#define LFHT_Statistics(X)                   ((X)->statistics)
+
+#define LFHT_StatisticsValidNodes                     \
+  (LFHT_Statistics(LFHT_ROOT_ENV).nodes_valid)
+
+#define LFHT_StatisticsDeletedNodes                   \
+  (LFHT_Statistics(LFHT_ROOT_ENV).nodes_deleted)
+
+#define LFHT_StatisticsUsedBucketEntries              \
+  (LFHT_Statistics(LFHT_ROOT_ENV).bucket_used_entries)
+
+#define LFHT_StatisticsEmptyBucketEntries             \
+  (LFHT_Statistics(LFHT_ROOT_ENV).bucket_empty_entries)
+
+#define LFHT_StatisticsUsedBucketArrayEntries         \
+  (LFHT_Statistics(LFHT_ROOT_ENV).buckets_used)
 
 #define LFHT_DeletePool(X)           ((X)->to_delete_pool)
 #define LFHT_ThreadEnv(X, Tid)       ((X)->thread_pool[Tid])
@@ -44,6 +59,7 @@ typedef struct LFHT_Environment{
 
 #define LFHT_SetThreadMemRef(TENV, MEM_REF)	  LFHT_ThreadMemRef(TENV) = MEM_REF
 #define LFHT_UnsetThreadMemRef(TENV)	          LFHT_ThreadMemRef(TENV) = NULL
+
 
 
 #define LFHT_InitEnv(LFHT_ENV)					                \
