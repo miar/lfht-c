@@ -66,6 +66,7 @@ typedef struct LFHT_Environment{
   {  LFHT_EnvPtr PTR;						                \
      if ((PTR = (LFHT_EnvPtr) malloc(sizeof(struct LFHT_Environment))) == NULL) \
        perror("Alloc LFHT Environment: malloc error");                          \
+     /* LFHT_StatisticsResetGeneralCounters();	*/			\
      LFHT_DeletePool(PTR) = NULL;					        \
      LFHT_ENV = PTR;							        \
   }

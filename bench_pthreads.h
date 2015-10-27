@@ -23,7 +23,6 @@
 //#define DATASET_SIZE (NUM_THREADS * 50000)
 //#define DATASET_SIZE (64 * 50000)
 
-
 //#define DATASET_SIZE (NUM_THREADS * 50)
 #define DATASET_SIZE   10000000
 
@@ -41,15 +40,6 @@ const char fresult_hash[] = "output/result_hash";
 long dataSet[DATASET_SIZE];
 static volatile int wait_;
 
-#ifdef FLUSH_HASH_STATISTICS
-int total_nodes,  
-  total_buckets, 
-  total_empties,
-  total_max_nodes, 
-  total_min_nodes;
-#endif /* FLUSH_HASH_STATISTICS */
-
-
 typedef struct thread_work {
   int wid;
   long startI; 
@@ -64,3 +54,9 @@ typedef struct thread_work {
 } *thread_work_ptr; 
 
 struct thread_work tw_single;
+
+/* gcc bug */
+#ifndef RUSAGE_THREAD
+#define RUSAGE_THREAD  1
+#endif
+
