@@ -62,13 +62,11 @@ typedef struct LFHT_Environment{
 
 
 
-#define LFHT_InitEnv(LFHT_ENV)					                \
-  {  LFHT_EnvPtr PTR;						                \
-     if ((PTR = (LFHT_EnvPtr) malloc(sizeof(struct LFHT_Environment))) == NULL) \
-       perror("Alloc LFHT Environment: malloc error");                          \
-     /* LFHT_StatisticsResetGeneralCounters();	*/			\
-     LFHT_DeletePool(PTR) = NULL;					        \
-     LFHT_ENV = PTR;							        \
+#define LFHT_InitEnv(LFHT_ENV)					                     \
+  {  if ((LFHT_ENV = (LFHT_EnvPtr) malloc(sizeof(struct LFHT_Environment))) == NULL) \
+       perror("Alloc LFHT Environment: malloc error");                               \
+     LFHT_StatisticsResetGeneralCounters();				             \
+     LFHT_DeletePool(LFHT_ENV) = NULL;					             \
   }
 
 #define LFHT_KillThreadEnv(LFHT_ENV, Tid)                                       \
