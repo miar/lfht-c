@@ -30,7 +30,7 @@ int main() {
   
   dic_show_statistics();
 
-  dic_abolish_all_keys();
+  //  dic_abolish_all_keys();
   dic_show_state();
 
   return 0;

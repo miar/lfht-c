@@ -60,14 +60,20 @@ typedef struct LFHT_Environment{
 #define LFHT_SetThreadMemRef(TENV, MEM_REF)	  LFHT_ThreadMemRef(TENV) = MEM_REF
 #define LFHT_UnsetThreadMemRef(TENV)	          LFHT_ThreadMemRef(TENV) = NULL
 
-
-
 #define LFHT_InitEnv(LFHT_ENV)					                     \
   {  if ((LFHT_ENV = (LFHT_EnvPtr) malloc(sizeof(struct LFHT_Environment))) == NULL) \
        perror("Alloc LFHT Environment: malloc error");                               \
      LFHT_StatisticsResetGeneralCounters();				             \
      LFHT_DeletePool(LFHT_ENV) = NULL;					             \
   }
+
+#define LFHT_KillEnv(LFHT_ENV)					                     \
+  if (LFHT_ENV) {							             \
+    LFHT_ABOLISH_ALL_KEYS();						             \
+    free(LFHT_ENV);                                                                  \
+    LFHT_ENV = NULL;                                                                 \
+  }
+
 
 #define LFHT_KillThreadEnv(LFHT_ENV, Tid)                                       \
  { LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));                        \

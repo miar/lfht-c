@@ -986,9 +986,18 @@ static inline void LFHT_ABOLISH_ALL_KEYS(void) {
   LFHT_STR_PTR first_node;
   LFHT_GetFirstNode(first_node);
 
-  /* For now i just don't care about the deleted nodes pool */
-  /* CHECK THIS LATER */
-  LFHT_DeletePool(LFHT_ROOT_ENV) = NULL; 
+  /* Free the Delete pool */
+  LFHT_ToDeletePtr to_delete_node = LFHT_DeletePool(LFHT_ROOT_ENV);
+
+  while (to_delete_node) {
+    void *chain_node = (void *) LFHT_ToDeleteNode(to_delete_node);
+    LFHT_ToDeletePtr free_to_delete_node = to_delete_node;
+    to_delete_node = LFHT_ToDeleteNext(to_delete_node);
+    free(chain_node);
+    free(free_to_delete_node);
+  }
+
+  LFHT_ToDeleteNode(to_delete_node) = NULL;
 
   /* Making sure that thread 0 does not have any data structure in its buffers */
   LFHT_ThreadEnvPtr tenv = &(LFHT_ThreadEnv(LFHT_ROOT_ENV, 0));
@@ -1197,7 +1206,7 @@ static inline
     while (to_delete_node) {
       void *chain_node = (void *) LFHT_ToDeleteNode(to_delete_node);
       int i;
-      /* optimize this search ...please  */
+      /* optimize this search ... please  */
       for (i = 0; i < LFHT_MAX_THREADS; i++)
 	if (LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref == chain_node ||
 	    LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref_next == chain_node)
