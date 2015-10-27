@@ -56,6 +56,22 @@ struct LFHT_StatisticsCounters {
   LFHT_StatisticsUsedBucketArrayEntries =	    \
   LFHT_StatisticsDeletedNodes = 0
 
+
+#define LFHT_InitEnv(LFHT_ENV)					                     \
+  {  if ((LFHT_ENV = (LFHT_EnvPtr) malloc(sizeof(struct LFHT_Environment))) == NULL) \
+       perror("Alloc LFHT Environment: malloc error");                               \
+     LFHT_StatisticsResetGeneralCounters();				             \
+     LFHT_DeletePool(LFHT_ENV) = NULL;					             \
+  }
+
+#define LFHT_KillEnv(LFHT_ENV)					                     \
+  /* Remember that LFHT_ENV = LFHT_ROOT_ENV  */			                     \
+  if (LFHT_ENV) {							             \
+    LFHT_ABOLISH_ALL_KEYS();						             \
+    free(LFHT_ENV);                                                                  \
+    LFHT_ENV = NULL;                                                                 \
+  }
+
 #define LFHT_BoolCAS(PTR, OLD, NEW)    __sync_bool_compare_and_swap((PTR), (OLD), (NEW))
 #define LFHT_ValCAS(PTR, OLD, NEW)     __sync_val_compare_and_swap((PTR), (OLD), (NEW))
 

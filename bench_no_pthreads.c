@@ -30,8 +30,10 @@ int main() {
   
   dic_show_statistics();
 
+  LFHT_KillEnv(Root.dic_env);
+
   //  dic_abolish_all_keys();
-  dic_show_state();
+  //dic_show_state();
 
   return 0;
 }

@@ -985,25 +985,26 @@ static inline void LFHT_SHOW_STATISTICS_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
 static inline void LFHT_ABOLISH_ALL_KEYS(void) {
   LFHT_STR_PTR first_node;
   LFHT_GetFirstNode(first_node);
-
-  /* Free the Delete pool */
+  
+  /* Free the delete pool */
   LFHT_ToDeletePtr to_delete_node = LFHT_DeletePool(LFHT_ROOT_ENV);
-
-  while (to_delete_node) {
-    void *chain_node = (void *) LFHT_ToDeleteNode(to_delete_node);
-    LFHT_ToDeletePtr free_to_delete_node = to_delete_node;
-    to_delete_node = LFHT_ToDeleteNext(to_delete_node);
-    free(chain_node);
-    free(free_to_delete_node);
+  if (to_delete_node) {
+    do {
+      void *chain_node = (void *) LFHT_ToDeleteNode(to_delete_node);
+      // LFHT_SHOW_TO_DELETE_NODE((LFHT_STR_PTR) chain_node);
+      LFHT_ToDeletePtr free_to_delete_node = to_delete_node;
+      to_delete_node = LFHT_ToDeleteNext(to_delete_node);
+      free(chain_node);
+      free(free_to_delete_node);
+    } while (to_delete_node);    
+    LFHT_DeletePool(LFHT_ROOT_ENV) = NULL;
   }
-
-  LFHT_ToDeleteNode(to_delete_node) = NULL;
-
+  
   /* Making sure that thread 0 does not have any data structure in its buffers */
   LFHT_ThreadEnvPtr tenv = &(LFHT_ThreadEnv(LFHT_ROOT_ENV, 0));
   LFHT_ThreadUnusedNode(tenv) = LFHT_ThreadUnusedBucketArray(tenv) = NULL;
   /* Ready to abolish LFHT */  
-
+  
   if (first_node == NULL) {
     printf("LFHT is empty \n");
     return;
@@ -1018,6 +1019,7 @@ static inline void LFHT_ABOLISH_ALL_KEYS(void) {
 
 static inline void LFHT_ABOLISH_CHAIN(LFHT_STR_PTR chain_node,
 				      LFHT_STR_PTR * end_chain) {
+
   if ((LFHT_STR_PTR *) chain_node == end_chain)
     return;  
   LFHT_ABOLISH_CHAIN(LFHT_NodeNext(chain_node), end_chain);
