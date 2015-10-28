@@ -9,13 +9,13 @@ extern int total_nodes;
 int main() {
   int key, value = 2;
 
-  LFHT_InitEnv();
+  LFHT_InitEnv();  // PASSAR PARA API
   //  dic_create_init_environment();
 
   
   int tid = 0;
   /* get thread's environment */
-  LFHT_ThreadEnvPtr tenv = LFHT_InitThreadEnv(Root.dic_env, tid);
+  LFHT_ThreadEnvPtr tenv = LFHT_InitThreadEnv(Root.dic_env, tid); // PASSAR PARA API
 
   printf("------ INSERT / DELETE -------\n");
   for (key = 1; key <= NKEYS; key++) {
@@ -33,7 +33,7 @@ int main() {
   
   dic_show_statistics();
 
-  LFHT_KillEnv();
+  LFHT_KillEnv(); // PASSAR PARA API
 
   //  dic_abolish_all_keys();
   //dic_show_state();
