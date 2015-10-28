@@ -188,8 +188,8 @@ static inline void
      perror("Alloc LFHT ToDelete node: malloc error");                           \
    LFHT_ToDeleteNode(PTR) = (void *) NODE;		                         \
    do {									         \
-     LFHT_ToDeleteNext(PTR) = LFHT_DeletePool(LFHT_ROOT_ENV);		         \
-   } while(!LFHT_BoolCAS((&(LFHT_DeletePool(LFHT_ROOT_ENV))),		         \
+     LFHT_ToDeleteNext(PTR) = LFHT_DeletePool;		                         \
+   } while(!LFHT_BoolCAS((&(LFHT_DeletePool)),		                         \
 			LFHT_ToDeleteNext(PTR), PTR));                           \
  }
 
@@ -197,7 +197,7 @@ static inline void
   LFHT_SHOW_DELETE_POOL(void) { 
     printf("****************************** ************** *************************\n"); 
     printf("*                                Delete Pool                          *\n");
-    LFHT_ToDeletePtr node = LFHT_DeletePool(LFHT_ROOT_ENV);
+    LFHT_ToDeletePtr node = LFHT_DeletePool;
     if (node == NULL)
       printf("                                Empty                              \n");
     else {
@@ -900,7 +900,7 @@ static inline void LFHT_SHOW_STATISTICS(void) {
   else
     LFHT_SHOW_STATISTICS_CHAIN(first_node, (LFHT_STR_PTR *) NULL);
 
-  LFHT_ToDeletePtr del_node = LFHT_DeletePool(LFHT_ROOT_ENV);
+  LFHT_ToDeletePtr del_node = LFHT_DeletePool;
   long del_pool_sum = 0;
   while(del_node != NULL) {
     del_pool_sum++;
@@ -987,7 +987,7 @@ static inline void LFHT_ABOLISH_ALL_KEYS(void) {
   LFHT_GetFirstNode(first_node);
   
   /* Free the delete pool */
-  LFHT_ToDeletePtr to_delete_node = LFHT_DeletePool(LFHT_ROOT_ENV);
+  LFHT_ToDeletePtr to_delete_node = LFHT_DeletePool;
   if (to_delete_node) {
     do {
       void *chain_node = (void *) LFHT_ToDeleteNode(to_delete_node);
@@ -997,7 +997,7 @@ static inline void LFHT_ABOLISH_ALL_KEYS(void) {
       free(chain_node);
       free(free_to_delete_node);
     } while (to_delete_node);    
-    LFHT_DeletePool(LFHT_ROOT_ENV) = NULL;
+    LFHT_DeletePool = NULL;
   }
   
   /* Making sure that thread 0 does not have any data structure in its buffers */
@@ -1200,8 +1200,8 @@ static inline
     LFHT_ToDeletePtr unfree_head = NULL;
     LFHT_ToDeletePtr unfree_tail = NULL;
       
-    if ((to_delete_node = LFHT_ValCAS((&(LFHT_DeletePool(LFHT_ROOT_ENV))),
-			    LFHT_DeletePool(LFHT_ROOT_ENV), NULL)) == NULL)
+    if ((to_delete_node = LFHT_ValCAS((&(LFHT_DeletePool)),
+			    LFHT_DeletePool, NULL)) == NULL)
       /* ToDeletePool is empty */
       return;
 
@@ -1231,8 +1231,8 @@ static inline
     if (unfree_tail != NULL) {
       /* join again to the toDeletePool */
       do { 
-	LFHT_ToDeleteNext(unfree_tail) = LFHT_DeletePool(LFHT_ROOT_ENV);
-      } while(!LFHT_BoolCAS((&(LFHT_DeletePool(LFHT_ROOT_ENV))),	
+	LFHT_ToDeleteNext(unfree_tail) = LFHT_DeletePool;
+      } while(!LFHT_BoolCAS((&(LFHT_DeletePool)),	
 			    LFHT_ToDeleteNext(unfree_tail), unfree_head));
     }
     return;

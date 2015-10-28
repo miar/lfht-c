@@ -19,39 +19,13 @@ typedef struct LFHT_ThreadEnvironment {
 #define LFHT_ThreadUnusedBucketArray(X)  ((X)->unused_bucketArray)
 #define LFHT_ThreadNrOfOps(X)            ((X)->number_of_operations)
 
-
-typedef struct LFHT_ToDelete {
-  void *node; /* only chain nodes for now */
-  struct LFHT_ToDelete *next;
-} *LFHT_ToDeletePtr;
-
-#define LFHT_ToDeleteNode(X)  ((X)->node)
-#define LFHT_ToDeleteNext(X)  ((X)->next)
-
 typedef struct LFHT_Environment{
-  struct LFHT_StatisticsCounters statistics;
-  LFHT_ToDeletePtr to_delete_pool;                
+  struct LFHT_StatisticsCounters statistics;  /* LFHT_common.h */
+  LFHT_ToDeletePtr to_delete_pool;            /* LFHT_common.h */    
   struct LFHT_ThreadEnvironment thread_pool[LFHT_MAX_THREADS];
 } *LFHT_EnvPtr;
 
-#define LFHT_Statistics(X)                   ((X)->statistics)
 
-#define LFHT_StatisticsValidNodes                     \
-  (LFHT_Statistics(LFHT_ROOT_ENV).nodes_valid)
-
-#define LFHT_StatisticsDeletedNodes                   \
-  (LFHT_Statistics(LFHT_ROOT_ENV).nodes_deleted)
-
-#define LFHT_StatisticsUsedBucketEntries              \
-  (LFHT_Statistics(LFHT_ROOT_ENV).bucket_used_entries)
-
-#define LFHT_StatisticsEmptyBucketEntries             \
-  (LFHT_Statistics(LFHT_ROOT_ENV).bucket_empty_entries)
-
-#define LFHT_StatisticsUsedBucketArrayEntries         \
-  (LFHT_Statistics(LFHT_ROOT_ENV).buckets_used)
-
-#define LFHT_DeletePool(X)           ((X)->to_delete_pool)
 #define LFHT_ThreadEnv(X, Tid)       ((X)->thread_pool[Tid])
 
 #define LFHT_SetThreadMemRefNext(TENV, MEM_REF)	  LFHT_ThreadMemRefNext(TENV) = MEM_REF
