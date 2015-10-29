@@ -34,55 +34,5 @@ typedef struct LFHT_Environment{
 #define LFHT_SetThreadMemRef(TENV, MEM_REF)	  LFHT_ThreadMemRef(TENV) = MEM_REF
 #define LFHT_UnsetThreadMemRef(TENV)	          LFHT_ThreadMemRef(TENV) = NULL
 
-#define LFHT_KillThreadEnv(LFHT_ENV, Tid)                                       \
- { LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));                        \
-   if (LFHT_ThreadUnusedNode(PTR) != NULL)                                      \
-     LFHT_DEALLOC_NODE(LFHT_ThreadUnusedNode(PTR));                             \
-   if (LFHT_ThreadUnusedBucketArray(PTR) != NULL)                               \
-     LFHT_DeallocateBucketArray(LFHT_ThreadUnusedBucketArray(PTR));             \
-   LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefNext(PTR) =                        \
-     LFHT_ThreadUnusedNode(PTR) = LFHT_ThreadUnusedBucketArray(PTR) = NULL;     \
- }
-
-static inline
-  LFHT_ThreadEnvPtr LFHT_InitThreadEnv(LFHT_EnvPtr LFHT,
-				       int Tid) {
-  LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));
-  LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefNext(PTR) = 
-    LFHT_ThreadUnusedNode(PTR) = LFHT_ThreadUnusedBucketArray(PTR) = NULL;
-  LFHT_ThreadNrOfOps(PTR) = 0;
-  return PTR;
-}
-
-
-/* unused code - misc */
-
-/* static inline  */
-/*   void LFHT_InsDeletePool(void *node) { */
-
-/*   LFHT_ToDeletePtr ptr; */
-/*   if ((ptr = (LFHT_ToDeletePtr) malloc(sizeof(struct LFHT_ToDelete))) == NULL)  */
-/*     perror("Alloc LFHT ToDelete node: malloc error"); */
-/*   LFHT_ToDeleteNode(ptr) = node; */
-/*   do { */
-/*     LFHT_ToDeleteNext(ptr) = LFHT_DeletePool(LFHT_ROOT_ENV); */
-/*   } while(LFHT_BoolCAS(&(LFHT_ToDeleteNext(ptr)),LFHT_DeletePool(LFHT_ROOT_ENV),ptr)); */
-/*   return; */
-/* } */
-
-   /*  int i; */
-   /* /\* optimize this search ...please *\/ */
-   /*  for (i = 0; i < LFHT_MAX_THREADS; i++) { */
-   /*    /\* pass all macros to this format ... instead of derrefing *\/ */
-
-   /*    if (LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref == chain_node || */
-   /* 	  LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref_next == chain_node) */
-   /* 	/\* unable to free chain_node *\/ */
-   /* 	return; */
-   /*  } */
-   /*  LFHT_FREE_NODE(chain_node, tenv); */
-
-
-
 
 #endif  /* _LFHT_THREADS_H */

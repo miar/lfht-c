@@ -36,7 +36,6 @@
   SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
   printf(" F\n"); /* Free */
 
-
 #define LFHT_SHOW_NODE(NODE)                                          \
   SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
   if (LFHT_IsDeletedKey(NODE))				              \
@@ -76,6 +75,11 @@
 #define LFHT_ABOLISH_ALL_KEYS               dic_abolish_all_keys
 #define LFHT_ABOLISH_CHAIN                  dic_abolish_chain
 #define LFHT_ABOLISH_BUCKET_ARRAY           dic_abolish_bucket_array
+#define LFHT_CREATE_INIT_ENV                dic_create_init_env
+#define LFHT_KILL_ENV                       dic_kill_env
+
+#define LFHT_CREATE_INIT_THREAD_ENV         dic_create_init_thread_env
+
 
 /*-------------- don't change nothing from this point ------- */
 
@@ -175,6 +179,12 @@ static inline void
 
 static inline void 
   LFHT_SHOW_DELETE_POOL(void);
+
+static inline void 
+  LFHT_CREATE_INIT_ENV(void);
+
+static inline LFHT_ThreadEnvPtr 
+  LFHT_CREATE_INIT_THREAD_ENV(int);
 
 #endif /* INCLUDE_DIC_LOCK_FREE_HASH_TRIE */
 
@@ -1238,6 +1248,49 @@ static inline
     return;
 }
 
+/* ------------------------------------------------------------------------------------*/
+/*                                 LFHT Environments                                   */
+/* ------------------------------------------------------------------------------------*/
+
+static inline void LFHT_CREATE_INIT_ENV(void) {
+  if ((LFHT_ROOT_ENV = (LFHT_EnvPtr)
+       malloc(sizeof(struct LFHT_Environment))) == NULL)
+    perror("Alloc LFHT Environment: malloc error"); 
+  LFHT_StatisticsResetGeneralCounters();
+  LFHT_DeletePool = NULL; 
+}
+
+static inline void LFHT_KILL_ENV(void) {
+  if (LFHT_ROOT_ENV) { 
+    LFHT_ABOLISH_ALL_KEYS();
+    free(LFHT_ROOT_ENV);
+    LFHT_ROOT_ENV = NULL;
+  }
+}
+
+/* ------------------------------------------------------------------------------------*/
+/*                                 Thread Environments                                 */
+/* ------------------------------------------------------------------------------------*/
+
+static inline LFHT_ThreadEnvPtr LFHT_CREATE_INIT_THREAD_ENV(int Tid) {
+  LFHT_ThreadEnvPtr tenv = &(LFHT_ThreadEnv(LFHT_ROOT_ENV, Tid));
+  LFHT_ThreadMemRef(tenv) = LFHT_ThreadMemRefNext(tenv) = 
+                           LFHT_ThreadUnusedNode(tenv) = 
+                           LFHT_ThreadUnusedBucketArray(tenv) = NULL;
+  LFHT_ThreadNrOfOps(tenv) = 0;
+  return tenv;
+}
+
+#define LFHT_KillThreadEnv(LFHT_ENV, Tid)                                       \
+ { LFHT_ThreadEnvPtr PTR = &(LFHT_ThreadEnv(LFHT, Tid));                        \
+   if (LFHT_ThreadUnusedNode(PTR) != NULL)                                      \
+     LFHT_DEALLOC_NODE(LFHT_ThreadUnusedNode(PTR));                             \
+   if (LFHT_ThreadUnusedBucketArray(PTR) != NULL)                               \
+     LFHT_DeallocateBucketArray(LFHT_ThreadUnusedBucketArray(PTR));             \
+   LFHT_ThreadMemRef(PTR) = LFHT_ThreadMemRefNext(PTR) =                        \
+     LFHT_ThreadUnusedNode(PTR) = LFHT_ThreadUnusedBucketArray(PTR) = NULL;     \
+ }
+
 
 /* ------------------------------------------------------------------------------------*/
 /*                                 undefine macros                                     */
@@ -1273,3 +1326,8 @@ static inline
 #undef LFHT_ABOLISH_ALL_KEYS
 #undef LFHT_ABOLISH_CHAIN
 #undef LFHT_ABOLISH_BUCKET_ARRAY
+#undef LFHT_CREATE_INIT_ENV
+#undef LFHT_KILL_ENV
+#undef LFHT_CREATE_INIT_THREAD_ENV
+
+/* CHECK LATER IF ALL MACROS ARE UNDEFINED */
