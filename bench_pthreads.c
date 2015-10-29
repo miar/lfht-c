@@ -5,7 +5,8 @@ void createTestAndSolution(void){
 #ifdef CREATE_NEW_DATA_SET_RANDOM
   /* create data set file */
   FP = fopen(fdata_set, "w");
-  srand(time(NULL)); /* initialize the random seed */
+  /* initialize the random seed */
+  srand(time(NULL)); 
   for (i = 0; i < DATASET_SIZE; i++) { 
     dataSet[i] = rand() % RANDOM_TERM_RANGE;
     fprintf(FP, " %ld ", dataSet[i]);
@@ -26,6 +27,7 @@ void createTestAndSolution(void){
   for (i = 0 ; i < DATASET_SIZE ; i++)
     fscanf(FP,"%ld", &(dataSet[i]));
 #endif /*CREATE_NEW_DATA_SET */
+
   fclose(FP);  
   
 #ifdef SINGLE_THREAD_EXECUTION  
@@ -68,6 +70,8 @@ void createTestAndSolution(void){
 #endif
   ///////////////////flushAndFreeHash(fcorrect_hash);
 #endif /* SINGLE_THREAD_EXECUTION */
+
+  return;
 
 }
 
