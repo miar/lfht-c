@@ -203,7 +203,7 @@ static inline void LFHT_SHOW_DELETE_POOL(char *user_out) {
   else if (strcmp(user_out,"stderr") == 0)
     out = stderr;
   else 
-    out = fopen(user_out, "w");
+    out = fopen(user_out, "a");
 
   fprintf(out, "****************************** ************** *************************\n"); 
   fprintf(out, "*                                Delete Pool                          *\n");
@@ -859,7 +859,7 @@ static inline void LFHT_SHOW_STATE(char *user_out) {
   else if (strcmp(user_out,"stderr") == 0)
     out = stderr;
   else 
-    out = fopen(user_out, "w");
+    out = fopen(user_out, "a");
 
   if (first_node == NULL) {
     fprintf(out, "LFHT is empty \n");
@@ -914,7 +914,7 @@ static inline void LFHT_SHOW_STATISTICS(char *user_out) {
   else if (strcmp(user_out,"stderr") == 0)
     out = stderr;
   else 
-    out = fopen(user_out, "w");
+    out = fopen(user_out, "a");
   
   fprintf(out, "****************************** ************** ********************\n");
   fprintf(out, "*                                Statistics                      *\n");

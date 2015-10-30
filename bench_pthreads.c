@@ -118,10 +118,19 @@ void create_bench_and_solution(void) {
   ///////////////////flushAndFreeHash(fcorrect_hash);
 
   total_nodes = 0;
+  /*
+  dic_show_state("stdout");
+  dic_show_delete_pool("stdout");
+  dic_show_statistics("stdout"); // "stdout"
+  */
   dic_show_state(fcorrect_hash);
   dic_show_delete_pool(fcorrect_hash);
-  
   dic_show_statistics(fcorrect_hash); // "stdout"
+
+
+
+
+
   dic_kill_env();
 
 #endif /* SINGLE_THREAD_EXECUTION */
