@@ -7,14 +7,13 @@
 /*                            BENCH CONFIGURATOR                             */
 /*****************************************************************************/
 
-//#define SINGLE_THREAD_EXECUTION   1
+#define SINGLE_THREAD_EXECUTION   1
 //#define CPUTIME_ON_THREAD_RUSAGE 1
 #define CPUTIME_ON_THREAD_DAYTIME 1
 //#define FLUSH_HASH_NODES 1 
 //#define FLUSH_HASH_STATISTICS 1
 //#define CREATE_NEW_DATA_SET_RANDOM 1
 #define CREATE_NEW_DATA_SET_INCREMENTAL 1
-
 #define DIVIDE_WORK_BETWEEN_THREADS   1 /* to disable check first IS_EQUAL_TO_NODE_ENTRY */
 
 #define NUM_THREADS 32   /* NUM_THREADS > 1 */
@@ -25,7 +24,6 @@
 
 //#define DATASET_SIZE (NUM_THREADS * 50)
 #define DATASET_SIZE   10
-
 
 /*****************************************************************************/
 
@@ -38,9 +36,11 @@ const char fdata_set[] = "output/data_set";
 const char fcorrect_hash[] = "output/correct_hash";
 const char fresult_hash[] = "output/result_hash";
 long dataSet[DATASET_SIZE];
+
 static volatile int wait_;
 
 typedef struct thread_work {
+  LFHT_ThreadEnvPtr tenv;
   int wid;
   long startI; 
   long endI;
@@ -54,6 +54,10 @@ typedef struct thread_work {
 } *thread_work_ptr; 
 
 struct thread_work tw_single;
+#define SYNC_ADD(PTR, VALUE)   __sync_add_and_fetch(PTR, VALUE)
+
+void *thread_run(void *);
+void create_bench_and_solution(void);
 
 /* gcc bug */
 #ifndef RUSAGE_THREAD

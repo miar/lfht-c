@@ -47,4 +47,7 @@ struct benchRoot Root;
 int total_nodes = 0;
 #endif /* LFHT_DEBUG */
 
+#define DIC_VALUE 2  /* dummy value. It is only used as example */
+
+
 #include "LFHT_tries.i"

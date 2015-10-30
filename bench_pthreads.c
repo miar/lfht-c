@@ -1,7 +1,7 @@
 #include "bench_pthreads.h"
 
 
-void * thread_run(void *ptr) { 
+void *thread_run(void *ptr) { 
   struct thread_work *tw;
   tw = (struct thread_work *) ptr;
   long i;
@@ -24,12 +24,9 @@ void * thread_run(void *ptr) {
   gettimeofday(&(tw->execStartTime), NULL); 
 #endif
   int s = tw->startI, e = tw->endI;
+  LFHT_ThreadEnvPtr tenv = tw_single.tenv;
   for (i = s; i < e; i++)  
-#ifdef MIGS_BUFFER_ALLOC
-    check_insert(dataSet[i], sb);
-#else
-    check_insert(dataSet[i]);
-#endif /* MIGS_BUFFER_ALLOC */  
+    dic_check_insert_key(dataSet[i], DIC_VALUE, tenv);
 
 #if defined(CPUTIME_ON_THREAD_RUSAGE)
   getrusage(RUSAGE_THREAD, &tv2);
@@ -40,21 +37,8 @@ void * thread_run(void *ptr) {
 #elif defined (CPUTIME_ON_THREAD_DAYTIME)
   gettimeofday(&(tw->execEndTime), NULL); 
 #endif
-#ifdef MIGS_BUFFER_ALLOC
-  FREE_STRUCT_BUFFER(sb);
-#endif  /* MIGS_BUFFER_ALLOC */  
   pthread_exit(NULL);
 }
-
-
-
-
-
-
-
-
-
-
 
 
 void create_bench_and_solution(void) {
@@ -95,6 +79,7 @@ void create_bench_and_solution(void) {
 #if defined(CPUTIME_ON_THREAD_RUSAGE) || defined(CPUTIME_ON_THREAD_DAYTIME)  
   pthread_t threads;  
   tw_single.wid = 0;
+  tw_single.tenv = tenv;
   tw_single.startI = 0;
   tw_single.endI = DATASET_SIZE;
   
@@ -117,17 +102,17 @@ void create_bench_and_solution(void) {
                 tw_single.execEndTime.tv_usec - tw_single.execStartTime.tv_usec) / 1000); 
 #endif /* CPUTIME_ON_THREAD_RUSAGE */
 #else  /* !CPUTIME_ON_THREAD_RUSAGE && !CPUTIME_ON_THREAD_DAYTIME */
-  // check time 
   struct timeval tv1, tv2;  
-  gettimeofday(&tv1, NULL);   
-  for (i = 0 ; i < DATASET_SIZE ; i++)
-    dic_check_insert_key(dataSet[i], value, tenv);
+  gettimeofday(&tv1, NULL);     // check time 
 
-  // check time 
-  gettimeofday(&tv2, NULL);
-  int ms = (int)(1000000*(tv2.tv_sec - tv1.tv_sec) + tv2.tv_usec - tv1.tv_usec) / 1000;
+  for (i = 0; i < DATASET_SIZE; i++)
+    dic_check_insert_key(dataSet[i], DIC_VALUE, tenv);
+
+  gettimeofday(&tv2, NULL);   // check time 
+  int ms = (int) (1000000*(tv2.tv_sec - tv1.tv_sec) + tv2.tv_usec - tv1.tv_usec) / 1000;
   printf(" Cputime DAYTIME MAIN (milliseconds): 1_thread = %d ", ms);     
 #endif /* CPUTIME_ON_THREAD_RUSAGE || CPUTIME_ON_THREAD_DAYTIME */
+
   ///////////////////flushAndFreeHash(fcorrect_hash);
 
   total_nodes = 0;

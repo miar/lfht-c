@@ -18,9 +18,9 @@ int main() {
   printf("------ INSERT / DELETE -------\n");
   for (key = 1; key <= NKEYS; key++) {
     printf("key - %d\n", key);
-    dic_check_insert_key(key, value, tenv);
+    dic_check_insert_key(key, DIC_VALUE, tenv);
     if (key % 2 == 0)
-      dic_check_delete_key(key, value, tenv);
+      dic_check_delete_key(key, DIC_VALUE, tenv);
   }
   printf("1-total_nodes = %d\n", total_nodes);
 
