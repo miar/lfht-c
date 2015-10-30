@@ -28,7 +28,7 @@ typedef struct dic {
 #define FREE_DIC_ENTRY(PTR)             free(PTR)
 
 /* Define how your data structure is shown --- do not add \n. LFHT does it elsewhere */
-#define SHOW_DIC_ENTRY(PTR, KEY)        printf("(%4ld, %1ld)", KEY, Dic_val(PTR))
+#define SHOW_DIC_ENTRY(OUT, PTR, KEY)        fprintf(OUT, "(%4ld, %1ld)", KEY, Dic_val(PTR))
 
 /* Define where you want to hook the LFHT data structure */
 struct benchRoot {
@@ -47,7 +47,6 @@ struct benchRoot Root;
 int total_nodes = 0;
 #endif /* LFHT_DEBUG */
 
-#define DIC_VALUE 2  /* dummy value. It is only used as example */
-
+#define DIC_VALUE 2  /* Dummy value. It is only used as example */
 
 #include "LFHT_tries.i"

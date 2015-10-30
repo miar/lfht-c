@@ -32,24 +32,24 @@
 
 #ifdef LFHT_DEBUG
 
-#define LFHT_SHOW_TO_DELETE_NODE(NODE)                                \
-  SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
-  printf(" F\n"); /* Free */
+#define LFHT_SHOW_TO_DELETE_NODE(NODE, OUT)			           \
+  SHOW_DIC_ENTRY(OUT, NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
+  fprintf(OUT, " F\n"); /* Free */
 
-#define LFHT_SHOW_NODE(NODE)                                          \
-  SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
-  if (LFHT_IsDeletedKey(NODE))				              \
-    printf(" D\n"); /* Deleted */				      \
-  else								      \
-    printf(" V\n")  /* Valid */
+#define LFHT_SHOW_NODE(NODE, OUT)				           \
+  SHOW_DIC_ENTRY(OUT, NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
+  if (LFHT_IsDeletedKey(NODE))				                   \
+    fprintf(OUT, " D\n"); /* Deleted */				           \
+  else								           \
+    fprintf(OUT, " V\n")  /* Valid */
 
 #else /* !LFHT_DEBUG */
 
-#define LFHT_SHOW_TO_DELETE_NODE(NODE)
+#define LFHT_SHOW_TO_DELETE_NODE(NODE, OUT)
 
-#define LFHT_SHOW_NODE(NODE)                                          \
-  SHOW_DIC_ENTRY(NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));   \
-  printf("\n")
+#define LFHT_SHOW_NODE(NODE, OUT)				          \
+  SHOW_DIC_ENTRY(OUT, NODE, LFTH_UnshiftDeleteBits(LFHT_NodeKey(NODE)));  \
+  fprintf(OUT, "\n")
 
 #endif /* LFHT_DEBUG */
 
@@ -137,14 +137,16 @@ static inline void
 			   int, int LFHT_USES_REGS);
 
 static inline void 
-  LFHT_SHOW_STATE(void);
+  LFHT_SHOW_STATE(char *);
 
 static inline void 
   LFHT_SHOW_CHAIN(LFHT_STR_PTR, 
-		  LFHT_STR_PTR *);
+		  LFHT_STR_PTR *,
+		  FILE *);
 
 static inline void 
-  LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *);
+  LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *,
+			 FILE *);
 
 static inline void 
   LFHT_SHOW_STATISTICS(char *);
@@ -165,7 +167,7 @@ static inline void
   LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *);
 
 static inline void 
-  LFHT_SHOW_DELETE_POOL(void);
+  LFHT_SHOW_DELETE_POOL(char *);
 
 static inline void 
   LFHT_CREATE_INIT_ENV(void);
@@ -193,20 +195,28 @@ static inline void
 			LFHT_ToDeleteNext(PTR), PTR));                           \
  }
 
-static inline void 
-  LFHT_SHOW_DELETE_POOL(void) { 
-    printf("****************************** ************** *************************\n"); 
-    printf("*                                Delete Pool                          *\n");
-    LFHT_ToDeletePtr node = LFHT_DeletePool;
-    if (node == NULL)
-      printf("                                Empty                              \n");
-    else {
-      do {
-	LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(node));
-	node = LFHT_ToDeleteNext(node);
-      } while (node);
-    }
-    printf("****************************** ************** *************************\n");
+static inline void LFHT_SHOW_DELETE_POOL(char *user_out) { 
+
+  FILE *out; 
+  if (strcmp(user_out,"stdout") == 0)
+    out = stdout;
+  else if (strcmp(user_out,"stderr") == 0)
+    out = stderr;
+  else 
+    out = fopen(user_out, "w");
+
+  fprintf(out, "****************************** ************** *************************\n"); 
+  fprintf(out, "*                                Delete Pool                          *\n");
+  LFHT_ToDeletePtr node = LFHT_DeletePool;
+  if (node == NULL)
+    fprintf(out, "                                Empty                              \n");
+  else {
+    do {
+      LFHT_SHOW_NODE((LFHT_STR_PTR) LFHT_ToDeleteNode(node), out);
+      node = LFHT_ToDeleteNext(node);
+    } while (node);
+  }
+  fprintf(out, "****************************** ************** *************************\n");
 }
 
 static inline
@@ -840,38 +850,49 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash,
 /*                     show state (prints the nodes inside the LFHT)                   */
 /* ------------------------------------------------------------------------------------*/
 
-static inline void LFHT_SHOW_STATE(void) {
+static inline void LFHT_SHOW_STATE(char *user_out) {
   LFHT_STR_PTR first_node;
   LFHT_GetFirstNode(first_node);
+  FILE *out; 
+  if (strcmp(user_out,"stdout") == 0)
+    out = stdout;
+  else if (strcmp(user_out,"stderr") == 0)
+    out = stderr;
+  else 
+    out = fopen(user_out, "w");
+
   if (first_node == NULL) {
-    printf("LFHT is empty \n");
+    fprintf(out, "LFHT is empty \n");
     return;
-  }  
+  }
+
   if (LFHT_IsHashLevel(first_node))
-    return LFHT_SHOW_BUCKET_ARRAY((LFHT_STR_PTR *) first_node);
-  return LFHT_SHOW_CHAIN(first_node, (LFHT_STR_PTR *)NULL);
+    return LFHT_SHOW_BUCKET_ARRAY((LFHT_STR_PTR *) first_node, out);
+  return LFHT_SHOW_CHAIN(first_node, (LFHT_STR_PTR *)NULL, out);
 }
 
 static inline void LFHT_SHOW_CHAIN(LFHT_STR_PTR chain_node,
-				   LFHT_STR_PTR *end_chain) {
+				   LFHT_STR_PTR *end_chain,
+				   FILE *out) {
   
   if ((LFHT_STR_PTR *) chain_node == end_chain)
     return;  
-  LFHT_SHOW_CHAIN(LFHT_NodeNext(chain_node), end_chain);
-  LFHT_SHOW_NODE(chain_node);
+  LFHT_SHOW_CHAIN(LFHT_NodeNext(chain_node), end_chain, out);
+  LFHT_SHOW_NODE(chain_node, out);
   return;
 }
 
-static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
+static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash,
+					  FILE *out) {
   int i;
   LFHT_STR_PTR *bucket;
   bucket = (LFHT_STR_PTR *) LFHT_UntagHashLevel(curr_hash);
   for (i = 0; i < LFHT_BUCKET_ARRAY_SIZE; i++) {
     if ((LFHT_STR_PTR *) *bucket != curr_hash) {
       if (LFHT_IsHashLevel((*bucket))) {      
-	LFHT_SHOW_BUCKET_ARRAY((LFHT_STR_PTR *) *bucket);
+	LFHT_SHOW_BUCKET_ARRAY((LFHT_STR_PTR *) *bucket, out);
       } else
-	LFHT_SHOW_CHAIN((LFHT_STR_PTR)*bucket, curr_hash);
+	LFHT_SHOW_CHAIN((LFHT_STR_PTR)*bucket, curr_hash, out);
     }
     bucket++;
   }
@@ -1000,7 +1021,6 @@ static inline void LFHT_ABOLISH_ALL_KEYS(void) {
   if (to_delete_node) {
     do {
       void *chain_node = (void *) LFHT_ToDeleteNode(to_delete_node);
-      // LFHT_SHOW_TO_DELETE_NODE((LFHT_STR_PTR) chain_node);
       LFHT_ToDeletePtr free_to_delete_node = to_delete_node;
       to_delete_node = LFHT_ToDeleteNext(to_delete_node);
       free(chain_node);
@@ -1014,10 +1034,9 @@ static inline void LFHT_ABOLISH_ALL_KEYS(void) {
   LFHT_ThreadUnusedNode(tenv) = LFHT_ThreadUnusedBucketArray(tenv) = NULL;
   /* Ready to abolish LFHT */  
   
-  if (first_node == NULL) {
-    printf("LFHT is empty \n");
+  if (first_node == NULL)
     return;
-  }  
+  
   if (LFHT_IsHashLevel(first_node))
     LFHT_ABOLISH_BUCKET_ARRAY((LFHT_STR_PTR *) first_node);
   else
@@ -1227,7 +1246,7 @@ static inline
       to_delete_node = LFHT_ToDeleteNext(to_delete_node);
 
       if (i == LFHT_MAX_THREADS) {
-	LFHT_SHOW_TO_DELETE_NODE((LFHT_STR_PTR) chain_node);
+	//	LFHT_SHOW_TO_DELETE_NODE((LFHT_STR_PTR) chain_node);
 	free(chain_node);
 	free(free_to_delete_node);
       } else {

@@ -24,8 +24,8 @@ int main() {
 
   total_nodes = 0;
 
-  dic_show_state();
-  dic_show_delete_pool();
+  dic_show_state("stdout");
+  dic_show_delete_pool("stdout");
   
   dic_show_statistics("stdout");
 
