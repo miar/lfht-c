@@ -1,6 +1,7 @@
 #ifndef _LFHT_TRIES_H
 #define _LFHT_TRIES_H
 
+#include <string.h>
 #include "LFHT_common.h"
 #include "LFHT_threads.h"
 

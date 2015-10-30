@@ -895,10 +895,20 @@ static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash) {
 /*                     show statistics                                                 */
 /* ------------------------------------------------------------------------------------*/
 
-static inline void LFHT_SHOW_STATISTICS(void) {
+static inline void LFHT_SHOW_STATISTICS(char *user_out) {
   LFHT_STR_PTR first_node;
   LFHT_GetFirstNode(first_node);
-  printf("****************************** ************** ******************************\n");
+  
+  FILE *out; 
+  
+  if (strcmp(user_out,"stdout") == 0)
+    out = stdout;
+  else if (strcmp(user_out,"stderr") == 0)
+    out = stderr;
+  else 
+    out = fopen(user_out, "w");
+
+  fprintf(out, "****************************** ************** ******************************\n");
   printf("*                                Statistics                                *\n");
   
   if (first_node == NULL) {

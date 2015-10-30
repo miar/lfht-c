@@ -27,7 +27,8 @@ int main() {
   dic_show_state();
   dic_show_delete_pool();
   
-  dic_show_statistics();
+  dic_show_statistics("stdout");
+
   dic_kill_env();
 
   //  dic_abolish_all_keys();
