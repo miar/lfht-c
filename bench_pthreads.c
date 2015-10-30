@@ -1,6 +1,5 @@
 #include "bench_pthreads.h"
 
-
 void *thread_run(void *ptr) { 
   struct thread_work *tw;
   tw = (struct thread_work *) ptr;
@@ -25,8 +24,11 @@ void *thread_run(void *ptr) {
 #endif
   int s = tw->startI, e = tw->endI;
   LFHT_ThreadEnvPtr tenv = tw_single.tenv;
-  for (i = s; i < e; i++)  
+  for (i = s; i < e; i++) {  
     dic_check_insert_key(dataSet[i], DIC_VALUE, tenv);
+    if (dataSet[i] % 2 == 0)
+      dic_check_delete_key(dataSet[i], DIC_VALUE, tenv);
+  }
 
 #if defined(CPUTIME_ON_THREAD_RUSAGE)
   getrusage(RUSAGE_THREAD, &tv2);
@@ -129,7 +131,7 @@ void create_bench_and_solution(void) {
 
 extern int total_nodes; 
 
-int main() {
+int main(void) {
   pthread_t threads[NUM_THREADS];  
   //  int wid = 0;
   create_bench_and_solution();

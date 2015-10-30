@@ -4,10 +4,8 @@
 
 #define NKEYS 12
 
-
-
 int main() {
-  int key, value = 2;
+  int key;
 
   dic_create_init_env();
   
@@ -16,7 +14,7 @@ int main() {
   LFHT_ThreadEnvPtr tenv = dic_create_init_thread_env(tid);
 
   printf("------ INSERT / DELETE -------\n");
-  for (key = 1; key <= NKEYS; key++) {
+  for (key = 0; key < NKEYS; key++) {
     printf("key - %d\n", key);
     dic_check_insert_key(key, DIC_VALUE, tenv);
     if (key % 2 == 0)
