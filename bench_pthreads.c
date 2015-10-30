@@ -121,7 +121,7 @@ void create_bench_and_solution(void) {
   dic_show_state();
   dic_show_delete_pool();
   
-  dic_show_statistics();
+  dic_show_statistics(fcorrect_hash);
   dic_kill_env();
 
 #endif /* SINGLE_THREAD_EXECUTION */

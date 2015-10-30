@@ -32,8 +32,8 @@
 #endif
 
 FILE *FP;
-const char fdata_set[] = "output/data_set";
-const char fcorrect_hash[] = "output/correct_hash";
+char fdata_set[] = "output/data_set";
+char fcorrect_hash[] = "output/correct_hash";
 const char fresult_hash[] = "output/result_hash";
 long dataSet[DATASET_SIZE];
 

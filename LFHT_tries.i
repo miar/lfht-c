@@ -84,98 +84,87 @@
 /*-------------- don't change nothing from this point ------- */
 
 static inline LFHT_STR_PTR 
-  LFHT_CHECK_INSERT_KEY(LFHT_NODE_KEY_STR key 
+  LFHT_CHECK_INSERT_KEY(LFHT_NODE_KEY_STR
 			LFHT_USES_ARGS);
 
 static inline LFHT_STR_PTR 
-  LFHT_CHECK_DELETE_KEY(LFHT_NODE_KEY_STR key 
+  LFHT_CHECK_DELETE_KEY(LFHT_NODE_KEY_STR
                         LFHT_USES_ARGS);
 
 static inline LFHT_STR_PTR 
-  LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR chain_node, 
-				LFHT_NODE_KEY_STR key, 
-				int count_nodes 
-				LFHT_USES_ARGS);
+  LFHT_CHECK_INSERT_FIRST_CHAIN(LFHT_STR_PTR, 
+				LFHT_NODE_KEY_STR, 
+				int LFHT_USES_ARGS);
 
 static inline LFHT_STR_PTR 
-  LFHT_CHECK_DELETE_FIRST_CHAIN(LFHT_STR_PTR chain_node,
-				LFHT_NODE_KEY_STR key,
-				int count_nodes
-				LFHT_USES_ARGS);
+  LFHT_CHECK_DELETE_FIRST_CHAIN(LFHT_STR_PTR,
+				LFHT_NODE_KEY_STR,
+				int LFHT_USES_ARGS);
 
 static inline LFHT_STR_PTR 
-  LFHT_CHECK_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash,  
-				 LFHT_NODE_KEY_STR key, 
-				 int n_shifts 
-				 LFHT_USES_ARGS);
+  LFHT_CHECK_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *,  
+				 LFHT_NODE_KEY_STR, 
+				 int LFHT_USES_ARGS);
 
 static inline LFHT_STR_PTR 
-  LFHT_CHECK_DELETE_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash,  
-				 LFHT_NODE_KEY_STR key, 
-				 int n_shifts 
-				 LFHT_USES_ARGS);
+  LFHT_CHECK_DELETE_BUCKET_ARRAY(LFHT_STR_PTR *,  
+				 LFHT_NODE_KEY_STR, 
+				 int LFHT_USES_ARGS);
 
 static inline LFHT_STR_PTR 
-  LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash,
-				 LFHT_STR_PTR chain_node,
-				 LFHT_NODE_KEY_STR key, 
-				 int n_shifts, 
-				 int count_nodes 
-				 LFHT_USES_ARGS);
+  LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *,
+				 LFHT_STR_PTR,
+				 LFHT_NODE_KEY_STR, 
+				 int, int LFHT_USES_ARGS);
 static inline LFHT_STR_PTR 
-  LFHT_CHECK_DELETE_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash,
-				 LFHT_STR_PTR chain_node,
-				 LFHT_NODE_KEY_STR key, 
-				 int n_shifts, 
-				 int count_nodes 
-				 LFHT_USES_ARGS);
+  LFHT_CHECK_DELETE_BUCKET_CHAIN(LFHT_STR_PTR *,
+				 LFHT_STR_PTR,
+				 LFHT_NODE_KEY_STR, 
+				 int, int LFHT_USES_ARGS);
 
 static inline void 
-  LFHT_ADJUST_CHAIN_NODES(LFHT_STR_PTR *new_hash, 
-			  LFHT_STR_PTR chain_node, 
-			  int n_shifts
-			  LFHT_USES_REGS);
+  LFHT_ADJUST_CHAIN_NODES(LFHT_STR_PTR *, 
+			  LFHT_STR_PTR, 
+			  int LFHT_USES_REGS);
 
 static inline void 
-  LFHT_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash, 
-			   LFHT_STR_PTR chain_node, 
-			   int n_shifts 
-			   LFHT_USES_REGS);
+  LFHT_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *, 
+			   LFHT_STR_PTR, 
+			   int LFHT_USES_REGS);
 
 static inline void 
-  LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash, 
-			   LFHT_STR_PTR chain_node, 
-			   LFHT_STR_PTR adjust_node, 
-			   int n_shifts, 
-			   int count_nodes 
-			   LFHT_USES_REGS);
+  LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *, 
+			   LFHT_STR_PTR, 
+			   LFHT_STR_PTR, 
+			   int, int LFHT_USES_REGS);
 
 static inline void 
   LFHT_SHOW_STATE(void);
 
 static inline void 
-  LFHT_SHOW_CHAIN(LFHT_STR_PTR chain_node, 
-		  LFHT_STR_PTR * end_chain);
+  LFHT_SHOW_CHAIN(LFHT_STR_PTR, 
+		  LFHT_STR_PTR *);
 
 static inline void 
-  LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
+  LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *);
 
 static inline void 
-  LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node, 
-   		             LFHT_STR_PTR * end_chain);
+  LFHT_SHOW_STATISTICS(char *);
 
 static inline void 
-  LFHT_SHOW_STATISTICS_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
+  LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR, 
+   		             LFHT_STR_PTR *);
+static inline void 
+  LFHT_SHOW_STATISTICS_BUCKET_ARRAY(LFHT_STR_PTR *);
 
 static inline void 
   LFHT_ABOLISH_ALL_KEYS(void);
 
 static inline void 
-  LFHT_ABOLISH_CHAIN(LFHT_STR_PTR chain_node, 
-		     LFHT_STR_PTR * end_chain);
-
+  LFHT_ABOLISH_CHAIN(LFHT_STR_PTR, 
+		     LFHT_STR_PTR *);
 static inline void 
-  LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash);
+  LFHT_ABOLISH_BUCKET_ARRAY(LFHT_STR_PTR *);
 
 static inline void 
   LFHT_SHOW_DELETE_POOL(void);
@@ -907,13 +896,13 @@ static inline void LFHT_SHOW_STATISTICS(char *user_out) {
     out = stderr;
   else 
     out = fopen(user_out, "w");
-
-  fprintf(out, "****************************** ************** ******************************\n");
-  fprintf(out, "*                                Statistics                                *\n");
+  
+  fprintf(out, "****************************** ************** ********************\n");
+  fprintf(out, "*                                Statistics                      *\n");
   
   if (first_node == NULL) {
-    fprintf(out, "                                Empty                                     \n");
-    fprintf(out, "****************************** ************** ******************************\n");
+    fprintf(out, "                                Empty                           \n");
+    fprintf(out, "****************************** ************** ******************\n");
     return;
   }  
   LFHT_StatisticsResetGeneralCounters();
@@ -976,7 +965,6 @@ static inline void LFHT_SHOW_STATISTICS_CHAIN(LFHT_STR_PTR chain_node,
   else
     LFHT_StatisticsValidNodes++;
 
-  //  LFHT_SHOW_STATISTICS_NODE(chain_node);
   return;
 }
 
