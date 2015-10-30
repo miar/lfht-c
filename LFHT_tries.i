@@ -909,11 +909,11 @@ static inline void LFHT_SHOW_STATISTICS(char *user_out) {
     out = fopen(user_out, "w");
 
   fprintf(out, "****************************** ************** ******************************\n");
-  printf("*                                Statistics                                *\n");
+  fprintf(out, "*                                Statistics                                *\n");
   
   if (first_node == NULL) {
-    printf("                                Empty                                     \n");
-    printf("****************************** ************** ******************************\n");
+    fprintf(out, "                                Empty                                     \n");
+    fprintf(out, "****************************** ************** ******************************\n");
     return;
   }  
   LFHT_StatisticsResetGeneralCounters();
@@ -933,35 +933,35 @@ static inline void LFHT_SHOW_STATISTICS(char *user_out) {
   long total_nodes = LFHT_StatisticsValidNodes + 
                      LFHT_StatisticsDeletedNodes + del_pool_sum;
 
-  printf("Total Nodes     (TN) = %ld ", total_nodes);
-  printf("  [ Nodes in Hash Tries (HT) = %ld ", 
+  fprintf(out, "Total Nodes     (TN) = %ld ", total_nodes);
+  fprintf(out, "  [ Nodes in Hash Tries (HT) = %ld ", 
 	 LFHT_StatisticsValidNodes + LFHT_StatisticsDeletedNodes);
-  printf(" | Nodes in Delete Pool (DP) = %ld ]\n", del_pool_sum);
+  fprintf(out, " | Nodes in Delete Pool (DP) = %ld ]\n", del_pool_sum);
 
-  printf("Valid Nodes     (VN) = %ld ", LFHT_StatisticsValidNodes);
-  printf("Ratio (VN/TN) = %.2lf \n", (double) LFHT_StatisticsValidNodes / total_nodes);
+  fprintf(out, "Valid Nodes     (VN) = %ld ", LFHT_StatisticsValidNodes);
+  fprintf(out, "Ratio (VN/TN) = %.2lf \n", (double) LFHT_StatisticsValidNodes / total_nodes);
 
-  printf("Deleted Nodes   (DN) = %ld ", LFHT_StatisticsDeletedNodes);
-  printf("Ratio (DN/TN) = %.2lf \n", ((double) LFHT_StatisticsDeletedNodes / total_nodes));
+  fprintf(out, "Deleted Nodes   (DN) = %ld ", LFHT_StatisticsDeletedNodes);
+  fprintf(out, "Ratio (DN/TN) = %.2lf \n", ((double) LFHT_StatisticsDeletedNodes / total_nodes));
 
-  printf("Not Freed Nodes (DP) = %ld ", del_pool_sum);
-  printf("Ratio (DP/TN) = %.2lf \n", ((double)  del_pool_sum / total_nodes));
+  fprintf(out, "Not Freed Nodes (DP) = %ld ", del_pool_sum);
+  fprintf(out, "Ratio (DP/TN) = %.2lf \n", ((double)  del_pool_sum / total_nodes));
 
   long total_bucket_entries = LFHT_StatisticsUsedBucketEntries + 
                              LFHT_StatisticsEmptyBucketEntries;
 
   if (total_bucket_entries == 0)
-    printf("Bucket Array Entries (BAE) = 0 \n");
+    fprintf(out, "Bucket Array Entries (BAE) = 0 \n");
   else {
-    printf("Bucket Array Entries (BAE) = %ld \n", LFHT_StatisticsUsedBucketArrayEntries);
-    printf("Non-Empty Bucket Entries (BE) = %ld ",  LFHT_StatisticsUsedBucketEntries);
-    printf("Ratio (BE/BAE) = %.2lf \n", ((double) LFHT_StatisticsUsedBucketEntries / 
+    fprintf(out, "Bucket Array Entries (BAE) = %ld \n", LFHT_StatisticsUsedBucketArrayEntries);
+    fprintf(out, "Non-Empty Bucket Entries (BE) = %ld ",  LFHT_StatisticsUsedBucketEntries);
+    fprintf(out, "Ratio (BE/BAE) = %.2lf \n", ((double) LFHT_StatisticsUsedBucketEntries / 
 					 total_bucket_entries));
-    printf("Empty Bucket Entries (EBE) = %ld ",LFHT_StatisticsEmptyBucketEntries);
-    printf("Ratio (BE/BAE) = %.2lf \n", ((double)LFHT_StatisticsEmptyBucketEntries / 
+    fprintf(out, "Empty Bucket Entries (EBE) = %ld ",LFHT_StatisticsEmptyBucketEntries);
+    fprintf(out, "Ratio (BE/BAE) = %.2lf \n", ((double)LFHT_StatisticsEmptyBucketEntries / 
 					 total_bucket_entries));
   }
-  printf("****************************** ************** ******************************\n");
+  fprintf(out, "****************************** ************** ******************************\n");
   return;
 }
 
