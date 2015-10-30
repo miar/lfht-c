@@ -4,7 +4,7 @@
 
 #define NKEYS 12
 
-extern int total_nodes; 
+
 
 int main() {
   int key, value = 2;

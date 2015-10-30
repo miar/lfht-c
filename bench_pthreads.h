@@ -7,7 +7,7 @@
 /*                            BENCH CONFIGURATOR                             */
 /*****************************************************************************/
 
-#define SINGLE_THREAD_EXECUTION   1
+//#define SINGLE_THREAD_EXECUTION   1
 //#define CPUTIME_ON_THREAD_RUSAGE 1
 #define CPUTIME_ON_THREAD_DAYTIME 1
 //#define FLUSH_HASH_NODES 1 
@@ -24,7 +24,7 @@
 //#define DATASET_SIZE (64 * 50000)
 
 //#define DATASET_SIZE (NUM_THREADS * 50)
-#define DATASET_SIZE   10000000
+#define DATASET_SIZE   10
 
 
 /*****************************************************************************/

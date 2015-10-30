@@ -1,7 +1,65 @@
 #include "bench_pthreads.h"
 
-void createTestAndSolution(void){  
+
+void * thread_run(void *ptr) { 
+  struct thread_work *tw;
+  tw = (struct thread_work *) ptr;
   long i;
+
+#ifdef SET_THREAD_AFFINITY
+  cpu_set_t cpuset;
+  CPU_ZERO(&cpuset);
+  CPU_SET((tw->wid)*CPU_LAUNCHER_OFFSET, &cpuset); 
+  pthread_setaffinity_np(pthread_self(),sizeof(cpuset),&cpuset);
+#endif
+
+  /* wait for all threads to be ready */
+  (void)SYNC_ADD(&wait_, -1);
+  do {} while (wait_); 
+   
+#if defined(CPUTIME_ON_THREAD_RUSAGE)
+  struct rusage tv1,tv2; 
+  getrusage(RUSAGE_THREAD, &tv1);
+#elif defined (CPUTIME_ON_THREAD_DAYTIME)    
+  gettimeofday(&(tw->execStartTime), NULL); 
+#endif
+  int s = tw->startI, e = tw->endI;
+  for (i = s; i < e; i++)  
+#ifdef MIGS_BUFFER_ALLOC
+    check_insert(dataSet[i], sb);
+#else
+    check_insert(dataSet[i]);
+#endif /* MIGS_BUFFER_ALLOC */  
+
+#if defined(CPUTIME_ON_THREAD_RUSAGE)
+  getrusage(RUSAGE_THREAD, &tv2);
+  tw->execUTime = (int)(((tv2.ru_utime.tv_sec  - tv1.ru_utime.tv_sec)  * 1000000 +
+          (tv2.ru_utime.tv_usec - tv1.ru_utime.tv_usec)) / 1000); 
+  tw->execSTime = (int)(((tv2.ru_stime.tv_sec  - tv1.ru_stime.tv_sec)  * 1000000 +
+          (tv2.ru_stime.tv_usec - tv1.ru_stime.tv_usec)) / 1000);  
+#elif defined (CPUTIME_ON_THREAD_DAYTIME)
+  gettimeofday(&(tw->execEndTime), NULL); 
+#endif
+#ifdef MIGS_BUFFER_ALLOC
+  FREE_STRUCT_BUFFER(sb);
+#endif  /* MIGS_BUFFER_ALLOC */  
+  pthread_exit(NULL);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+void create_bench_and_solution(void) {
+  long i;
+
 #ifdef CREATE_NEW_DATA_SET_RANDOM
   /* create data set file */
   FP = fopen(fdata_set, "w");
@@ -27,13 +85,12 @@ void createTestAndSolution(void){
   for (i = 0 ; i < DATASET_SIZE ; i++)
     fscanf(FP,"%ld", &(dataSet[i]));
 #endif /*CREATE_NEW_DATA_SET */
-
   fclose(FP);  
-  
+
 #ifdef SINGLE_THREAD_EXECUTION  
-  // create the solution of hash table using a single thread
-  ///////////////////////////  new_answer_trie_hash_node();      HHHHHHHHHEEERRREEEE  
-  // execute bench with one thread 
+  dic_create_init_env();
+  LFHT_ThreadEnvPtr tenv = dic_create_init_thread_env(0);
+
   wait_ = 1;
 #if defined(CPUTIME_ON_THREAD_RUSAGE) || defined(CPUTIME_ON_THREAD_DAYTIME)  
   pthread_t threads;  
@@ -50,37 +107,49 @@ void createTestAndSolution(void){
     printf("ERROR: pthread_join() \n");
     exit(-1);
   } 
-  //printf("********************SINGLE THREAD FINISHED**********\n");
+
 #if defined(CPUTIME_ON_THREAD_RUSAGE)
-  printf(" Cputime RUSAGE THREAD (milliseconds): 1_thread = %d ", tw_single.execUTime + tw_single.execSTime); 
-#else
-  printf(" Cputime DAYTIME THREAD (milliseconds): 1_thread = %d ",(int)(1000000*(tw_single.execEndTime.tv_sec - tw_single.execStartTime.tv_sec) + tw_single.execEndTime.tv_usec - tw_single.execStartTime.tv_usec) / 1000); 
-#endif
-#else  
+  printf(" Cputime RUSAGE THREAD (milliseconds): 1_thread = %d ", 
+         tw_single.execUTime + tw_single.execSTime); 
+#else /* !CPUTIME_ON_THREAD_RUSAGE */
+  printf(" Cputime DAYTIME THREAD (milliseconds): 1_thread = %d ",
+         (int) (1000000*(tw_single.execEndTime.tv_sec - tw_single.execStartTime.tv_sec) + 
+                tw_single.execEndTime.tv_usec - tw_single.execStartTime.tv_usec) / 1000); 
+#endif /* CPUTIME_ON_THREAD_RUSAGE */
+#else  /* !CPUTIME_ON_THREAD_RUSAGE && !CPUTIME_ON_THREAD_DAYTIME */
   // check time 
   struct timeval tv1, tv2;  
   gettimeofday(&tv1, NULL);   
   for (i = 0 ; i < DATASET_SIZE ; i++)
-    //////////////    check_insert(dataSet[i]);
+    dic_check_insert_key(dataSet[i], value, tenv);
 
   // check time 
   gettimeofday(&tv2, NULL);
   int ms = (int)(1000000*(tv2.tv_sec - tv1.tv_sec) + tv2.tv_usec - tv1.tv_usec) / 1000;
   printf(" Cputime DAYTIME MAIN (milliseconds): 1_thread = %d ", ms);     
-#endif
+#endif /* CPUTIME_ON_THREAD_RUSAGE || CPUTIME_ON_THREAD_DAYTIME */
   ///////////////////flushAndFreeHash(fcorrect_hash);
+
+  total_nodes = 0;
+  dic_show_state();
+  dic_show_delete_pool();
+  
+  dic_show_statistics();
+  dic_kill_env();
+
 #endif /* SINGLE_THREAD_EXECUTION */
 
   return;
-
 }
 
+extern int total_nodes; 
 
 int main() {
   pthread_t threads[NUM_THREADS];  
-  int wid = 0;
-  createTestAndSolution();
-
+  //  int wid = 0;
+  create_bench_and_solution();
+  
+  return 0 ;
   /*
   // run test
   new_answer_trie_hash_node(); 
