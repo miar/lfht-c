@@ -1,6 +1,10 @@
 #ifndef _LFHT_COMMON_H
 #define _LFHT_COMMON_H
 
+#include <string.h>
+
+typedef enum {LFHT_False, LFHT_True} LFHT_Bool;
+
 typedef struct LFHT_ToDelete {
   void *node; /* only chain nodes for now */
   struct LFHT_ToDelete *next;
@@ -84,5 +88,20 @@ struct LFHT_StatisticsCounters {
 
 #define LFHT_BoolCAS(PTR, OLD, NEW)    __sync_bool_compare_and_swap((PTR), (OLD), (NEW))
 #define LFHT_ValCAS(PTR, OLD, NEW)     __sync_val_compare_and_swap((PTR), (OLD), (NEW))
+
+#define LFHT_OpenOutputDescriptor(USER_OUT, OUT, FILE)  \
+  FILE = LFHT_False;                                    \
+  if (strcmp(USER_OUT,"stdout") == 0)			\
+    OUT = stdout;					\
+  else if (strcmp(USER_OUT,"stderr") == 0)		\
+    OUT = stderr;					\
+  else {						\
+    OUT = fopen(USER_OUT, "a");			        \
+    FILE = LFHT_True;				        \
+  }
+
+#define LFHT_CloseOutputDescriptor(OUT, FILE)           \
+  if(FILE == LFHT_True)				        \
+    fclose(OUT)
 
 #endif /* _LFHT_COMMON_H */

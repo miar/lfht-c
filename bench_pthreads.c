@@ -118,18 +118,10 @@ void create_bench_and_solution(void) {
   ///////////////////flushAndFreeHash(fcorrect_hash);
 
   total_nodes = 0;
-  /*
-  dic_show_state("stdout");
-  dic_show_delete_pool("stdout");
-  dic_show_statistics("stdout"); // "stdout"
-  */
+  
   dic_show_state(fcorrect_hash);
   dic_show_delete_pool(fcorrect_hash);
-  dic_show_statistics(fcorrect_hash); // "stdout"
-
-
-
-
+  dic_show_statistics(fcorrect_hash); // dic_show_statistics("stdout")
 
   dic_kill_env();
 
@@ -145,6 +137,7 @@ int main(void) {
   //  int wid = 0;
   create_bench_and_solution();
   
+  /* HERE */
   return 0 ;
   /*
   // run test

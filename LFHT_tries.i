@@ -196,15 +196,10 @@ static inline void
  }
 
 static inline void LFHT_SHOW_DELETE_POOL(char *user_out) { 
+  FILE *out; 					       
+  LFHT_Bool file;
 
-  FILE *out; 
-  if (strcmp(user_out,"stdout") == 0)
-    out = stdout;
-  else if (strcmp(user_out,"stderr") == 0)
-    out = stderr;
-  else 
-    out = fopen(user_out, "a");
-
+  LFHT_OpenOutputDescriptor(user_out, out, file);
   fprintf(out, "****************************** ************** *************************\n"); 
   fprintf(out, "*                                Delete Pool                          *\n");
   LFHT_ToDeletePtr node = LFHT_DeletePool;
@@ -217,6 +212,9 @@ static inline void LFHT_SHOW_DELETE_POOL(char *user_out) {
     } while (node);
   }
   fprintf(out, "****************************** ************** *************************\n");
+
+  LFHT_CloseOutputDescriptor(out, file);
+  return;
 }
 
 static inline
@@ -851,15 +849,12 @@ static inline void LFHT_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_hash,
 /* ------------------------------------------------------------------------------------*/
 
 static inline void LFHT_SHOW_STATE(char *user_out) {
+  FILE *out; 					       
+  LFHT_Bool file;
   LFHT_STR_PTR first_node;
+
   LFHT_GetFirstNode(first_node);
-  FILE *out; 
-  if (strcmp(user_out,"stdout") == 0)
-    out = stdout;
-  else if (strcmp(user_out,"stderr") == 0)
-    out = stderr;
-  else 
-    out = fopen(user_out, "a");
+  LFHT_OpenOutputDescriptor(user_out, out, file);
 
   if (first_node == NULL) {
     fprintf(out, "LFHT is empty \n");
@@ -867,8 +862,12 @@ static inline void LFHT_SHOW_STATE(char *user_out) {
   }
 
   if (LFHT_IsHashLevel(first_node))
-    return LFHT_SHOW_BUCKET_ARRAY((LFHT_STR_PTR *) first_node, out);
-  return LFHT_SHOW_CHAIN(first_node, (LFHT_STR_PTR *)NULL, out);
+    LFHT_SHOW_BUCKET_ARRAY((LFHT_STR_PTR *) first_node, out);
+  else
+    LFHT_SHOW_CHAIN(first_node, (LFHT_STR_PTR *)NULL, out);
+
+  LFHT_CloseOutputDescriptor(out, file);
+  return;
 }
 
 static inline void LFHT_SHOW_CHAIN(LFHT_STR_PTR chain_node,
@@ -904,17 +903,13 @@ static inline void LFHT_SHOW_BUCKET_ARRAY(LFHT_STR_PTR *curr_hash,
 /* ------------------------------------------------------------------------------------*/
 
 static inline void LFHT_SHOW_STATISTICS(char *user_out) {
+  FILE *out; 					       
+  LFHT_Bool file;
   LFHT_STR_PTR first_node;
+
   LFHT_GetFirstNode(first_node);
-  
-  FILE *out; 
-  
-  if (strcmp(user_out,"stdout") == 0)
-    out = stdout;
-  else if (strcmp(user_out,"stderr") == 0)
-    out = stderr;
-  else 
-    out = fopen(user_out, "a");
+
+  LFHT_OpenOutputDescriptor(user_out, out, file);
   
   fprintf(out, "****************************** ************** ********************\n");
   fprintf(out, "*                                Statistics                      *\n");
@@ -922,6 +917,7 @@ static inline void LFHT_SHOW_STATISTICS(char *user_out) {
   if (first_node == NULL) {
     fprintf(out, "                                Empty                           \n");
     fprintf(out, "****************************** ************** ******************\n");
+    LFHT_CloseOutputDescriptor(out, file);
     return;
   }  
   LFHT_StatisticsResetGeneralCounters();
@@ -970,6 +966,8 @@ static inline void LFHT_SHOW_STATISTICS(char *user_out) {
 					 total_bucket_entries));
   }
   fprintf(out, "****************************** ************** ******************************\n");
+
+  LFHT_CloseOutputDescriptor(out, file);
   return;
 }
 

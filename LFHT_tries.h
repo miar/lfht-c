@@ -1,11 +1,9 @@
 #ifndef _LFHT_TRIES_H
 #define _LFHT_TRIES_H
 
-#include <string.h>
 #include "LFHT_common.h"
 #include "LFHT_threads.h"
 
-typedef enum {LFHT_false, LFHT_true} LFHT_Bool;
 
 #define LFTH_LowTagDeleteKeyBits        1  /* 1 bit for the logically deleted key (for now) */
 /*******************************************************************************
