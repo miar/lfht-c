@@ -53,7 +53,6 @@
 
 #endif /* LFHT_DEBUG */
 
-
 #define LFHT_CHECK_INSERT_KEY               dic_check_insert_key
 #define LFHT_CHECK_DELETE_KEY               dic_check_delete_key
 #define LFHT_CHECK_INSERT_FIRST_CHAIN       dic_check_insert_first_chain
@@ -79,7 +78,6 @@
 #define LFHT_KILL_ENV                       dic_kill_env
 #define LFHT_CREATE_INIT_THREAD_ENV         dic_create_init_thread_env
 #define LFHT_KILL_THREAD_ENV                dic_kill_thread_env
-
 
 /*-------------- don't change nothing from this point ------- */
 
