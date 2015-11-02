@@ -26,7 +26,7 @@
 //#define DATASET_SIZE (64 * 50000)
 
 //#define DATASET_SIZE (NUM_THREADS * 50)
-#define DATASET_SIZE   32
+#define DATASET_SIZE   100
 
 /*****************************************************************************/
 

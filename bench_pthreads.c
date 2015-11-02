@@ -140,8 +140,8 @@ void create_bench_and_solution(void) {
   total_nodes = 0;
   
   dic_show_state(fcorrect_hash);
-//  dic_show_delete_pool(fcorrect_hash);
-//  dic_show_statistics(fcorrect_hash); // dic_show_statistics("stdout")
+  dic_show_delete_pool(fcorrect_hash);
+  dic_show_statistics(fcorrect_hash); // dic_show_statistics("stdout")
   dic_kill_env();
 
 #endif /* SINGLE_THREAD_EXECUTION */
@@ -240,8 +240,8 @@ int main(void) {
   //  flushAndFreeHash(fresult_hash);
 
   dic_show_state(fresult_hash);
-  //dic_show_delete_pool(fresult_hash);
-  //dic_show_statistics(fresult_hash); // dic_show_statistics("stdout")
+  dic_show_delete_pool(fresult_hash);
+  dic_show_statistics(fresult_hash); // dic_show_statistics("stdout")
 
   dic_kill_env();
 
