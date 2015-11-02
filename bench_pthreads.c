@@ -7,7 +7,11 @@ void *thread_run(void *ptr) {
 
 #ifdef THREAD_FLUSH_EXECUTION
   char thr_out_file[25];
-  sprintf(thr_out_file, "output/thread_output_%d", tw->wid);
+  if (tw == &tw_single)
+    sprintf(thr_out_file, "output/thread_single");
+  else
+    sprintf(thr_out_file, "output/thread_%d", tw->wid);
+
   FILE *thr_out;
   thr_out = fopen(thr_out_file, "w");
 #endif /* THREAD_FLUSH_EXECUTION */
@@ -15,7 +19,7 @@ void *thread_run(void *ptr) {
 #ifdef SET_THREAD_AFFINITY
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);
-  CPU_SET((tw->wid)*CPU_LAUNCHER_OFFSET, &cpuset); 
+  CPU_SET((tw->wid) * CPU_LAUNCHER_OFFSET, &cpuset); 
   pthread_setaffinity_np(pthread_self(),sizeof(cpuset),&cpuset);
 #endif
 
@@ -123,12 +127,12 @@ void create_bench_and_solution(void) {
 #endif /* CPUTIME_ON_THREAD_RUSAGE */
 #else  /* !CPUTIME_ON_THREAD_RUSAGE && !CPUTIME_ON_THREAD_DAYTIME */
   struct timeval tv1, tv2;  
-  gettimeofday(&tv1, NULL);     // check time 
+  gettimeofday(&tv1, NULL);
 
   for (i = 0; i < DATASET_SIZE; i++)
     dic_check_insert_key(dataSet[i], DIC_VALUE, tenv);
 
-  gettimeofday(&tv2, NULL);   // check time 
+  gettimeofday(&tv2, NULL);
   int ms = (int) (1000000*(tv2.tv_sec - tv1.tv_sec) + tv2.tv_usec - tv1.tv_usec) / 1000;
   printf(" Cputime DAYTIME MAIN (milliseconds): 1_thread = %d ", ms);     
 #endif /* CPUTIME_ON_THREAD_RUSAGE || CPUTIME_ON_THREAD_DAYTIME */
