@@ -30,18 +30,18 @@ void *thread_run(void *ptr) {
   gettimeofday(&(tw->execStartTime), NULL); 
 #endif
   int s = tw->startI, e = tw->endI;
-  LFHT_ThreadEnvPtr tenv = tw_single.tenv;
+  LFHT_ThreadEnvPtr tenv = tw->tenv;
   for (i = s; i < e; i++) {  
     dic_check_insert_key(dataSet[i], DIC_VALUE, tenv);
 #ifdef THREAD_FLUSH_EXECUTION
     fprintf(thr_out, "Insert -> %ld\n", dataSet[i]);
 #endif /* THREAD_FLUSH_EXECUTION */
-    if (dataSet[i] % 2 == 0) {
-      dic_check_delete_key(dataSet[i], DIC_VALUE, tenv);
+    //    if (dataSet[i] % 2 == 0) {
+    //  dic_check_delete_key(dataSet[i], DIC_VALUE, tenv);
 #ifdef THREAD_FLUSH_EXECUTION
-      fprintf(thr_out, "Delete -> %ld\n", dataSet[i]);
+    //   fprintf(thr_out, "Delete -> %ld\n", dataSet[i]);
 #endif /* THREAD_FLUSH_EXECUTION */
-    }
+    // }
   }
 
 #if defined(CPUTIME_ON_THREAD_RUSAGE)
