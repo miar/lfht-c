@@ -14,6 +14,8 @@ if test ${error_compile} -eq 1; then
     exit 1
 fi
 
+del output/correct_hash output/result_hash
+
 while [ ${N_TESTS} -ge 1 ]
 do
     echo -n "Test Nr " ${N_TESTS} " : " 

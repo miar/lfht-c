@@ -3,6 +3,8 @@
 # compile on with gcc 
 
 rm bench.out
+del output/correct_hash output/result_hash
+
 gcc  -Wall -Wmissing-prototypes -Wmissing-declarations bench_pthreads.c -lpthread -g -o bench.out
 
 #compile and check assembly code
@@ -15,3 +17,5 @@ gcc  -Wall -Wmissing-prototypes -Wmissing-declarations bench_pthreads.c -lpthrea
 #and run for the moment...
 
 ./bench.out
+
+#tkdiff output/correct_hash output/result_hash

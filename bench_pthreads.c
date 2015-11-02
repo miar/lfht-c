@@ -5,6 +5,13 @@ void *thread_run(void *ptr) {
   tw = (struct thread_work *) ptr;
   long i;
 
+#ifdef THREAD_FLUSH_EXECUTION
+  char thr_out_file[25];
+  sprintf(thr_out_file, "output/thread_output_%d", tw->wid);
+  FILE *thr_out;
+  thr_out = fopen(thr_out_file, "w");
+#endif /* THREAD_FLUSH_EXECUTION */
+
 #ifdef SET_THREAD_AFFINITY
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);
@@ -26,8 +33,15 @@ void *thread_run(void *ptr) {
   LFHT_ThreadEnvPtr tenv = tw_single.tenv;
   for (i = s; i < e; i++) {  
     dic_check_insert_key(dataSet[i], DIC_VALUE, tenv);
-    if (dataSet[i] % 2 == 0)
+#ifdef THREAD_FLUSH_EXECUTION
+    fprintf(thr_out, "Insert -> %ld\n", dataSet[i]);
+#endif /* THREAD_FLUSH_EXECUTION */
+    if (dataSet[i] % 2 == 0) {
       dic_check_delete_key(dataSet[i], DIC_VALUE, tenv);
+#ifdef THREAD_FLUSH_EXECUTION
+      fprintf(thr_out, "Delete -> %ld\n", dataSet[i]);
+#endif /* THREAD_FLUSH_EXECUTION */
+    }
   }
 
 #if defined(CPUTIME_ON_THREAD_RUSAGE)
@@ -39,6 +53,10 @@ void *thread_run(void *ptr) {
 #elif defined (CPUTIME_ON_THREAD_DAYTIME)
   gettimeofday(&(tw->execEndTime), NULL); 
 #endif
+#ifdef THREAD_FLUSH_EXECUTION
+  fclose(thr_out);
+#endif /* THREAD_FLUSH_EXECUTION */
+
   pthread_exit(NULL);
 }
 
@@ -150,16 +168,14 @@ int main(void) {
     tw[wid].startI = startI;
     tw[wid].endI = startI + offset;	
     startI = tw[wid].endI;
-    wid++;
-  } while(wid < NUM_THREADS);    
+  } while(++wid < NUM_THREADS);    
 #else
   do {
     tw[wid].wid = wid;
     tw[wid].tenv = dic_create_init_thread_env(wid);
     tw[wid].startI = 0;
-    tw[wid].endI = DATASET_SIZE;	
-    wid++;
-  } while(wid < NUM_THREADS);
+    tw[wid].endI = DATASET_SIZE; 
+  } while(++wid < NUM_THREADS);
 #endif  
   // check time
   wait_ = NUM_THREADS;
