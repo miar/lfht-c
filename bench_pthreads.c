@@ -36,12 +36,12 @@ void *thread_run(void *ptr) {
 #ifdef THREAD_FLUSH_EXECUTION
     fprintf(thr_out, "Insert -> %ld\n", dataSet[i]);
 #endif /* THREAD_FLUSH_EXECUTION */
-    //    if (dataSet[i] % 2 == 0) {
-    //  dic_check_delete_key(dataSet[i], DIC_VALUE, tenv);
+    if (dataSet[i] % 2 == 0) {
+      dic_check_delete_key(dataSet[i], DIC_VALUE, tenv);
 #ifdef THREAD_FLUSH_EXECUTION
-    //   fprintf(thr_out, "Delete -> %ld\n", dataSet[i]);
+      fprintf(thr_out, "Delete -> %ld\n", dataSet[i]);
 #endif /* THREAD_FLUSH_EXECUTION */
-    // }
+    }
   }
 
 #if defined(CPUTIME_ON_THREAD_RUSAGE)
@@ -133,13 +133,11 @@ void create_bench_and_solution(void) {
   printf(" Cputime DAYTIME MAIN (milliseconds): 1_thread = %d ", ms);     
 #endif /* CPUTIME_ON_THREAD_RUSAGE || CPUTIME_ON_THREAD_DAYTIME */
 
-  ///////////////////flushAndFreeHash(fcorrect_hash);
-
   total_nodes = 0;
   
   dic_show_state(fcorrect_hash);
-  dic_show_delete_pool(fcorrect_hash);
-  dic_show_statistics(fcorrect_hash); // dic_show_statistics("stdout")
+//  dic_show_delete_pool(fcorrect_hash);
+//  dic_show_statistics(fcorrect_hash); // dic_show_statistics("stdout")
   dic_kill_env();
 
 #endif /* SINGLE_THREAD_EXECUTION */
@@ -238,8 +236,8 @@ int main(void) {
   //  flushAndFreeHash(fresult_hash);
 
   dic_show_state(fresult_hash);
-  dic_show_delete_pool(fresult_hash);
-  dic_show_statistics(fresult_hash); // dic_show_statistics("stdout")
+  //dic_show_delete_pool(fresult_hash);
+  //dic_show_statistics(fresult_hash); // dic_show_statistics("stdout")
 
   dic_kill_env();
 
