@@ -32,8 +32,9 @@ do
 	exit 1
     fi
 
-    python run_output_filter.py output/lfht_correct
-    python run_output_filter.py output/lfht_result
+    sort output/lfht_correct > output/lfht_correct.sorted
+    sort output/lfht_result > output/lfht_result.sorted
+
     error_result=0
     diff output/lfht_correct.sorted output/lfht_result.sorted > output/result.diff || error_result=1
     

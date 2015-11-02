@@ -25,7 +25,7 @@ while (line):
         for val in sorted(line.split()) :
             if (val !=''):
                 lr = lr + " " + val
-        fout.write(lr+'\n')
+        fout.write(lr + '\n')
     line = fin.readline()
 
 fin.close()
