@@ -40,12 +40,12 @@ void *thread_run(void *ptr) {
 #ifdef THREAD_FLUSH_EXECUTION
     fprintf(thr_out, "Insert -> %ld\n", dataSet[i]);
 #endif /* THREAD_FLUSH_EXECUTION */
-    if (dataSet[i] % 2 == 0) {
-      dic_check_delete_key(dataSet[i], DIC_VALUE, tenv);
+    //if (dataSet[i] % 2 == 0) {
+      //   dic_check_delete_key(dataSet[i], DIC_VALUE, tenv); //
 #ifdef THREAD_FLUSH_EXECUTION
-      fprintf(thr_out, "Delete -> %ld\n", dataSet[i]);
+      //      fprintf(thr_out, "Delete -> %ld\n", dataSet[i]);
 #endif /* THREAD_FLUSH_EXECUTION */
-    }
+      // }
   }
 
 #if defined(CPUTIME_ON_THREAD_RUSAGE)
