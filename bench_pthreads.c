@@ -122,7 +122,6 @@ void create_bench_and_solution(void) {
   dic_show_state(fcorrect_hash);
   dic_show_delete_pool(fcorrect_hash);
   dic_show_statistics(fcorrect_hash); // dic_show_statistics("stdout")
-
   dic_kill_env();
 
 #endif /* SINGLE_THREAD_EXECUTION */
