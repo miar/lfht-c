@@ -36,8 +36,8 @@
 
 FILE *FP;
 char fdata_set[] = "output/data_set";
-char fcorrect_hash[] = "output/correct_hash";
-char fresult_hash[] = "output/result_hash";
+char fcorrect_hash[] = "output/lfht_correct";
+char fresult_hash[] = "output/lfht_result";
 
 long dataSet[DATASET_SIZE];
 
