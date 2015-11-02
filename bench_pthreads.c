@@ -165,8 +165,6 @@ int main(void) {
   // check time
   wait_ = NUM_THREADS;
 
-  
-
 #if !defined(CPUTIME_ON_THREAD_RUSAGE) && !defined(CPUTIME_ON_THREAD_DAYTIME)
   struct timeval tv1, tv2;  
   gettimeofday(&tv1, NULL); 
