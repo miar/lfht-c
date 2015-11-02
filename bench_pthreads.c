@@ -134,14 +134,12 @@ extern int total_nodes;
 
 int main(void) {
   pthread_t threads[NUM_THREADS];  
-  //  int wid = 0;
+  int wid = 0;
   create_bench_and_solution();
   
-  /* HERE */
-  return 0 ;
-  /*
   // run test
-  new_answer_trie_hash_node(); 
+  dic_create_init_env();
+  //new_answer_trie_hash_node(); 
   FP = fopen(fdata_set, "r");
   struct thread_work tw[NUM_THREADS];  
 #ifdef DIVIDE_WORK_BETWEEN_THREADS
@@ -149,6 +147,7 @@ int main(void) {
   int startI = 0;
   do { 
     tw[wid].wid = wid;
+    tw[wid].tenv = dic_create_init_thread_env(wid);
     tw[wid].startI = startI;
     tw[wid].endI = startI + offset;	
     startI = tw[wid].endI;
@@ -157,6 +156,7 @@ int main(void) {
 #else
   do {
     tw[wid].wid = wid;
+    tw[wid].tenv = dic_create_init_thread_env(wid);
     tw[wid].startI = 0;
     tw[wid].endI = DATASET_SIZE;	
     wid++;
@@ -165,19 +165,21 @@ int main(void) {
   // check time
   wait_ = NUM_THREADS;
 
+  
+
 #if !defined(CPUTIME_ON_THREAD_RUSAGE) && !defined(CPUTIME_ON_THREAD_DAYTIME)
   struct timeval tv1, tv2;  
   gettimeofday(&tv1, NULL); 
 #endif
   // execute bench with NUM_THREADS threads
-  for(wid=0; wid<NUM_THREADS; wid++) { 
+  for(wid = 0; wid < NUM_THREADS; wid++) { 
     if (pthread_create(&threads[wid], NULL, thread_run, (void *)(&tw[wid]))) {
       printf("ERROR: pthread_create() wid = %d \n", wid);
       exit(-1);
     }
   }    
 
-  for(wid=0; wid<NUM_THREADS; wid++) {
+  for(wid = 0; wid < NUM_THREADS; wid++) {
     void * status;
     if (pthread_join(threads[wid], &status)) {
       printf("ERROR: pthread_join() wid = %d \n", wid);
@@ -220,9 +222,16 @@ int main(void) {
   printf(" %d_threads = %d  ", NUM_THREADS, ms1);
 #endif   
   fclose(FP);
-  flushAndFreeHash(fresult_hash);	    
+  //  flushAndFreeHash(fresult_hash);
+
+  dic_show_state(fresult_hash);
+  dic_show_delete_pool(fresult_hash);
+  dic_show_statistics(fresult_hash); // dic_show_statistics("stdout")
+
+  dic_kill_env();
+
+
   return (0);
-  */
 }
 
 

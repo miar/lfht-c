@@ -16,7 +16,7 @@
 #define CREATE_NEW_DATA_SET_INCREMENTAL 1
 #define DIVIDE_WORK_BETWEEN_THREADS   1 /* to disable check first IS_EQUAL_TO_NODE_ENTRY */
 
-#define NUM_THREADS 32   /* NUM_THREADS > 1 */
+#define NUM_THREADS 2   /* NUM_THREADS > 1 */
 #define RANDOM_TERM_RANGE  500000000 /* n is random number in range of 0 - 9 */
 
 //#define DATASET_SIZE (NUM_THREADS * 50000)
@@ -34,7 +34,7 @@
 FILE *FP;
 char fdata_set[] = "output/data_set";
 char fcorrect_hash[] = "output/correct_hash";
-const char fresult_hash[] = "output/result_hash";
+char fresult_hash[] = "output/result_hash";
 long dataSet[DATASET_SIZE];
 
 static volatile int wait_;
