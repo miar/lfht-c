@@ -17,7 +17,7 @@ typedef struct dic {
 /* Define how your data structure is inserted */
 
 #define NEW_DIC_ENTRY(PTR, KEY, VAL, NEXT) {			        \
-    if(PTR == NULL) /* leave this condition (LFHT memory manage) */	\
+    if(PTR == NULL) /* leave this condition (LFHT_NEW_NODE macro) */	\
     if ((PTR = (struct dic *) malloc(sizeof(struct dic))) == NULL)	\
       perror("ALLOC_DIC_ENTRY: malloc error") ;				\
   Dic_key(PTR) = KEY;							\

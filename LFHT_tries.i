@@ -637,11 +637,6 @@ static inline void
 
   LFHT_NodeNext(chain_node) = (LFHT_STR_PTR) new_hash;
   LFHT_ThreadMemRef(tenv) = chain_node;
-
-  /*
-  if(LFHT_NodeKey(chain_node) == 0)
-    printf ("olaaaaaaaaaaaaa -> shifts = %d\n", n_shifts);
-  */
   
   if (LFHT_IsDeletedKey(chain_node)) {    
     LFHT_InsertOnDeletePool(chain_node);
