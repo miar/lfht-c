@@ -130,17 +130,15 @@ void create_bench_and_solution(void) {
   gettimeofday(&tv1, NULL);
 
   for (i = 0; i < DATASET_SIZE; i++)
-    dic_check_insert_key(dataSet[i], DIC_VALUE, tenv);
+    printf(" %p ", dic_check_insert_key(dataSet[i], DIC_VALUE, tenv));
 
   gettimeofday(&tv2, NULL);
   int ms = (int) (1000000*(tv2.tv_sec - tv1.tv_sec) + tv2.tv_usec - tv1.tv_usec) / 1000;
   printf(" Cputime DAYTIME MAIN (milliseconds): 1_thread = %d ", ms);     
 #endif /* CPUTIME_ON_THREAD_RUSAGE || CPUTIME_ON_THREAD_DAYTIME */
 
-  total_nodes = 0;
-  
   dic_show_state(fcorrect_hash);
-  dic_show_delete_pool(fcorrect_hash);
+  //  dic_show_delete_pool(fcorrect_hash);
   dic_show_statistics(fcorrect_hash); // dic_show_statistics("stdout")
   dic_kill_env();
 
@@ -148,8 +146,6 @@ void create_bench_and_solution(void) {
 
   return;
 }
-
-extern int total_nodes; 
 
 int main(void) {
   pthread_t threads[NUM_THREADS];  
@@ -240,7 +236,7 @@ int main(void) {
   //  flushAndFreeHash(fresult_hash);
 
   dic_show_state(fresult_hash);
-  dic_show_delete_pool(fresult_hash);
+  //  dic_show_delete_pool(fresult_hash);
   dic_show_statistics(fresult_hash); // dic_show_statistics("stdout")
 
   dic_kill_env();

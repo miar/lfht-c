@@ -20,10 +20,6 @@ int main() {
     if (key % 2 == 0)
       dic_check_delete_key(key, DIC_VALUE, tenv);
   }
-  printf("1-total_nodes = %d\n", total_nodes);
-
-  total_nodes = 0;
-
   dic_show_state("stdout");
   dic_show_delete_pool("stdout");
   

@@ -237,9 +237,6 @@ static inline LFHT_STR_PTR
     LFHT_ThreadMemRef(tenv) = new_node;
 
     if (LFHT_BoolCAS(LFHT_ROOT_ADDR, NULL, new_node)) {
-#ifdef LFHT_DEBUG
-      total_nodes++;
-#endif /* LFHT_DEBUG */
       return new_node;
     }
     LFHT_FREE_NODE(new_node, tenv);
@@ -338,9 +335,6 @@ static inline LFHT_STR_PTR
       LFHT_ThreadMemRefNext(tenv) = new_node;
       if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), 
 		       NULL, new_node)) {
-#ifdef LFHT_DEBUG
-	total_nodes++;
-#endif /* LFHT_DEBUG */
 	return new_node;
       }
       LFHT_FREE_NODE(new_node, tenv);
@@ -399,7 +393,6 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_FIRST_CHAIN_ORIGINAL(LFHT_STR_PTR c
       LFHT_STR_PTR new_node;
       LFHT_NEW_NODE(new_node, key, NULL, tenv);
       if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), NULL, new_node)) {
-	total_nodes++;
 	return new_node;
       }
       LFHT_FREE_NODE(new_node, tenv);
@@ -441,9 +434,6 @@ static inline LFHT_STR_PTR
 
     if (LFHT_BoolCAS(bucket, (LFHT_STR_PTR) curr_hash, 
 		     new_node)) {
-#ifdef LFHT_DEBUG
-      total_nodes++;
-#endif /* LFHT_DEBUG */
       return new_node;
     }
     LFHT_FREE_NODE(new_node, tenv);
@@ -472,7 +462,6 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_ARRAY(LFHT_STR_PTR *curr_has
 #ifdef LFHT_DEBUG
       //      printf("3- bucket=%p n_shifts = %d hash= %p", bucket, n_shifts,curr_hash);
       //SHOW_DIC_ENTRY(new_node);
-      total_nodes++;
 #endif // LFHT_DEBUG
       return new_node;
     }
@@ -542,9 +531,6 @@ static inline LFHT_STR_PTR
       LFHT_ThreadMemRefNext(tenv) = new_node;
       if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), 
 		       (LFHT_STR_PTR) curr_hash, new_node)) {
-#ifdef LFHT_DEBUG
-	total_nodes++;
-#endif /* LFHT_DEBUG */
 	return new_node;
       }
       LFHT_FREE_NODE(new_node, tenv);
@@ -614,9 +600,6 @@ static inline LFHT_STR_PTR LFHT_CHECK_INSERT_BUCKET_CHAIN(LFHT_STR_PTR *curr_has
       LFHT_NEW_NODE(new_node, key, (LFHT_STR_PTR) curr_hash, tenv);
       if (LFHT_BoolCAS(&(LFHT_NodeNext(chain_node)), (LFHT_STR_PTR) curr_hash, 
 		       new_node)) {
-#ifdef LFHT_DEBUG
-	total_nodes++;
-#endif // LFHT_DEBUG 
 	return new_node;
       }
       LFHT_FREE_NODE(new_node, tenv);
@@ -652,12 +635,12 @@ static inline void
 
   LFHT_NodeNext(chain_node) = (LFHT_STR_PTR) new_hash;
   LFHT_ThreadMemRef(tenv) = chain_node;
-
+  
   if (LFHT_IsDeletedKey(chain_node)) {    
     LFHT_InsertOnDeletePool(chain_node);
     return;
   }
-
+  
   return LFHT_CALL_INSERT_BUCKET_ARRAY(new_hash, chain_node, (n_shifts + 1));
 }
 
@@ -1269,8 +1252,7 @@ static inline
 /* ------------------------------------------------------------------------------------*/
 
 static inline void LFHT_CREATE_INIT_ENV(void) {
-  if ((LFHT_ROOT_ENV = (LFHT_EnvPtr)
-       malloc(sizeof(struct LFHT_Environment))) == NULL)
+  if ((LFHT_ROOT_ENV = (LFHT_EnvPtr) malloc(sizeof(struct LFHT_Environment))) == NULL)
     perror("Alloc LFHT Environment: malloc error"); 
   LFHT_StatisticsResetGeneralCounters();
   LFHT_DeletePool = NULL; 
