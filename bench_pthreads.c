@@ -60,7 +60,7 @@ void *thread_run(void *ptr) {
 #ifdef THREAD_FLUSH_EXECUTION
   fclose(thr_out);
 #endif /* THREAD_FLUSH_EXECUTION */
-
+  dic_kill_thread_env(tw->wid);
   pthread_exit(NULL);
 }
 
@@ -128,7 +128,7 @@ void create_bench_and_solution(void) {
 
   dic_show_state(fcorrect_hash);
   //  dic_show_delete_pool(fcorrect_hash);
-  dic_show_statistics(fcorrect_hash); // dic_show_statistics("stdout")
+  //dic_show_statistics(fcorrect_hash); // dic_show_statistics("stdout")
   dic_kill_env();
 #endif /* SINGLE_THREAD_EXECUTION */
 
@@ -189,7 +189,7 @@ int main(void) {
 #if defined(CPUTIME_ON_THREAD_RUSAGE)
   int ms2U = 0; 
   int ms2S = 0;
-  for(wid=0; wid<NUM_THREADS; wid++) {
+  for(wid = 0; wid < NUM_THREADS; wid++) {
     ms2U = ms2U + tw[wid].execUTime;
     ms2S = ms2S + tw[wid].execSTime;
   }  
@@ -200,7 +200,7 @@ int main(void) {
   int max_ms = 0;
   int min_ms = 0;
   int sum_ms = 0;
-  for(wid=0; wid<NUM_THREADS; wid++) {
+  for(wid=0; wid < NUM_THREADS; wid++) {
     int ms = (int) (1000000 * (tw[wid].execEndTime.tv_sec - tw[wid].execStartTime.tv_sec) + 
 		    tw[wid].execEndTime.tv_usec - tw[wid].execStartTime.tv_usec) / 1000;
     if (ms > max_ms)
@@ -210,8 +210,10 @@ int main(void) {
     sum_ms += ms;
   }  
 
-  int  ms_single = (int)(1000000 * (tw_single.execEndTime.tv_sec - tw_single.execStartTime.tv_sec) + 
-			 tw_single.execEndTime.tv_usec - tw_single.execStartTime.tv_usec) / 1000;
+  int  ms_single = (int)(1000000 * 
+			 (tw_single.execEndTime.tv_sec - tw_single.execStartTime.tv_sec) + 
+			 tw_single.execEndTime.tv_usec - tw_single.execStartTime.tv_usec) 
+                        / 1000;
 
   float avg_ms = (float)sum_ms / (float)NUM_THREADS;
 
@@ -233,7 +235,7 @@ int main(void) {
  
   dic_show_state(fresult_hash);
   //  dic_show_delete_pool(fresult_hash);
-  dic_show_statistics(fresult_hash); // dic_show_statistics("stdout")
+  // dic_show_statistics(fresult_hash); // dic_show_statistics("stdout")
 
   dic_kill_env();
 

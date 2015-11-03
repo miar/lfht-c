@@ -80,19 +80,19 @@
 #define LFHT_CALL_INSERT_BUCKET_CHAIN(H, N, L, S, C)       \
   LFHT_INSERT_BUCKET_CHAIN(H, N, L, S, C LFHT_PASS_REGS)
 
-#define LFTH_ShiftDeleteBits(KEY)         ((KEY = KEY << LFTH_LowTagDeleteKeyBits))
+#define LFTH_ShiftDeleteBits(KEY)         (KEY = (KEY << LFTH_LowTagDeleteKeyBits))
 
-#define LFTH_UnshiftDeleteBits(KEY)       ((KEY >> LFTH_LowTagDeleteKeyBits))
+#define LFTH_UnshiftDeleteBits(KEY)       (KEY >> LFTH_LowTagDeleteKeyBits)
 
 #define LFHT_TagAsDeletedKey(NODE)        \
   (LFHT_NodeKey(NODE) = LFHT_NodeKey(NODE) | (LFHT_CELL) 0x1)
 
-#define LFHT_UnTagDeletedBit(NODE)     \
-  ((LFHT_CELL)(LFHT_NodeKey(NODE)) & ~(LFHT_CELL)(0x1))
+#define LFHT_UnTagLowDeleteKeyBits(NODE)     \
+  ((LFHT_CELL)(LFHT_NodeKey(NODE)) & ~(LFHT_CELL)(LFTH_LowTagDeleteKeyBits))
 
 #define LFHT_IsDeletedKey(NODE)            (LFHT_NodeKey(NODE) & (LFHT_CELL) 0x1)
 
-#define LFHT_IsEqualKey(NODE, KEY)        (LFHT_UnTagDeletedBit(NODE) == KEY)
+#define LFHT_IsEqualKey(NODE, KEY)        (LFHT_UnTagLowDeleteKeyBits(NODE) == KEY)
 
 #define LFHT_IsHashLevel(PTR)             ((LFHT_CELL)(PTR) & (LFHT_CELL)(0x1))
      /* V04_IS_EMPTY_BUCKET */
