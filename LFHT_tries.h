@@ -33,12 +33,31 @@
  *******************************************************************************/
 /* common macros - do not change*/
 
+/*
 #define LFHT_NEW_NODE(NODE, KEY, NEXT, TENV)            \
-  if ((NODE = LFHT_ThreadUnusedNode(TENV)) != NULL)	\
-    LFHT_ThreadUnusedNode(TENV) = NULL;                 \
-  else {					        \
+  if ((NODE = LFHT_ThreadUnusedNode(TENV)) != NULL) {	\
+    LFHT_ThreadUnusedNode(TENV) = NULL;			\
+    Dic_key(NODE) = KEY;				\
+    // Dic_val(NODE) = VAL;				\
+    Dic_next(NODE) = NEXT;			        \
+  } else {						\
     LFHT_ALLOC_NODE(NODE, KEY, NEXT);                   \
   }
+*/
+
+#define LFHT_NEW_NODE(NODE, KEY, NEXT, TENV)            \
+  if ((NODE = LFHT_ThreadUnusedNode(TENV)) != NULL) 	\
+    LFHT_ThreadUnusedNode(TENV) = NULL;			\
+  LFHT_ALLOC_NODE(NODE, KEY, NEXT);			\
+  
+
+
+
+
+
+
+
+
 
 #define LFHT_FREE_NODE(NODE, TENV)                       \
   if (LFHT_ThreadUnusedNode(TENV) == NULL) {	         \

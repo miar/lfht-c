@@ -16,12 +16,13 @@ typedef struct dic {
 
 /* Define how your data structure is inserted */
 
-#define NEW_DIC_ENTRY(PTR, KEY, VAL, NEXT) {			   \
-  if ((PTR = (struct dic *) malloc(sizeof(struct dic))) == NULL)   \
-    perror("ALLOC_DIC_ENTRY: malloc error") ;			   \
-  Dic_key(PTR) = KEY;						   \
-  Dic_val(PTR) = VAL;						   \
-  Dic_next(PTR) = NEXT;						   \
+#define NEW_DIC_ENTRY(PTR, KEY, VAL, NEXT) {			        \
+  if(PTR == NULL) 							\
+    if ((PTR = (struct dic *) malloc(sizeof(struct dic))) == NULL)	\
+      perror("ALLOC_DIC_ENTRY: malloc error") ;				\
+  Dic_key(PTR) = KEY;							\
+  Dic_val(PTR) = VAL;							\
+  Dic_next(PTR) = NEXT;							\
 }
 
 /* Define how your data structure is released */
