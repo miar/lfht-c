@@ -167,6 +167,11 @@
 #else /* STANDARD_MALLOC */ 
 #define LFHT_DeallocateBucketArray(PTR)			\
   free(((LFHT_STR_PTR *)LFHT_UntagHashLevel(PTR)) - 1)
+
+#define LFHT_DeallocateBucketArrayInThreadBuffer(PTR)	\
+  free(((LFHT_STR_PTR *)LFHT_UntagHashLevel(PTR)))
+
+
 #endif
 
 #endif /* _LFHT_TRIES_H */

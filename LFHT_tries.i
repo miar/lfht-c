@@ -227,6 +227,8 @@ static inline
 static inline LFHT_STR_PTR 
   LFHT_CHECK_INSERT_KEY(LFHT_NODE_KEY_STR key 
 			LFHT_USES_ARGS) {
+  //  printf("\n %d ", key);
+
   LFTH_ShiftDeleteBits(key);
  LFHT_CHECK_INSERT_KEY:
   LFHT_GetFirstNode(LFHT_ThreadMemRef(tenv));
@@ -635,6 +637,11 @@ static inline void
 
   LFHT_NodeNext(chain_node) = (LFHT_STR_PTR) new_hash;
   LFHT_ThreadMemRef(tenv) = chain_node;
+
+  /*
+  if(LFHT_NodeKey(chain_node) == 0)
+    printf ("olaaaaaaaaaaaaa -> shifts = %d\n", n_shifts);
+  */
   
   if (LFHT_IsDeletedKey(chain_node)) {    
     LFHT_InsertOnDeletePool(chain_node);
@@ -1284,10 +1291,14 @@ static inline void LFHT_KILL_THREAD_ENV(int tid) {
   if (LFHT_ThreadUnusedNode(tenv) != NULL)
     LFHT_DEALLOC_NODE(LFHT_ThreadUnusedNode(tenv));
   if (LFHT_ThreadUnusedBucketArray(tenv) != NULL)
-    LFHT_DeallocateBucketArray(LFHT_ThreadUnusedBucketArray(tenv));
+    //    LFHT_DeallocateBucketArray(LFHT_ThreadUnusedBucketArray(tenv));
+    LFHT_DeallocateBucketArrayInThreadBuffer(
+      (LFHT_STR_PTR *)LFHT_UntagHashLevel(LFHT_ThreadUnusedBucketArray(tenv)));
+
   LFHT_ThreadMemRef(tenv) = LFHT_ThreadMemRefNext(tenv) =
                             LFHT_ThreadUnusedNode(tenv) = 
                             LFHT_ThreadUnusedBucketArray(tenv) = NULL;
+  LFHT_ThreadNrOfOps(tenv) = 0;
 }
 
 /* ------------------------------------------------------------------------------------*/
