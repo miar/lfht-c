@@ -100,7 +100,7 @@ void create_bench_and_solution(void) {
   LFHT_ThreadEnvPtr tenv = dic_create_init_thread_env(0);
 
   wait_ = 1;
-#if defined(CPUTIME_ON_THREAD_RUSAGE) || defined(CPUTIME_ON_THREAD_DAYTIME)  
+
   pthread_t threads;  
   tw_single.wid = 0;
   tw_single.tenv = tenv;
@@ -125,23 +125,11 @@ void create_bench_and_solution(void) {
          (int) (1000000*(tw_single.execEndTime.tv_sec - tw_single.execStartTime.tv_sec) + 
                 tw_single.execEndTime.tv_usec - tw_single.execStartTime.tv_usec) / 1000); 
 #endif /* CPUTIME_ON_THREAD_RUSAGE */
-#else  /* !CPUTIME_ON_THREAD_RUSAGE && !CPUTIME_ON_THREAD_DAYTIME */
-  struct timeval tv1, tv2;  
-  gettimeofday(&tv1, NULL);
-
-  for (i = 0; i < DATASET_SIZE; i++)
-    printf(" %p ", dic_check_insert_key(dataSet[i], DIC_VALUE, tenv));
-
-  gettimeofday(&tv2, NULL);
-  int ms = (int) (1000000*(tv2.tv_sec - tv1.tv_sec) + tv2.tv_usec - tv1.tv_usec) / 1000;
-  printf(" Cputime DAYTIME MAIN (milliseconds): 1_thread = %d ", ms);     
-#endif /* CPUTIME_ON_THREAD_RUSAGE || CPUTIME_ON_THREAD_DAYTIME */
 
   dic_show_state(fcorrect_hash);
   //  dic_show_delete_pool(fcorrect_hash);
   dic_show_statistics(fcorrect_hash); // dic_show_statistics("stdout")
   dic_kill_env();
-
 #endif /* SINGLE_THREAD_EXECUTION */
 
   return;
@@ -191,7 +179,7 @@ int main(void) {
   }    
 
   for(wid = 0; wid < NUM_THREADS; wid++) {
-    void * status;
+    void *status;
     if (pthread_join(threads[wid], &status)) {
       printf("ERROR: pthread_join() wid = %d \n", wid);
       exit(-1);
@@ -205,36 +193,44 @@ int main(void) {
     ms2U = ms2U + tw[wid].execUTime;
     ms2S = ms2S + tw[wid].execSTime;
   }  
-  printf(" %d_threads = %d  utime = %d stime = %d avg = %d avg_utime = %d avg_stime = %d ", NUM_THREADS, ms2U+ms2S, ms2U, ms2S, (ms2U+ms2S) / NUM_THREADS, ms2U/NUM_THREADS, ms2S/NUM_THREADS);
+  printf(" %d_threads = %d  utime = %d stime = %d avg = %d avg_utime = %d avg_stime = %d ", 
+	 NUM_THREADS,  ms2U + ms2S, ms2U, ms2S, (ms2U+ms2S) / NUM_THREADS, 
+	 ms2U/NUM_THREADS, ms2S/NUM_THREADS);
 #elif defined (CPUTIME_ON_THREAD_DAYTIME)
   int max_ms = 0;
   int min_ms = 0;
   int sum_ms = 0;
   for(wid=0; wid<NUM_THREADS; wid++) {
-    int ms = (int)(1000000*(tw[wid].execEndTime.tv_sec - tw[wid].execStartTime.tv_sec) + tw[wid].execEndTime.tv_usec - tw[wid].execStartTime.tv_usec) / 1000;
+    int ms = (int) (1000000 * (tw[wid].execEndTime.tv_sec - tw[wid].execStartTime.tv_sec) + 
+		    tw[wid].execEndTime.tv_usec - tw[wid].execStartTime.tv_usec) / 1000;
     if (ms > max_ms)
-	max_ms = ms;    
+      max_ms = ms;
     if (min_ms == 0 || ms < min_ms)
-	min_ms = ms;
+      min_ms = ms;
     sum_ms += ms;
   }  
-  int  ms_single = (int)(1000000*(tw_single.execEndTime.tv_sec - tw_single.execStartTime.tv_sec) + tw_single.execEndTime.tv_usec - tw_single.execStartTime.tv_usec) / 1000;
+
+  int  ms_single = (int)(1000000 * (tw_single.execEndTime.tv_sec - tw_single.execStartTime.tv_sec) + 
+			 tw_single.execEndTime.tv_usec - tw_single.execStartTime.tv_usec) / 1000;
 
   float avg_ms = (float)sum_ms / (float)NUM_THREADS;
 
-  printf(" %d_threads min/avg/max = %d/%0.2f/%d ratio = %0.2f/%0.2f/%0.2f\n", NUM_THREADS, min_ms,avg_ms, max_ms, (float)ms_single/(float)min_ms, (float)ms_single/(float)avg_ms, (float)ms_single/(float)max_ms);  
+  printf(" %d_threads min/avg/max = %d/%0.2f/%d ratio = %0.2f/%0.2f/%0.2f\n", 
+	 NUM_THREADS, min_ms,avg_ms, max_ms, (float)ms_single/(float)min_ms, 
+	 (float)ms_single/(float)avg_ms, (float)ms_single/(float)max_ms);  
+
   for(wid=0; wid < NUM_THREADS; wid++) {
-    int ms = (int)(1000000*(tw[wid].execEndTime.tv_sec - tw[wid].execStartTime.tv_sec) + tw[wid].execEndTime.tv_usec - tw[wid].execStartTime.tv_usec) / 1000;    
+    int ms = (int) (1000000 * (tw[wid].execEndTime.tv_sec - tw[wid].execStartTime.tv_sec) + 
+		    tw[wid].execEndTime.tv_usec - tw[wid].execStartTime.tv_usec) / 1000;    
     printf("wid = %d time = %d \n",wid, ms);  
   }
 #else
   gettimeofday(&tv2, NULL); 
-  int ms1 = (int)(1000000*(tv2.tv_sec - tv1.tv_sec) + tv2.tv_usec - tv1.tv_usec) / 1000;
+  int ms1 = (int) (1000000 * (tv2.tv_sec - tv1.tv_sec) + tv2.tv_usec - tv1.tv_usec) / 1000;
   printf(" %d_threads = %d  ", NUM_THREADS, ms1);
 #endif   
   fclose(FP);
-  //  flushAndFreeHash(fresult_hash);
-
+ 
   dic_show_state(fresult_hash);
   //  dic_show_delete_pool(fresult_hash);
   dic_show_statistics(fresult_hash); // dic_show_statistics("stdout")

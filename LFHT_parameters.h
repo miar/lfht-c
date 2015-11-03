@@ -28,13 +28,15 @@
 
 //#define LFHT_STATISTICS       1 --> NOT USED
 
-/* LFHT statistics are taken during the execution of threads. 
+/* LFHT thread statistics are taken during the execution of threads. 
    Threads have local counters and at the end of their execution they  
    pass their values to the global counters. Synchronization occurs then threads 
    end their execution. OBS: The main thread still has to call the show_statistics
    function to display the data. */
 
 //#define LFHT_THREAD_STATISTICS       1  --> NOT IMPLEMENTED YET
+
+//#define 
 
 
 #endif /* _LFHT_PARAMETERS_H */
