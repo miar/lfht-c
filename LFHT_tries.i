@@ -1291,7 +1291,6 @@ static inline void LFHT_KILL_THREAD_ENV(int tid) {
   if (LFHT_ThreadUnusedNode(tenv) != NULL)
     LFHT_DEALLOC_NODE(LFHT_ThreadUnusedNode(tenv));
   if (LFHT_ThreadUnusedBucketArray(tenv) != NULL)
-    //    LFHT_DeallocateBucketArray(LFHT_ThreadUnusedBucketArray(tenv));
     LFHT_DeallocateBucketArrayInThreadBuffer(
       (LFHT_STR_PTR *)LFHT_UntagHashLevel(LFHT_ThreadUnusedBucketArray(tenv)));
 
