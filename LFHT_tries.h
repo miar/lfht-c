@@ -87,9 +87,13 @@
 #define LFHT_TagAsDeletedKey(NODE)        \
   (LFHT_NodeKey(NODE) = LFHT_NodeKey(NODE) | (LFHT_CELL) 0x1)
 
+#define LFHT_UnTagDeletedBit(NODE)     \
+  ((LFHT_CELL)(LFHT_NodeKey(NODE)) & ~(LFHT_CELL)(0x1))
+
 #define LFHT_IsDeletedKey(NODE)            (LFHT_NodeKey(NODE) & (LFHT_CELL) 0x1)
 
-#define LFHT_IsEqualKey(NODE, KEY)        (LFHT_NodeKey(NODE) == KEY)
+#define LFHT_IsEqualKey(NODE, KEY)        (LFHT_UnTagDeletedBit(NODE) == KEY)
+
 #define LFHT_IsHashLevel(PTR)             ((LFHT_CELL)(PTR) & (LFHT_CELL)(0x1))
      /* V04_IS_EMPTY_BUCKET */
 #define LFHT_IsEmptyBucket(B, H, STR)     (B == (STR *) H)
