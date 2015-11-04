@@ -19,7 +19,7 @@
 #define CREATE_NEW_DATA_SET_INCREMENTAL 1
 #define DIVIDE_WORK_BETWEEN_THREADS   1 /* to disable check first IS_EQUAL_TO_NODE_ENTRY */
 
-#define NUM_THREADS 16   /* NUM_THREADS > 1 */
+#define NUM_THREADS LFHT_MAX_THREADS    /* define in the LFHT_parameters.h for now */
 #define RANDOM_TERM_RANGE  500000000 /* n is random number in range of 0 - 9 */
 
 //#define DATASET_SIZE (NUM_THREADS * 50000)
