@@ -1207,31 +1207,34 @@ static inline LFHT_STR_PTR
 
 static inline
   void LFHT_FreeToDeletePool(void) {
-  return;
+  //  return;
     LFHT_ToDeletePtr to_delete_node;
     LFHT_ToDeletePtr unfree_head = NULL;
     LFHT_ToDeletePtr unfree_tail = NULL;
-      
-    if ((to_delete_node = LFHT_ValCAS((&(LFHT_DeletePool)),
-			    LFHT_DeletePool, NULL)) == NULL)
+
+    if ((to_delete_node = LFHT_DeletePool) == NULL ||
+	!LFHT_BoolCAS((&(LFHT_DeletePool)), to_delete_node, NULL))
       /* ToDeletePool is empty */
       return;
 
-    while (to_delete_node) {
+    do {
       void *chain_node = (void *) LFHT_ToDeleteNode(to_delete_node);
       int i;
       /* optimize this search ... please  */
       for (i = 0; i < LFHT_MAX_THREADS; i++)
 	if (LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref == chain_node ||
-	    LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref_next == chain_node)
+	    LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref_next == chain_node) {
+	  //printf("iiiiiiiiiiiiiii = %d \n", i);
 	  break;
+	}
 
       LFHT_ToDeletePtr free_to_delete_node = to_delete_node;
       to_delete_node = LFHT_ToDeleteNext(to_delete_node);
 
       if (i == LFHT_MAX_THREADS) {
 	//	LFHT_SHOW_TO_DELETE_NODE((LFHT_STR_PTR) chain_node);
-	free(chain_node);
+	// printf("free chain_node = %p\n", chain_node);
+	free((LFHT_STR_PTR) chain_node);
 	free(free_to_delete_node);
       } else {
 	LFHT_ToDeleteNext(free_to_delete_node) = unfree_head;
@@ -1239,7 +1242,8 @@ static inline
 	if (unfree_tail == NULL)
 	  unfree_tail = unfree_head;
       }
-    }
+    } while (to_delete_node);
+
     if (unfree_tail != NULL) {
       /* join again to the toDeletePool */
       do { 
