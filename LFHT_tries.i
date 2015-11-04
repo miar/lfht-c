@@ -1223,8 +1223,7 @@ static inline
       /* optimize this search ... please  */
       for (i = 0; i < LFHT_MAX_THREADS; i++)
 	if (LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref == chain_node ||
-	    LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref_next == chain_node) {
-	  //printf("iiiiiiiiiiiiiii = %d \n", i);
+	    LFHT_ThreadEnv(LFHT_ROOT_ENV, i).mem_ref_next == chain_node) {	  
 	  break;
 	}
 
@@ -1233,7 +1232,6 @@ static inline
 
       if (i == LFHT_MAX_THREADS) {
 	//	LFHT_SHOW_TO_DELETE_NODE((LFHT_STR_PTR) chain_node);
-	// printf("free chain_node = %p\n", chain_node);
 	free((LFHT_STR_PTR) chain_node);
 	free(free_to_delete_node);
       } else {
@@ -1245,7 +1243,7 @@ static inline
     } while (to_delete_node);
 
     if (unfree_tail != NULL) {
-      /* join again to the toDeletePool */
+      /* join the undeleted nodes with ToDeletePool */
       do { 
 	LFHT_ToDeleteNext(unfree_tail) = LFHT_DeletePool;
       } while(!LFHT_BoolCAS((&(LFHT_DeletePool)),	
