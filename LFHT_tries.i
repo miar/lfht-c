@@ -1207,6 +1207,7 @@ static inline LFHT_STR_PTR
 
 static inline
   void LFHT_FreeToDeletePool(void) {
+  return;
     LFHT_ToDeletePtr to_delete_node;
     LFHT_ToDeletePtr unfree_head = NULL;
     LFHT_ToDeletePtr unfree_tail = NULL;
