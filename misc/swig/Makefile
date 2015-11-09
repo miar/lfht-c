@@ -4,7 +4,7 @@ compile:
 	gcc -shared example.o example_wrap.o -o libexample.so
 	make clean
 clean:
-	del exampleJNI.java example.o example_wrap.* libexample.so
+	del exampleJNI.java example.o example_wrap.* libexample.so example.java
 
 
 
