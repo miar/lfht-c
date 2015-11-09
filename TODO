@@ -1,11 +1,10 @@
 
-
-I'm currently extending the model to support concurrent deletion of
-keys.
-
-For the moment I will assume that only chain nodes will be
+-> I'm currently extending the model to support concurrent deletion of
+keys. For the moment I will assume that only chain nodes will be
 deleted, i.e. buckets arrays will remain allocated.
+    --> Seems to be ok for the moment. 
 
-I expect to improve this in the near future.... 
-
-missing to check the adjust operation .....
+->My next moves will be:
+  -> check correctness with PIN and Anaconda (check stuff in misc/)
+  -> use swig (wrapper) to access C from Java.
+  -> test LFHT in the C-Tries java framework.
