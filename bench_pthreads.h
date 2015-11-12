@@ -14,7 +14,7 @@
 //#define FLUSH_HASH_STATISTICS 1
 //#define CREATE_NEW_DATA_SET_RANDOM 1
 
-#define THREAD_FLUSH_EXECUTION  1
+//#define THREAD_FLUSH_EXECUTION  1
 
 #define CREATE_NEW_DATA_SET_INCREMENTAL 1
 #define DIVIDE_WORK_BETWEEN_THREADS   1 /* to disable check first IS_EQUAL_TO_NODE_ENTRY */
@@ -26,7 +26,7 @@
 //#define DATASET_SIZE (64 * 50000)
 
 //#define DATASET_SIZE (NUM_THREADS * 50)
-#define DATASET_SIZE   16000
+#define DATASET_SIZE   320000
 
 /*****************************************************************************/
 

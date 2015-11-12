@@ -8,10 +8,12 @@ cd swig_working_dir/
 
 swig -java -includeall lfht.i
 
+# Machines Desktop and Toshiba
 gcc -fpic -c lfht.h lfht_wrap.c -I/home/miguel/bin/jdk1.7.0_25/include/  -I/home/miguel/bin/jdk1.7.0_25/include/linux/ 
 
+# Machine Leap
+gcc -fpic -c -c lfht.h lfht_wrap.c  -I/home/miguelareias/java-hash/jdk1.7.0_25/include/  -I/home/miguelareias/java-hash/jdk1.7.0_25/include/linux/
 gcc -shared lfht_wrap.o -o liblfht.so
-
 
 
 #check the tutorial at:

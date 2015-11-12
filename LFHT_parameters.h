@@ -6,7 +6,7 @@
  *******************************************************************************/
 
 /* Define the maximum number of simultaneous threads that LFHT will support */
-#define LFHT_MAX_THREADS 4
+#define LFHT_MAX_THREADS 32
 /* Define the frequency in which a thread tries to free the delete pool */
 #define LFHT_FREE_TO_DELETE_POOL 20
 /*******************************************************************************
