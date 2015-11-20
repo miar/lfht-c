@@ -18,8 +18,5 @@ public class UseExample {
 	//	    System.out.println("Hello, World " + e.fact(3));
 	
         e.imprime();
-    }
-
-
-    
+    }    
 }
